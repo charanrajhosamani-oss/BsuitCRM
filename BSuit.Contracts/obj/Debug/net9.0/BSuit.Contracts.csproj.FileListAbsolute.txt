@@ -20,3 +20,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Contracts\obj\Debug\ne
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Contracts\obj\Debug\net9.0\refint\BSuit.Contracts.dll
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Contracts\obj\Debug\net9.0\BSuit.Contracts.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Contracts\obj\Debug\net9.0\ref\BSuit.Contracts.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Contracts\obj\Debug\net9.0\BSuit.Contracts.sourcelink.json

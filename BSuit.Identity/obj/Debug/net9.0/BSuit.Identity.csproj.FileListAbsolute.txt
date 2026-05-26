@@ -32,3 +32,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Identity\obj\Debug\net
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Identity\obj\Debug\net9.0\BSuit.Identity.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Identity\obj\Debug\net9.0\BSuit.Identity.genruntimeconfig.cache
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Identity\obj\Debug\net9.0\ref\BSuit.Identity.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Identity\obj\Debug\net9.0\BSuit.Identity.sourcelink.json

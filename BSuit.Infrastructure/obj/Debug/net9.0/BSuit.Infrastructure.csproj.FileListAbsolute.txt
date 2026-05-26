@@ -664,3 +664,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Infrastructure\obj\Deb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Infrastructure\obj\Debug\net9.0\refint\BSuit.Infrastructure.dll
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Infrastructure\obj\Debug\net9.0\BSuit.Infrastructure.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Infrastructure\obj\Debug\net9.0\ref\BSuit.Infrastructure.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Infrastructure\obj\Debug\net9.0\BSuit.Infrastructure.sourcelink.json

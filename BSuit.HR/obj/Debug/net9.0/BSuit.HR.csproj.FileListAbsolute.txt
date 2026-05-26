@@ -28,3 +28,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.HR\obj\Debug\net9.0\BS
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.HR\obj\Debug\net9.0\refint\BSuit.HR.dll
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.HR\obj\Debug\net9.0\BSuit.HR.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.HR\obj\Debug\net9.0\ref\BSuit.HR.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.HR\obj\Debug\net9.0\BSuit.HR.sourcelink.json

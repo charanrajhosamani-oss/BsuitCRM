@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BSuit.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e652db78499ea3e69742e96dacd2ced15be1095f")]
 [assembly: System.Reflection.AssemblyProductAttribute("BSuit.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BSuit.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1702,3 +1702,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.API\obj\Debug\net9.0\r
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.API\obj\Debug\net9.0\BSuit.API.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.API\obj\Debug\net9.0\BSuit.API.genruntimeconfig.cache
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.API\obj\Debug\net9.0\ref\BSuit.API.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.API\obj\Debug\net9.0\BSuit.API.sourcelink.json

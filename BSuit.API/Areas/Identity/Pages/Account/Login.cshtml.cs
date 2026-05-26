@@ -111,26 +111,26 @@ namespace BSuit.API.Areas.Identity.Pages.Account
         // POST        
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            try
-            {
-                var sessionCaptcha = HttpContext.Session.GetString("CaptchaCode");
+            //try
+            //{
+            //    var sessionCaptcha = HttpContext.Session.GetString("CaptchaCode");
 
-                if (string.IsNullOrWhiteSpace(CaptchaInput) ||
-                    string.IsNullOrWhiteSpace(sessionCaptcha) ||
-                    !string.Equals(
-                        CaptchaInput.Trim(),
-                        sessionCaptcha.Trim(),
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid captcha.");
-                    return Page();
-                }
-            }
-            catch
-            {
-                ModelState.AddModelError(string.Empty, "Captcha expired.");
-                return Page();
-            }
+            //    if (string.IsNullOrWhiteSpace(CaptchaInput) ||
+            //        string.IsNullOrWhiteSpace(sessionCaptcha) ||
+            //        !string.Equals(
+            //            CaptchaInput.Trim(),
+            //            sessionCaptcha.Trim(),
+            //            StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        ModelState.AddModelError(string.Empty, "Invalid captcha.");
+            //        return Page();
+            //    }
+            //}
+            //catch
+            //{
+            //    ModelState.AddModelError(string.Empty, "Captcha expired.");
+            //    return Page();
+            //}
 
 
             returnUrl = GetSafeReturnUrl(returnUrl);

@@ -682,3 +682,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.SalesCRM\obj\Debug\net
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.SalesCRM\obj\Debug\net9.0\refint\BSuit.SalesCRM.dll
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.SalesCRM\obj\Debug\net9.0\BSuit.SalesCRM.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.SalesCRM\obj\Debug\net9.0\ref\BSuit.SalesCRM.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.SalesCRM\obj\Debug\net9.0\BSuit.SalesCRM.sourcelink.json

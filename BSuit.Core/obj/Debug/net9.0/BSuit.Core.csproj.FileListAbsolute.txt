@@ -682,3 +682,4 @@ C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Core\obj\Debug\net9.0\
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Core\obj\Debug\net9.0\BSuit.Core.pdb
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Core\obj\Debug\net9.0\BSuit.Core.genruntimeconfig.cache
 C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Core\obj\Debug\net9.0\ref\BSuit.Core.dll
+C:\Users\charanraj.nagashetty\source\repos\BsuitCRM\BSuit.Core\obj\Debug\net9.0\BSuit.Core.sourcelink.json
