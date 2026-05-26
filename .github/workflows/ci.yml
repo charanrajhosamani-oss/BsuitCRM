@@ -37,13 +37,13 @@ jobs:
     # BUILD PROJECT
     # =========================
     - name: Build Project
-      run: dotnet build --configuration Release --no-restore
+     run: dotnet build ./BSuit.API/BSuit.API.csproj --configuration Release --no-restore
 
     # =========================
     # PUBLISH PROJECT
     # =========================
     - name: Publish Project
-      run: dotnet publish --configuration Release --output ./publish
+        run: dotnet publish ./BSuit.API/BSuit.API.csproj --configuration Release --output ./publish
 
     # =========================
     # UPLOAD ARTIFACT
