@@ -1,0 +1,211 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model AnalyticsVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Database Analytics Dashboard</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Content -->
+<div id="adminHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Database Analytics Help</h6>
+
+        <p class="text-white mb-2">
+            Monitor tenant-specific database records and analyze table-level statistics.
+        </p>
+
+        <ul class="mb-0 ps-3 text-white">
+            <li>Select a <strong>Tenant</strong> (available only for Super Admin users).</li>
+            <li>Select a <strong>Database Table</strong> to view analytics.</li>
+            <li>View total <strong>Active Records</strong> count.</li>
+            <li>View total <strong>Inactive Records</strong> count.</li>
+            <li>Identify <strong>Duplicate Records</strong> in the selected table.</li>
+            <li>Track records created <strong>Today</strong>.</li>
+            <li>View records created in the last <strong>7 Days</strong>.</li>
+            <li>View records created in the last <strong>1 Month</strong>.</li>
+            <li>View records created in the last <strong>1 Year</strong>.</li>
+            <li>Analyze trends using dashboard charts and tables.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+
+
+<div class="container"> 
+
+    <form method="get">
+
+        @if (Model.Tenants.Any())
+        {
+            <div class="mb-3">
+                <label>Tenant</label>
+                <select name="tenantId"
+                        class="form-control"
+                        onchange="this.form.submit()">
+                    <option value="">Select Tenant</option>
+
+                    @foreach (var item in Model.Tenants)
+                    {
+                        <option value="@item.Value"
+                                selected="@(item.Value == Model.SelectedTenantId?.ToString())">
+                            @item.Text
+                        </option>
+                    }
+                </select>
+            </div>
+        }
+
+        <div class="mb-3">
+            <label>Table Name</label>
+            <select name="tableName"
+                    class="form-control"
+                    onchange="this.form.submit()">
+                <option value="">Select Table</option>
+
+                @foreach (var item in Model.Tables)
+                {
+                    <option value="@item.Value"
+                            selected="@(item.Value == Model.SelectedTableName)">
+                        @item.Text
+                    </option>
+                }
+            </select>
+        </div>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model.SelectedTableName))
+    {
+        <table class="table table-bordered mt-4">
+            <tr>
+                <th>Metric</th>
+                <th>Count</th>
+            </tr>
+
+            <tr>
+                <td>Active Records</td>
+                <td>@Model.ActiveCount</td>
+            </tr>
+
+            <tr>
+                <td>Inactive Records</td>
+                <td>@Model.InactiveCount</td>
+            </tr>
+
+        @*     <tr>
+                <td>Duplicate Records</td>
+                <td>@Model.DuplicateCount</td>
+            </tr> *@
+
+            <tr>
+                <td>Today Created</td>
+                <td>@Model.TodayCount</td>
+            </tr>
+
+            <tr>
+                <td>Last 7 Days</td>
+                <td>@Model.Last7DaysCount</td>
+            </tr>
+
+            <tr>
+                <td>Last 1 Month</td>
+                <td>@Model.Last1MonthCount</td>
+            </tr>
+
+            <tr>
+                <td>Last 1 Year</td>
+                <td>@Model.Last1YearCount</td>
+            </tr>
+        </table>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.SelectedTableName))
+    {
+        <div class="card mt-4">
+            <div class="card-header">
+                Record Analytics Chart
+            </div>
+            <div class="card-body">
+                <canvas id="recordChart"></canvas>
+            </div>
+        </div>
+    }
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var labels = @Html.Raw(Json.Serialize(Model.ChartLabels));
+    var values = @Html.Raw(Json.Serialize(Model.ChartValues));
+
+    if (labels.length > 0) {
+        var ctx = document.getElementById('recordChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Record Counts',
+                    data: values,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+<script>
+  
+    document.addEventListener("DOMContentLoaded", function () {
+      
+        // Tooltip
+        let helpContent =
+            document.getElementById("adminHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            });
+    });
+</script>

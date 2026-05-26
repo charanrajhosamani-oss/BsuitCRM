@@ -1,0 +1,28 @@
+﻿Modules/BSuits.SalesCRM:
+------------------------
+Create a module-specific library that contains everything related to Sales CRM functionality.
+
+Store module-specific database entities.
+DTOs (Data Transfer Objects)-Optional, to separate internal entities from API contracts.
+Business Logic.
+Module Data Seeder.
+Module Permissions
+Module-specific DbContext (if needed)
+
+Add project references:
+BSuits.SalesCRM → BSuits.Core
+BSuits.SalesCRM → BSuits.Contracts
+
+
+ContextSetup:
+
+--MS SQL Server
+-- Create schema for SalesCRM
+CREATE SCHEMA CRM;
+
+
+--C#
+--Setup Context
+Scaffold-DbContext "Server=brickworkcrm-server.database.windows.net,1433;Persist Security Info=False;Database=BSUIT;User Id=brickworkcrm-server-admin;Password=$kyVv6EdubMs4Fjd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer -Schemas CRM -Context SalesCRMContext -ContextDir Data -OutputDir Entities -UseDatabaseNames -NoOnConfiguring -Force
+
+

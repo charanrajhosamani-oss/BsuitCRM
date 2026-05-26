@@ -1,0 +1,259 @@
+﻿@model BSuit.SalesCRM.Models.ProjectVM
+
+@{
+    ViewData["Title"] = "Edit Project";
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+
+        <!-- LEFT -->
+        <div>
+            <a href="@Url.Action("Index", "Project", new { area = "SalesCRM" })"
+               class="btn btn-sm btn-outline-secondary">
+
+                <i class="fa fa-arrow-left"></i>
+
+            </a>
+        </div>
+
+        <!-- CENTER -->
+        <div class="text-center flex-grow-1">
+            <h5 class="mb-0">
+                Edit Project
+            </h5>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="d-flex gap-2">
+
+            <a href="@Url.Action("Index", "Project", new { area = "SalesCRM" })"
+               class="btn btn-sm btn-secondary">
+
+                Cancel
+
+            </a>
+
+            <button type="submit"
+                    form="projectForm"
+                    class="btn btn-sm btn-primary">
+
+                Update
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+    <form id="projectForm"
+          method="post"
+          asp-action="Update"
+          asp-controller="Project"
+          asp-area="SalesCRM">
+
+        <input type="hidden" asp-for="ProjectId" />
+
+        <!-- PROJECT INFO -->
+        <div class="card section-card blue">
+
+            <div class="section-header">
+                📁 Project Information
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <!-- PROJECT NAME -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Project Name
+                        </label>
+
+                        <input asp-for="ProjectName"
+                               class="form-control"
+                               placeholder="Enter Project Name" />
+
+                        <span asp-validation-for="ProjectName"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- PROJECT CODE -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Project Code
+                        </label>
+
+                        <input asp-for="ProjectCode"
+                               class="form-control"
+                               placeholder="Enter Project Code" />
+
+                        <span asp-validation-for="ProjectCode"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- PRIORITY -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Priority
+                        </label>
+
+                        <select asp-for="PriorityId"
+                                asp-items="Model.PriorityList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Priority --
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="PriorityId"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- PROJECT DATES -->
+        <div class="card section-card green">
+
+            <div class="section-header">
+                📅 Project Schedule
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <!-- START DATE -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Start Date
+                        </label>
+
+                        <input asp-for="StartDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="StartDate"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- END DATE -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            End Date
+                        </label>
+
+                        <input asp-for="EndDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="EndDate"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Description
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  rows="1"
+                                  class="form-control"
+                                  placeholder="Enter Description"></textarea>
+
+                        <span asp-validation-for="Description"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- PROJECT HOURS -->
+        <div class="card section-card purple">
+
+            <div class="section-header">
+                ⏱️ Project Hours
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <!-- TOTAL HOURS -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Project Hours
+                        </label>
+
+                        <input asp-for="ProjectHours"
+                               class="form-control"
+                               placeholder="Enter Total Hours" />
+
+                        <span asp-validation-for="ProjectHours"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <!-- BALANCE HOURS -->
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Balance Hours
+                        </label>
+
+                        <input asp-for="BalanceHours"
+                               class="form-control"
+                               placeholder="Enter Balance Hours" />
+
+                        <span asp-validation-for="BalanceHours"
+                              class="text-danger"></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

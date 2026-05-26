@@ -1,0 +1,415 @@
+﻿CorporateWebsite → BSuit API
+==============================================================================
+
+CorporateWebsite sends API request
+Adds API Key in request header
+BSuit API validates the key
+If valid → process lead
+If invalid → reject request
+
+==============================================================================
+
+CorporateWebsite Project → Sends Lead data via API POST
+BSuit Project → Receives API request and inserts into:
+Lead
+LeadServiceMapping
+
+1. LeadRequestDto.cs
+namespace BSuit.API.Models
+{
+    public class LeadRequestDto
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string CompanyName { get; set; }
+        public string City { get; set; }
+        public string Website { get; set; }
+        public string RequirementDetails { get; set; }
+
+        public Guid? CountryId { get; set; }
+        public Guid? IndustryId { get; set; }
+        public Guid? LeadSourceId { get; set; }
+
+        public List<LeadServiceDto> Services { get; set; }
+    }
+
+    public class LeadServiceDto
+    {
+        public Guid ServiceId { get; set; }
+        public Guid? SubServiceId { get; set; }
+        public string Notes { get; set; }
+    }
+}
+
+
+2. Create API Controller in BSuit
+LeadApiController.cs
+using BSuit.API.Models;
+using BSuit.SalesCRM.Entities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace BSuit.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LeadApiController : ControllerBase
+    {
+        private readonly ApplicationDbContext _context;
+
+        public LeadApiController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        [HttpPost("CreateLead")]
+        public async Task<IActionResult> CreateLead([FromBody] LeadRequestDto model)
+        {
+            if (model == null)
+                return BadRequest("Invalid request");
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                var leadId = Guid.NewGuid();
+
+                var lead = new Lead
+                {
+                    LeadId = leadId,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Phone = model.Phone,
+                    CompanyName = model.CompanyName,
+                    City = model.City,
+                    Website = model.Website,
+                    RequirementDetails = model.RequirementDetails,
+                    CountryId = model.CountryId,
+                    IndustryId = model.IndustryId,
+                    LeadSourceId = model.LeadSourceId,
+                    CreatedOn = DateTime.UtcNow,
+                    IsActive = true
+                };
+
+                _context.Leads.Add(lead);
+                await _context.SaveChangesAsync();
+
+                // Insert Services
+                if (model.Services != null && model.Services.Any())
+                {
+                    foreach (var service in model.Services)
+                    {
+                        var leadService = new LeadServiceMapping
+                        {
+                            LeadServiceId = Guid.NewGuid(),
+                            LeadId = leadId,
+                            ServiceId = service.ServiceId,
+                            SubServiceId = service.SubServiceId,
+                            Notes = service.Notes,
+                            CreatedOn = DateTime.UtcNow
+                        };
+
+                        _context.LeadServiceMappings.Add(leadService);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Lead created successfully",
+                    leadId = leadId
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+    }
+}
+
+3. Register API URL in CorporateWebsite
+appsettings.json
+{
+  "BSuitApiSettings": {
+    "BaseUrl": "https://bsuit-domain.com/api/"
+  }
+}
+
+4. Create DTO in CorporateWebsite
+namespace CorporateWebsite.Models
+{
+    public class LeadPostRequest
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string CompanyName { get; set; }
+        public string City { get; set; }
+        public string Website { get; set; }
+        public string RequirementDetails { get; set; }
+
+        public Guid? CountryId { get; set; }
+        public Guid? IndustryId { get; set; }
+        public Guid? LeadSourceId { get; set; }
+
+        public List<ServiceRequestDto> Services { get; set; }
+    }
+
+    public class ServiceRequestDto
+    {
+        public Guid ServiceId { get; set; }
+        public Guid? SubServiceId { get; set; }
+        public string Notes { get; set; }
+    }
+}
+
+5. Create API Consumer Service in CorporateWebsite
+Services/LeadApiService.cs
+
+using System.Text;
+using System.Text.Json;
+using CorporateWebsite.Models;
+
+namespace CorporateWebsite.Services
+{
+    public class LeadApiService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
+
+        public LeadApiService(HttpClient httpClient,
+                              IConfiguration configuration)
+        {
+            _httpClient = httpClient;
+            _configuration = configuration;
+        }
+
+        public async Task<string> SubmitLeadAsync(LeadPostRequest model)
+        {
+            var apiUrl = _configuration["BSuitApiSettings:BaseUrl"] + "LeadApi/CreateLead";
+
+            var json = JsonSerializer.Serialize(model);
+
+            var content = new StringContent(
+                json,
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _httpClient.PostAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+
+            throw new Exception("Failed to submit lead");
+        }
+    }
+}
+
+6. Register HttpClient
+builder.Services.AddHttpClient<LeadApiService>();
+
+7. Corporate Website Controller
+using CorporateWebsite.Models;
+using CorporateWebsite.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CorporateWebsite.Controllers
+{
+    public class ContactController : Controller
+    {
+        private readonly LeadApiService _leadApiService;
+
+        public ContactController(LeadApiService leadApiService)
+        {
+            _leadApiService = leadApiService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitLead(LeadPostRequest model)
+        {
+            try
+            {
+                var result = await _leadApiService.SubmitLeadAsync(model);
+
+                TempData["Success"] = "Your enquiry submitted successfully!";
+                return RedirectToAction("ThankYou");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View("Contact");
+            }
+        }
+    }
+}
+
+Sample JSON Request from CorporateWebsite
+{
+  "firstName": "Maxi",
+  "lastName": "John",
+  "email": "maxi@test.com",
+  "phone": "9876543210",
+  "companyName": "ABC Pvt Ltd",
+  "city": "Bangalore",
+  "website": "www.abc.com",
+  "requirementDetails": "Need ERP software",
+  "countryId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "industryId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "leadSourceId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "services": [
+    {
+      "serviceId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "subServiceId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "notes": "Urgent requirement"
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+Optional Security Improvement (Recommended)
+To prevent unauthorized API posting:
+
+Add API Key validation:
+[FromHeader(Name = "x-api-key")]
+string apiKey
+
+1. Store API Key in BSuit API
+Add in BSuit:
+{
+  "ApiSecurity": {
+    "ApiKey": "BSUIT_SECRET_2026"
+  }
+}
+
+
+2. Create API Key Validation Attribute
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+
+namespace BSuit.API.Filters
+{
+    public class ApiKeyAuthAttribute : Attribute, IAsyncActionFilter
+    {
+        private const string APIKEYHEADER = "x-api-key";
+
+        public async Task OnActionExecutionAsync(
+            ActionExecutingContext context,
+            ActionExecutionDelegate next)
+        {
+            var configuration = context.HttpContext.RequestServices
+                .GetRequiredService<IConfiguration>();
+
+            if (!context.HttpContext.Request.Headers.TryGetValue(
+                APIKEYHEADER,
+                out var extractedApiKey))
+            {
+                context.Result = new UnauthorizedObjectResult(
+                    "API Key missing");
+                return;
+            }
+
+            var apiKey = configuration["ApiSecurity:ApiKey"];
+
+            if (!apiKey.Equals(extractedApiKey))
+            {
+                context.Result = new UnauthorizedObjectResult(
+                    "Invalid API Key");
+                return;
+            }
+
+            await next();
+        }
+    }
+}
+
+3. Apply Attribute in BSuit API Controller
+Update your Lead API:
+using BSuit.API.Filters;
+
+[Route("api/[controller]")]
+[ApiController]
+public class LeadApiController : ControllerBase
+{
+    private readonly ApplicationDbContext _context;
+
+    public LeadApiController(ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    [ApiKeyAuth]
+    [HttpPost("CreateLead")]
+    public async Task<IActionResult> CreateLead(
+        [FromBody] LeadRequestDto model)
+    {
+        // existing logic
+    }
+}
+
+4. Store Same API Key in CorporateWebsite
+appsettings.json
+{
+  "BSuitApiSettings": {
+    "BaseUrl": "https://yourdomain.com/api/",
+    "ApiKey": "BSUIT_SECRET_2026"
+  }
+}
+
+5. Pass API Key from CorporateWebsite
+LeadApiService.cs
+using System.Text;
+using System.Text.Json;
+
+public async Task<string> SubmitLeadAsync(LeadPostRequest model)
+{
+    var apiUrl = _configuration["BSuitApiSettings:BaseUrl"] 
+                 + "LeadApi/CreateLead";
+
+    var apiKey = _configuration["BSuitApiSettings:ApiKey"];
+
+    var json = JsonSerializer.Serialize(model);
+
+    var request = new HttpRequestMessage(
+        HttpMethod.Post,
+        apiUrl);
+
+    request.Headers.Add("x-api-key", apiKey);
+
+    request.Content = new StringContent(
+        json,
+        Encoding.UTF8,
+        "application/json");
+
+    var response = await _httpClient.SendAsync(request);
+
+    if (response.IsSuccessStatusCode)
+    {
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    throw new Exception("Failed to submit lead");
+}

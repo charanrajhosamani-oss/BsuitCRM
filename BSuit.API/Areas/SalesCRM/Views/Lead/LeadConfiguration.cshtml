@@ -1,0 +1,760 @@
+﻿@using BSuit.SalesCRM.VM.Lead
+@model LeadConfigurationVM
+
+@{
+    ViewData["Title"] = "Lead Configuration";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var leadRules = Model.Configurations;
+    var salesPersons = Model.SalesExecutives;
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12">
+
+        <!-- 🔷 TABS -->
+        <div class="card border-0 shadow-sm mb-2">
+            <div class="card-body py-2 px-2 d-flex align-items-center">
+
+                <button type="button" class="btn btn-sm btn-light border me-2" onclick="scrollTabs(-200)">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+
+                <div id="tabsContainer" class="d-flex flex-nowrap overflow-auto flex-grow-1 gap-2">
+
+                    <button class="tab-btn active" onclick="filterTab('ALL', this)">
+                        All <span class="badge bg-primary ms-1">@(leadRules?.Count ?? 0)</span>
+                    </button>
+
+                    @foreach (var sp in salesPersons)
+                    {
+                        var id = Guid.Parse(sp.Value);
+
+                        var count = leadRules.Count(x =>
+                            x.SalesExecutiveId == id);
+
+                        <button class="tab-btn" onclick="filterTab('@sp.Text', this)">
+                            @sp.Text
+                            <span class="badge bg-secondary ms-1">@count</span>
+                        </button>
+                    }
+
+                </div>
+
+                <button type="button" class="btn btn-sm btn-light border ms-2" onclick="scrollTabs(200)">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- 🔷 FILTER (NO FORM - CLIENT SIDE ONLY) -->
+        <div class="card mb-2 shadow-sm border-0">
+            <div class="card-body py-2 px-3">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                    <!-- LEFT -->
+                    <div class="d-flex gap-2 align-items-center">
+
+                        <input type="text"
+                               id="searchText"
+                               class="form-control form-control-sm"
+                               placeholder="Search..."
+                               style="width:260px;" />
+
+                        <button type="button" class="btn btn-sm btn-primary" onclick="applyClientFilter()">
+                            <i class="fa fa-search"></i>
+                        </button>
+
+                        <button type="button" class="btn btn-sm btn-danger" onclick="resetClientFilter()">
+                            <i class="fa fa-refresh"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="d-flex gap-2">
+
+                        <button class="btn btn-outline-success btn-sm">
+                            <i class="fa fa-play"></i>
+                        </button>
+
+                        <button class="btn btn-outline-primary btn-sm" onclick="showCreateRule()">
+                            <i class="fa fa-plus"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔷 TABLE -->
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body p-0">
+
+                <table class="table table-bordered mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" /></th>
+                            <th>Sl.No</th>
+                            <th>Service</th>
+                            <th>Region</th>
+                            <th>Previous Plans</th>
+                            <th>Current Plan</th>
+                            <th>Future Plans</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody">
+
+                        @{
+                            var groupedRules = leadRules
+                                .GroupBy(x => new
+                                {
+                                    Service = x.Service?.ServiceName,
+                                    Region = x.Region?.RegionName
+                                })
+                                .ToList();
+
+                            int i = 1;
+                        }
+
+                        @if (groupedRules.Any())
+                        {
+                            foreach (var group in groupedRules)
+                            {
+                                var ordered = group
+                                    .OrderBy(x => x.EffectiveFrom)
+                                    .ToList();
+
+                                var currentDate = DateTime.Today;
+
+                                var currentPlan = ordered
+                                    .Where(x => x.EffectiveFrom <= currentDate)
+                                    .OrderByDescending(x => x.EffectiveFrom)
+                                    .FirstOrDefault();
+
+                                var previousPlans = ordered
+                                    .Where(x =>
+                                        currentPlan != null &&
+                                        x.EffectiveFrom < currentPlan.EffectiveFrom)
+                                    .ToList();
+
+                                var futurePlans = ordered
+                                    .Where(x =>
+                                        currentPlan != null
+                                            ? x.EffectiveFrom > currentPlan.EffectiveFrom
+                                            : x.EffectiveFrom > currentDate)
+                                    .ToList();
+
+                                <tr>
+
+                                    <!-- CHECKBOX -->
+                                    <td class="text-center">
+                                        <input type="checkbox" class="row-checkbox" />
+                                    </td>
+
+                                    <!-- SERIAL -->
+                                    <td class="text-center">
+                                        @i
+                                    </td>
+
+                                    <!-- SERVICE -->
+                                    <td>
+                                        @group.Key.Service
+                                    </td>
+
+                                    <!-- REGION -->
+                                    <td>
+                                        @group.Key.Region
+                                    </td>
+
+                                    <!-- PREVIOUS -->
+                                    <td>
+
+                                        @if (previousPlans.Any())
+                                        {
+                                            foreach (var item in previousPlans)
+                                            {
+                                                var primary = salesPersons.FirstOrDefault(x =>
+                                                    string.Equals(
+                                                        x.Value?.Trim(),
+                                                        item.SalesExecutiveId.ToString(),
+                                                        StringComparison.OrdinalIgnoreCase
+                                                    ))?.Text;
+
+                                                <div class="mb-1">
+
+                                                    <span class="badge bg-light text-dark border">
+                                                        @primary
+                                                    </span>
+
+                                                    <small class="text-muted">
+                                                        (@item.EffectiveFrom?.ToString("dd-MMM-yyyy"))
+                                                    </small>
+
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+
+                                    </td>
+
+                                    <!-- CURRENT -->
+                                    <td>
+
+                                        @if (currentPlan != null)
+                                        {
+                                            var currentPrimary = salesPersons.FirstOrDefault(x =>
+                                                string.Equals(
+                                                    x.Value?.Trim(),
+                                                    currentPlan.SalesExecutiveId.ToString(),
+                                                    StringComparison.OrdinalIgnoreCase
+                                                ))?.Text;
+
+                                            <div>
+
+                                                <span class="badge bg-success">
+                                                    @currentPrimary
+                                                </span>
+
+                                                <small class="text-muted">
+                                                    (@currentPlan.EffectiveFrom?.ToString("dd-MMM-yyyy"))
+                                                </small>
+
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+
+                                    </td>
+
+                                    <!-- FUTURE -->
+                                    <td>
+
+                                        @if (futurePlans.Any())
+                                        {
+                                            foreach (var item in futurePlans)
+                                            {
+                                                var futurePrimary = salesPersons.FirstOrDefault(x =>
+                                                    string.Equals(
+                                                        x.Value?.Trim(),
+                                                        item.SalesExecutiveId.ToString(),
+                                                        StringComparison.OrdinalIgnoreCase
+                                                    ))?.Text;
+
+                                                <div class="mb-1">
+
+                                                    <span class="badge bg-warning text-dark">
+                                                        @futurePrimary
+                                                    </span>
+
+                                                    <small class="text-muted">
+                                                        (@item.EffectiveFrom?.ToString("dd-MMM-yyyy"))
+                                                    </small>
+
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+
+                                    </td>
+                                    <td>
+
+                                        <div class="d-flex gap-2 align-items-center">
+
+                                            <!-- CURRENT -->
+                                            <div class="form-check">
+
+                                                <input class="form-check-input planType"
+                                                       type="radio"
+                                                       name="plan_@i"
+                                                       value="Current"
+                                                       checked />
+
+                                                <label class="form-check-label small">
+                                                    Current
+                                                </label>
+
+                                            </div>
+
+                                            <!-- FUTURE -->
+                                            <div class="form-check">
+
+                                                <input class="form-check-input planType"
+                                                       type="radio"
+                                                       name="plan_@i"
+                                                       value="Future" />
+
+                                                <label class="form-check-label small">
+                                                    Future
+                                                </label>
+
+                                            </div>
+
+                                            <!-- EDIT -->
+                                            <a href="javascript:void(0)"
+                                                   class="text-decoration-none text-dark"
+                                                   onclick="editLeadConfiguration(
+                                                '@group.Key.Service',
+                                                '@group.Key.Region',
+                                                this)">
+
+                                                <i class="bi bi-pencil"></i>
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+                                    @*   <td>
+                                        <a href="@Url.Action("EditLeadConfiguration", "Lead", new { serviceName = group.Key.Service, regionName = group.Key.Region })"
+                                               class="text-decoration-none text-dark">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+            </td> *@
+
+                                </tr>
+
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center p-4">
+                                    No Data
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <div>
+            <partial name="_LeadConfigurationEdit" model="@Model" />
+        </div>
+        <!-- 🔷 CREATE SECTION -->
+        <div id="createConfigurationSection" class="d-none">
+
+            <form asp-action="SaveConfiguration"
+                  asp-controller="Lead"
+                  method="post">
+
+                <div class="card border-0 shadow-sm mb-3">
+
+                    <div class="card-header bg-white border-bottom">
+
+                        <h6 class="mb-0 fw-semibold">
+
+                            <i class="fa fa-plus-circle text-primary me-2"></i>
+                            Create Lead Configuration
+
+                        </h6>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <!-- SERVICES -->
+                            <div class="col-md-12">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-briefcase text-primary me-1"></i>
+                                    Services
+
+                                </label>
+
+                                <select id="services"
+                                        name="SelectedServices"
+                                        multiple
+                                        class="form-select">
+
+                                    <option value="ALL">
+                                        Select All
+                                    </option>
+
+                                    @foreach (var s in Model.Services)
+                                    {
+                                        <option value="@s.Value">
+                                            @s.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- REGIONS -->
+                            <div class="col-md-12">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-globe text-success me-1"></i>
+                                    Regions
+
+                                </label>
+
+                                <select id="regions"
+                                        name="SelectedRegions"
+                                        multiple
+                                        class="form-select">
+
+                                    <option value="ALL">
+                                        Select All
+                                    </option>
+
+                                    @foreach (var r in Model.Regions)
+                                    {
+                                        <option value="@r.Value">
+                                            @r.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- PRIMARY EXECUTIVE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-user text-primary me-1"></i>
+                                    Primary Sales Executive
+
+                                </label>
+
+                                <select name="PrimarySalesExecutive"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select --
+                                    </option>
+
+                                    @foreach (var e in Model.SalesExecutives)
+                                    {
+                                        <option value="@e.Value">
+                                            @e.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- SECONDARY EXECUTIVE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-user-plus text-secondary me-1"></i>
+                                    Secondary Sales Executive
+
+                                </label>
+
+                                <select name="SecondarySalesExecutive"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select --
+                                    </option>
+
+                                    @foreach (var e in Model.SalesExecutives)
+                                    {
+                                        <option value="@e.Value">
+                                            @e.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- EFFECTIVE DATE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-calendar text-danger me-1"></i>
+                                    Effective From
+
+                                </label>
+
+                                <input type="text"
+                                       name="EffectiveFrom"
+                                       class="form-control datepicker"
+                                       placeholder="Select Date" />
+
+                            </div>
+
+                            <!-- BUTTONS -->
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
+
+                                <div class="d-flex gap-2">
+
+                                    <!-- CANCEL -->
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            onclick="hideCreateRule()">
+
+                                        <i class="fa fa-times me-1"></i>
+                                        Cancel
+
+                                    </button>
+
+                                    <!-- SAVE -->
+                                    <button type="submit"
+                                            class="btn btn-primary">
+
+                                        <i class="fa fa-save me-1"></i>
+                                        Save
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- 🔷 SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<script>
+
+    let activeTab = "ALL";
+    let searchText = "";
+
+    /* ---------------- TAB FILTER ---------------- */
+    function filterTab(id, btn) {
+
+    activeTab = id;
+
+    document.querySelectorAll(".tab-btn")
+    .forEach(x => x.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    applyFilters();
+    }
+
+    /* ---------------- SEARCH FILTER ---------------- */
+    function applyClientFilter() {
+
+    searchText = document.getElementById("searchText")
+    .value
+    .toLowerCase()
+    .trim();
+
+    applyFilters();
+    }
+
+    /* ---------------- RESET ---------------- */
+    function resetClientFilter() {
+
+    searchText = "";
+    document.getElementById("searchText").value = "";
+
+    activeTab = "ALL";
+
+    document.querySelectorAll(".tab-btn")
+    .forEach(x => x.classList.remove("active"));
+
+    document.querySelectorAll(".tab-btn")[0].classList.add("active");
+
+    applyFilters();
+    }
+
+    /* ---------------- CORE FILTER ENGINE ---------------- */
+    function applyFilters() {
+
+    document.querySelectorAll("#tableBody tr").forEach(row => {
+
+    // read values safely
+    let primary = (row.dataset.primary || "").toLowerCase();
+    let secondary = (row.dataset.secondary || "").toLowerCase();
+    let rowText = row.innerText.toLowerCase();
+
+    // TAB MATCH
+    let tabMatch = true;
+
+    if (activeTab !== "ALL") {
+    tabMatch =
+    primary.includes(activeTab.toLowerCase());
+    }
+
+    // SEARCH MATCH
+    let searchMatch = true;
+
+    if (searchText !== "") {
+    searchMatch = rowText.includes(searchText);
+    }
+
+    // FINAL RESULT
+    row.style.display = (tabMatch && searchMatch) ? "" : "none";
+    });
+    }
+
+    /* ---------------- CREATE SECTION ---------------- */
+    function showCreateRule() {
+
+    let sec = document.getElementById("createConfigurationSection");
+
+    sec.classList.remove("d-none");
+
+    sec.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+    });
+    }
+
+    function hideCreateRule() {
+
+    document.getElementById("createConfigurationSection")
+    .classList.add("d-none");
+    }
+
+    /* ---------------- TAB SCROLL ---------------- */
+    function scrollTabs(v) {
+
+    document.getElementById("tabsContainer")
+    .scrollBy({
+    left: v,
+    behavior: "smooth"
+    });
+    }
+
+    /* ---------------- INIT ---------------- */
+    document.addEventListener("DOMContentLoaded", function () {
+
+    flatpickr(".datepicker", {
+    dateFormat: "d-M-Y"
+    });
+
+    /* =========================================
+    SERVICES MULTI SELECT
+    ========================================= */
+    const servicesChoices = new Choices("#services", {
+    removeItemButton: true,
+    shouldSort: false
+    });
+
+    document.getElementById("services")
+    .addEventListener("change", function () {
+
+    const selectedValues = servicesChoices.getValue(true);
+
+    // SELECT ALL
+    if (selectedValues.includes("ALL")) {
+
+    const allValues = Array.from(this.options)
+    .filter(x => x.value !== "ALL")
+    .map(x => x.value);
+
+    servicesChoices.removeActiveItems();
+
+    servicesChoices.setChoiceByValue(allValues);
+    }
+    });
+
+    /* =========================================
+    REGIONS MULTI SELECT
+    ========================================= */
+    const regionsChoices = new Choices("#regions", {
+    removeItemButton: true,
+    shouldSort: false
+    });
+
+    document.getElementById("regions")
+    .addEventListener("change", function () {
+
+    const selectedValues = regionsChoices.getValue(true);
+
+    // SELECT ALL
+    if (selectedValues.includes("ALL")) {
+
+    const allValues = Array.from(this.options)
+    .filter(x => x.value !== "ALL")
+    .map(x => x.value);
+
+    regionsChoices.removeActiveItems();
+
+    regionsChoices.setChoiceByValue(allValues);
+    }
+    });
+
+    /* =========================================
+    TABLE SELECT ALL
+    ========================================= */
+    document.getElementById("selectAll")
+    ?.addEventListener("change", function () {
+
+    document.querySelectorAll(".row-checkbox")
+    .forEach(x => x.checked = this.checked);
+    });
+
+    });
+
+</script>
+
+<script>
+
+    function editLeadConfiguration(
+    serviceName,
+    regionName,
+    element) {
+
+    // FIND SELECTED PLAN
+
+    let row =
+    element.closest("tr");
+
+    let selectedPlan =
+    row.querySelector(".planType:checked").value;
+
+    // REDIRECT
+
+    let url =
+    '../Lead/EditLeadConfiguration'
+    + '?serviceName=' + encodeURIComponent(serviceName)
+    + '&regionName=' + encodeURIComponent(regionName)
+    + '&planType=' + encodeURIComponent(selectedPlan);
+
+    window.location.href = url;
+    }
+
+</script>

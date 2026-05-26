@@ -1,0 +1,272 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model AuditLogVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Audit Logs</h3>
+        <span id="helpIcon" class="help-icon">?</span>
+    </div>
+
+    <!-- Help -->
+    <div id="adminHelpContent" style="display:none;">
+        <div class="p-2">
+            <h6 class="text-primary">Audit Logs Help</h6>
+            <p class="text-white">
+                Track all CREATE, UPDATE and DELETE actions performed in the system.
+            </p>
+        </div>
+    </div>
+
+    <form method="get" class="row mb-4">
+
+        @if (Model.Tenants.Any())
+        {
+            <div class="col-md-3">
+                <label>Tenant</label>
+                <select name="tenantId"
+                        class="form-control"
+                        onchange="this.form.submit()">
+
+                    <option value="">All Tenants</option>
+
+                    @foreach (var tenant in Model.Tenants)
+                    {
+                        <option value="@tenant.Value"
+                                selected="@(tenant.Value == Model.SelectedTenantId?.ToString())">
+                            @tenant.Text
+                        </option>
+                    }
+                </select>
+            </div>
+        }
+
+        <div class="col-md-3">
+            <label>Table</label>
+            <select name="tableName"
+                    class="form-control"
+                    onchange="this.form.submit()">
+
+                <option value="">All Tables</option>
+
+                @foreach (var table in Model.Tables)
+                {
+                    <option value="@table.Value"
+                            selected="@(table.Value == Model.SelectedTableName)">
+                        @table.Text
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label>Action</label>
+            <select name="actionType"
+                    class="form-control"
+                    onchange="this.form.submit()">
+
+                <option value="">All Actions</option>
+
+                @foreach (var action in Model.Actions)
+                {
+                    <option value="@action.Value"
+                            selected="@(action.Value == Model.SelectedAction)">
+                        @action.Text
+                    </option>
+                }
+            </select>
+        </div>
+    </form>
+
+    <div class="row mb-3">
+
+        <div class="col-md-2">
+            <label>Search User</label>
+            <input type="text"
+                   name="userSearch"
+                   value="@Model.UserSearch"
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+            <label>From Date</label>
+            <input type="date"
+                   name="fromDate"
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-2">
+            <label>To Date</label>
+            <input type="date"
+                   name="toDate"
+                   class="form-control" />
+        </div>
+
+        <div class="col-md-2 mt-4">
+            <button class="btn btn-primary">
+                Filter
+            </button>
+        </div>
+
+        <div class="col-md-2 mt-4">
+            <a asp-action="ExportToExcel"
+               class="btn btn-success">
+                Export Excel
+            </a>
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Table</th>
+                    <th>Action</th>
+                    <th>User</th>
+                    <th>Changed On</th>
+                    <th>Changed Columns</th>
+                    <th>Remarks</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Logs.Any())
+                {
+                    foreach (var log in Model.Logs)
+                    {
+                        <tr>
+                            <td>@log.TableName</td>
+                            <td>
+                                <span class="badge bg-primary">
+                                    @log.Action
+                                </span>
+                            </td>
+                            <td>@log.UserId</td>
+                            <td>@log.ChangedOn.ToString("dd-MMM-yyyy hh:mm tt")</td>
+                            <td>@log.ChangedColumns</td>
+                            <td>@log.Remarks</td>
+                            <td>
+                                <button class="btn btn-sm btn-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#logModal_@log.Id">
+                                    View
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade"
+                                     id="logModal_@log.Id"
+                                     tabindex="-1"
+                                     aria-hidden="true">
+
+                                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                        <div class="modal-content">
+
+                                            <div class="modal-header bg-primary text-white">
+                                                <h5 class="modal-title">
+                                                    Audit Log Details
+                                                </h5>
+
+                                                <button type="button"
+                                                        class="btn-close btn-close-white"
+                                                        data-bs-dismiss="modal">
+                                                </button>
+                                            </div>
+
+                                            <div class="modal-body">
+
+                                                <div class="mb-3">
+                                                    <label class="fw-bold">Key Values</label>
+                                                    <pre class="bg-light p-2 rounded">
+                        @log.KeyValues
+                                                </pre>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="fw-bold">Old Values</label>
+                                                    <pre class="bg-light p-2 rounded">
+                        @Html.Raw(
+                            Newtonsoft.Json.JsonConvert.SerializeObject(
+                                                            Newtonsoft.Json.JsonConvert.DeserializeObject(log.OldValues ?? "{}"),
+                                                            Newtonsoft.Json.Formatting.Indented))
+                        </pre>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="fw-bold">New Values</label>
+                                            <pre class="bg-light p-2 rounded">
+@Html.Raw(
+                                Newtonsoft.Json.JsonConvert.SerializeObject(
+                                                                Newtonsoft.Json.JsonConvert.DeserializeObject(log.NewValues ?? "{}"),
+                                                                Newtonsoft.Json.Formatting.Indented))
+                        </pre>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                                }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No audit logs found
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <nav>
+            <ul class="pagination">
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="?page=@i">
+                            @i
+                        </a>
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    </div>
+</div>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Tooltip
+        let helpContent =
+            document.getElementById("adminHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            });
+    });
+</script>

@@ -1,0 +1,78 @@
+﻿@using static BSuit.SalesCRM.Models.ProjectVM
+@model List<ProjectTaskVM>
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+}
+
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h4 class="fw-semibold">Project Tasks</h4>
+
+        <!-- ADD TASK BUTTON -->
+        <a href="@Url.Action("CreateProject", "Project", new { area = "SalesCRM", projectId = ViewBag.ProjectId })"
+           class="btn btn-outline-primary">
+            <i class="bi bi-box"></i> Add Project Task
+            
+        </a>
+
+    </div>
+
+    <div class="row">
+        <div class="col-12 pt-4 pb-4">
+            <div class="table-container table-responsive">
+               <table class="table table1 align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Task Name</th>
+                            <th>Description</th>
+                            <th>Resource</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Start</th>
+                            <th>Due</th>
+                            <th>Hours</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.TaskName</td>
+                                    <td>@item.Description</td>
+                                    <td>@item.AssignedTo</td>
+                                    <td>@item.TaskStatusId</td>
+                                    <td>@item.PriorityId</td>
+                                    <td>@item.StartDate?.ToString("dd-MMM-yyyy")</td>
+                                    <td>@item.DueDate?.ToString("dd-MMM-yyyy")</td>
+                                    <td>@item.EstimatedHours</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    No tasks available
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+  
+               </table>
+
+                <a href="@Url.Action("ProjectDetails", "Project", new { area = "SalesCRM", id = ViewBag.ProjectId })"
+                   class="btn btn-outline-dark ms-2">
+                    Back
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>

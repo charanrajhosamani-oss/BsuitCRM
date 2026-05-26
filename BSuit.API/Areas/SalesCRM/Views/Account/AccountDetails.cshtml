@@ -1,0 +1,445 @@
+﻿@using BSuit.API.Areas.SalesCRM.Models
+@model AccountVM
+
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+    ViewBag.Title = "Account Form";
+}
+<style>
+    body {
+        font-size: 13px;
+    }
+
+    /* ✅ FIXED CARD BORDER */
+    .section-card {
+        border: 1px solid #e0e0e0;
+        border-left: 4px solid #007bff;
+        margin-bottom: 12px;
+        border-radius: 6px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+        .section-card.green {
+            border-left-color: #28a745;
+        }
+
+        .section-card.orange {
+            border-left-color: #fd7e14;
+        }
+
+        .section-card.purple {
+            border-left-color: #6f42c1;
+        }
+
+        .section-card.red {
+            border-left-color: #dc3545;
+        }
+
+    .section-header {
+        font-weight: 600;
+        padding: 10px 15px;
+        background: #ffffff;
+        border-bottom: 1px solid #eee;
+    }
+
+    .section-body {
+        background: #f8f9fa;
+        padding: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 6px;
+    }
+
+    .info-label {
+        width: 40%;
+        font-weight: 500;
+        color: #555;
+    }
+
+    .info-value {
+        width: 60%;
+        color: #000;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 4px 10px;
+    }
+
+    h5 {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    table th, table td {
+        font-size: 12px;
+    }
+</style>
+<div class="container-fluid">
+    <!-- 🔷 HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+
+        <!-- LEFT -->
+        <div>
+            @*  <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })"
+                   class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-arrow-left"></i> Back
+            </a> *@
+
+            <!-- Back Button -->
+            <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })"
+                   class="btn btn-sm btn-outline-secondary ms-3">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+
+        </div>
+
+        <!-- CENTER -->
+        <div class="text-center flex-grow-1">
+            <h5 class="mb-0">Account Details</h5>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+            @*   <a href="@Url.Action("EditAccount", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                   class="btn btn-sm btn-primary">
+                <i class="fa fa-pen"></i> Edit
+            </a> *@
+
+
+            <!-- RIGHT (Outline Icon) -->
+
+            <a href="@Url.Action("EditAccount", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                   class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-pencil-square"></i>
+            </a>
+            @*  <a href="@Url.Action("EditAccount", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                   class="text-decoration-none text-dark">
+                <i class="bi bi-pencil"></i>
+            </a> *@
+        </div>
+
+    </div>
+
+    <!-- 🔷 👤 Account Information -->
+    <div class="card section-card">
+        <div class="section-header">👤 Account Information</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Account Name:</div><div class="info-value">@Model.AccountName</div></div>
+                    <div class="info-row"><div class="info-label">Client Name:</div><div class="info-value">@Model.CompanyName</div></div>
+                    <div class="info-row"><div class="info-label">Owner Name:</div><div class="info-value">@Model.OwnerName</div></div>
+                    <div class="info-row"><div class="info-label">Customer Type:</div><div class="info-value">@Model.CustomerTypeName</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Account Source:</div><div class="info-value">@Model.AccountSourceName</div></div>
+                    <div class="info-row"><div class="info-label">Gender:</div><div class="info-value">@Model.GenderName</div></div>
+                    <div class="info-row"><div class="info-label">Job Title:</div><div class="info-value">@Model.JobTitleName</div></div>
+                    <div class="info-row"><div class="info-label">Customer Id:</div><div class="info-value">@Model.CustomerId</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card section-card green">
+        <div class="section-header">🔷 Account Type</div>
+        <div class="section-body">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-row"><div class="info-label">Customer Category:</div><div class="info-value">@Model.CustomerCategory</div></div>
+
+                </div>
+                <div class="col-md-5">
+                    <div class="info-row"><div class="info-label">Account Categorization:</div><div class="info-value">@Model.AccountCategorization</div></div>
+
+                </div>
+                <div class="col-md-3">
+                    <div class="info-row"><div class="info-label">High Potential:</div><div class="info-value">@Model.HighPotentialStatus</div></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📞 Contact -->
+    <div class="card section-card purple">
+        <div class="section-header">📞 Contact</div>
+        <div class="section-body">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row">
+                        <div class="info-label">Business Email:</div><div class="info-value">
+                        <a href="#"
+                           class="icon-btn">@Model.BusinessEmail </a>
+                    </div>
+                </div>
+                <div class="info-row"><div class="info-label">Business Phone:</div><div class="info-value">@Model.BusinessPhone</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row">
+                    <div class="info-label">Personal Email:</div><div class="info-value">
+
+                    <a href="#"
+                       class="icon-btn">@Model.PersonalEmail </a>
+
+                </div>
+            </div>
+            <div class="info-row"><div class="info-label">Personal Phone:</div><div class="info-value">@Model.PersonalPhone</div></div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="info-row">
+                <div class="info-label">Website:</div>
+                <div class="info-value">
+                    <a href="#"
+                       class="icon-btn">@Model.Website </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+        </div>
+
+    </div>
+</div>
+</div>
+
+
+<!-- 🔷 Social Media Link -->
+<div class="card section-card green">
+    <div class="section-header">🔷Social Media </div>
+    <div class="section-body">
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row">
+                    <div class="info-label">LinkedIn URL:</div><div class="info-value">
+                    <a href="#"
+                       class="icon-btn">@Model.LinkedInURL </a>
+                </div>
+            </div>
+            <div class="info-row"><div class="info-label">Twitter URL:</div><div class="info-value">@Model.TwitterURL</div></div>
+        </div>
+        <div class="col-md-6">
+            <div class="info-row">
+                <div class="info-label">Facebook URL:</div><div class="info-value">
+
+                <a href="#"
+                   class="icon-btn">@Model.FacebookURL </a>
+
+            </div>
+        </div>
+        <div class="info-row"><div class="info-label">SkypeID:</div><div class="info-value">@Model.SkypeID</div></div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="info-row">
+            <div class="info-label">Instant Messenger Id:</div>
+            <div class="info-value">
+                <a href="#"
+                   class="icon-btn">@Model.InstantMessengerId </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+    </div>
+
+</div>
+</div>
+</div>
+
+
+<!-- 📍🔷 LOCATION -->
+<div class="card section-card orange">
+    <div class="section-header">📍 Billing & Shipping Address</div>
+    <div class="section-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Address:</div><div class="info-value">@Model.Address</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">State:</div><div class="info-value">@Model.State</div></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">City:</div><div class="info-value">@Model.City</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Country:</div><div class="info-value">@Model.CountryName</div></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">ZipCode:</div><div class="info-value">@Model.ZipCode</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Continent:</div><div class="info-value">@Model.RegionName</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--  🏭 Industry -->
+<div class="card section-card gray">
+    <div class="section-header">🏭 Account Industry</div>
+    <div class="section-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Industry:</div><div class="info-value">@Model.IndustryName:</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Revenue:</div><div class="info-value">@Model.CompanyRevenue</div></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Company Size :</div><div class="info-value">@Model.SizeName</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Ranking:</div><div class="info-value">@Model.CompanyRanking</div></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- 🔷 Background -->
+<div class="card section-card green">
+    <div class="section-header">🔷 Background</div>
+
+    <div class="section-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">Customer Background:</div><div class="info-value">@Model.CustomerBackground</div></div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-row"><div class="info-label">How did you hear about Brickwork:</div><div class="info-value">@Model.SourceName</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 👥 Referral Information -->
+<div class="card section-card shadow">
+    <div class="section-header">👥 Referral Information</div>
+    <div class="section-body">
+        <div class="row mt-2">
+            <table border="1" id="referralTable" class="table table1 align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Status</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.referralInfo.Any())
+                    {
+                        int count = 1;
+                        foreach (var item in Model.referralInfo)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@item.ReferredName</td>
+                                <td>
+                                    <a href="#" class="icon-btn">@item.ReferredEmail </a>
+                                </td>
+                                <td>@item.ReferredPhone</td>
+                                <td> @Html.Raw(item.StatusId) </td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                No records found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+
+
+        </div>
+    </div>
+</div>
+<!-- 🏢👥 Contact Information -->
+<div class="card section-card orange">
+    <div class="section-header">🏢👥 Contact Information</div>
+    
+    <div class="section-body">
+        <div class="row mt-2">
+            <table border="1" id="contactTable" class="table table1 align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Status</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.contactInfo.Any())
+                    {
+                        int count = 1;
+                        foreach (var item in Model.contactInfo)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@item.FullName</td>
+                                <td>@item.Department</td>
+                                <td>@item.Designation</td>
+                                <td>
+                                    <a href="#" class="icon-btn">@item.Email </a>
+                                </td>
+                                <td>@item.MobilePhone</td>
+                                <td> @Html.Raw(item.StatusId) </td>
+                            </tr>
+                            count++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                No records found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+
+
+        </div>
+    </div>
+</div>
+
+

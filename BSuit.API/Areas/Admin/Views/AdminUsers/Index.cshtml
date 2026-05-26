@@ -1,0 +1,352 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@using BSuit.API.Infrastructure
+@inject IHttpContextAccessor HttpContextAccessor
+
+@model AdminUserVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Admin User Management</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Content -->
+<div id="adminHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Admin Management Help</h6>
+
+        <p class="text-white mb-2">
+            Manage tenant administrators and internal users.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Create admin users</li>
+            <li>Assign roles</li>
+            <li>Edit user details</li>
+            <li>Activate/Deactivate users</li>
+            <li>Delete users</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<!-- Search + Actions -->
+<div class="row align-items-center mb-3">
+
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input type="text"
+                   name="Search"
+                   value="@Model.Search"
+                   placeholder="Search admin users..."
+                   class="form-control me-2" />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-4 text-end">
+        <button type="button"
+                onclick="location.reload()"
+                class="btn btn-secondary me-2">
+            Refresh
+        </button>
+
+        <button type="button"
+                onclick="showCreate()"
+                class="btn btn-success">
+            Add Admin
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Role</th>
+            <th>Full Name</th>
+           @*  <th>Username</th> *@
+            <th>
+                <a asp-route-SortColumn="Email"
+                   asp-route-SortDirection="@(Model.SortDirection == "asc" ? "desc" : "asc")">
+                    Email
+                </a>
+            </th>
+            <th>Date</th>
+            <th width="300">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr class="@(user.IsSuperAdmin ? "table-primary" : "")
+                        @(!user.IsActive ? "table-secondary text-muted" : "")">          
+
+                <td>@user.SelectedRole</td>
+                <td>@user.FullName</td>
+               @*  <td>@user.UserName</td> *@
+                <td>@user.Email</td>
+                <td>@user.CreatedOn UTC&nbsp;|&nbsp;
+                    @DateTimeHelper.ToUserTime(user.CreatedOn, HttpContextAccessor.HttpContext).ToString("dd-MMM-yyyy hh:mm tt")
+                </td>
+                <td>
+                    <button type="button"
+                            class="btn btn-primary btn-sm"
+                            onclick="editUser('@user.Id',
+                                                  '@user.Email',
+                                                  '@user.SelectedRole')"
+                            @(user.IsSuperAdmin ? "disabled" : "")>
+                        Edit
+                    </button>
+
+                    <form action="/Admin/AdminUsers/ToggleActive"
+                          method="post"
+                          style="display:inline">
+
+                        <input type="hidden"
+                               name="id"
+                               value="@user.Id" />
+
+                        <button class="btn btn-info btn-sm"
+                                @(user.IsSuperAdmin ? "disabled" : "")>
+                            @(user.IsActive ? "Deactivate" : "Activate")
+                        </button>
+                    </form>
+
+                    <button type="button"
+                            onclick="deleteUser('@user.Id')"
+                            class="btn btn-danger btn-sm"
+                            @(user.IsSuperAdmin ? "disabled" : "")>
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="mt-3 d-flex flex-wrap gap-2">
+    @for (int i = 1; i <= Math.Ceiling((double)Model.TotalCount / Model.PageSize); i++)
+    {
+        <a asp-route-PageNumber="@i"
+           asp-route-Search="@Model.Search"
+           class="btn btn-sm @(i == Model.PageNumber ? "btn-primary" : "btn-light")">
+            @i
+        </a>
+    }
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="adminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">
+                    Admin User
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post" id="userForm">
+
+                    <input type="hidden"
+                           name="id"
+                           id="userId" />
+
+                    <div class="mb-2">
+                        <label>Role</label>
+                        <select name="roleName"
+                                id="roleName"
+                                class="form-select"
+                                required>
+                            <option value="">-- Select Role --</option>
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Value">
+                                    @role.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Email</label>
+                        <input type="email"
+                               name="email"
+                               id="email"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Password</label>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               class="form-control"
+                               placeholder="Enter password" />
+                        <small id="passwordMessage"></small>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit"
+                        form="userForm"
+                        class="btn btn-success">
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let adminModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        adminModal = new bootstrap.Modal(
+            document.getElementById("adminModal")
+        );
+
+        // Tooltip
+        let helpContent =
+            document.getElementById("adminHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto-hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+    function showCreate() {
+        document.getElementById("userForm").reset();
+        document.getElementById("userId").value = "";
+
+        document.getElementById("modalTitle").innerText =
+            "Add Admin User";
+
+        document.getElementById("userForm").action =
+            "/Admin/AdminUsers/Create";
+
+        adminModal.show();
+    }
+
+    function editUser(id, email, roleName) {
+        document.getElementById("userId").value = id;
+        document.getElementById("email").value = email;
+        document.getElementById("roleName").value = roleName;
+        document.getElementById("password").value = "";
+
+        document.getElementById("modalTitle").innerText =
+            "Edit Admin User";
+
+        document.getElementById("userForm").action =
+            "/Admin/AdminUsers/Edit";
+
+        adminModal.show();
+    }
+
+    function deleteUser(id) {
+        if (!confirm("Delete this admin user?")) return;
+
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = "/Admin/AdminUsers/Delete";
+
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "id";
+        input.value = id;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+<script type="text/javascript">
+    //    document.getElementById("userForm").addEventListener("submit", function (e) {
+    //         if (!validatePassword()) {
+    //             e.preventDefault();
+    //         }
+    //     });
+
+    //    function validatePassword() {
+    //     const password = document.getElementsById("password").value;
+    //     const message = document.getElementById("passwordMessage");
+
+    //     const strongPasswordRegex =
+    //             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+    //     if (!strongPasswordRegex.test(password)) {
+    //         message.style.color = "red";
+    //         message.textContent =
+    //             "Password must contain uppercase, lowercase, number, special character and be at least 8 characters.";
+    //         return false;
+    //     }
+
+    //     message.style.color = "green";
+    //     message.textContent = "Strong password ✓";
+    //     return true;
+    // }
+</script>

@@ -1,0 +1,330 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model RoleMenuMappingVM
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Role Menu Mapping Management
+        @if (Model.MenuId.HasValue && Model.MenuId > 0)
+        {
+           <span> : <b>@Model.MenuName</b>           </span>
+        }
+    </h3>
+
+    <!-- Help Icon -->
+    <span id="helpIcon" class="help-icon">
+        ?
+    </span>
+</div>
+<!-- Hidden Help Content -->
+<div id="paraHelpContent" style="display:none;">
+    <div class="p-2">
+
+        <h6 class="mb-2 text-primary">Menu Role Mapping Help</h6>
+
+        <p class="mb-2 text-white">
+            This page allows administrators to assign specific roles to menus.
+            Users will only be able to view and access menus that are mapped
+            to their assigned roles.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Select roles for the chosen menu</li>
+            <li>Grant menu access permissions</li>          
+            <li>Update role assignments anytime</li>           
+        </ul>
+
+    </div>
+</div>
+
+<div class="row align-items-center mb-3">
+    <!-- Search Section -->
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input name="Search"
+                   value="@Model.Search"
+                   class="form-control me-2"
+                   placeholder="Search menu..." />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+            <button type="button"
+                    onclick="location.reload();"
+                    class="btn btn-secondary me-2 ms-2">
+                Refresh
+            </button>
+            <a href="/Admin/Menu"
+                    class="btn btn-info me-2 ms-2">
+                ← Back
+            </a>
+        </form>
+    </div>
+
+    <!-- Add Menu Button -->
+    <div class="col-md-4 text-end">
+        
+    </div>
+</div>
+
+<!-- ALERT CONTAINER -->
+<div id="alertContainerT" class="mt-2">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                <a asp-route-SortColumn="Name"
+                   asp-route-SortDirection="@(Model.SortColumn == "Name" && Model.SortDirection == "asc" ? "desc" : "asc")"
+                   asp-route-Search="@Model.Search" 
+                   asp-route-MenuId="@Model.MenuId">
+                    Role Name
+                </a>
+            </th>
+            <th width="150">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var r in Model.Roles)
+        {
+            <tr class="@(Model.SelectedRoleId == r.Id ? "table-primary" : "")">
+                <td>@r.Name</td>
+                <td>
+                    <form method="get"
+                          asp-action="RoleMapping"
+                          asp-controller="Menu"
+                          asp-area="Admin"
+                          class="mb-2 d-flex">
+                        <input type="hidden" name="SelectedRoleId" value="@r.Id" />
+                        <input type="hidden" name="MenuId" value="@Model.MenuId" />
+                        <button type="button" class="btn btn-sm btn-info"
+                            onclick="openAssignPopup('@r.Id')">
+                            Assign Menus
+                        </button>
+                    </form>
+                 
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<!-- Pagination -->
+<div class="mt-3 d-flex flex-wrap gap-2">
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        <form method="get" asp-action="RoleMapping" class="mb-2 d-flex">
+            <input type="hidden" name="PageNumber" value="@i" />
+            <input type="hidden" name="Search" value="@Model.Search" />
+            <input type="hidden" name="SortColumn" value="@Model.SortColumn" />
+            <input type="hidden" name="SortDirection" value="@Model.SortDirection" />
+            <input type="hidden" name="MenuId" value="@Model.MenuId" /> <!-- ✅ -->
+
+            <button type="submit"
+                    class="btn btn-sm @(i == Model.PageNumber ? "btn-primary" : "btn-light")">
+                @i
+            </button>
+        </form>
+    }
+</div>
+
+<hr />
+
+
+<!-- ALERT CONTAINER -->
+<div id="alertContainerB" class="mt-2">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+
+<!-- Assign Menu Modal -->
+<div class="modal fade" id="assignMenuModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Assign Menus To Role</h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <form method="post"
+                      id="assignMenuForm"
+                      asp-action="SaveRoleMapping"
+                      asp-controller="Menu"
+                      asp-area="Admin">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="SelectedRoleId"
+                           id="SelectedRoleId" />
+
+                    <input type="hidden"
+                           name="MenuId"
+                           value="@Model.MenuId" />
+
+                    <div class="row">
+                        @foreach (var m in Model.AllMenus)
+                        {
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           name="SelectedMenuIds"
+                                           value="@m.Id"
+                                           class="form-check-input menu-checkbox" />
+
+                                    <label class="form-check-label">
+                                        @m.Name
+                                    </label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit"
+                        form="assignMenuForm"
+                        class="btn btn-success">
+                    Save Mapping
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+        let assignModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        assignModal = new bootstrap.Modal(
+            document.getElementById('assignMenuModal')
+        );
+    });
+
+    function openAssignPopup(roleId) {
+
+        document.getElementById("SelectedRoleId").value = roleId;
+
+        let menuId = '@Model.MenuId';
+
+        // uncheck all first
+        document.querySelectorAll(".menu-checkbox").forEach(cb => {
+            cb.checked = false;
+        });
+
+        // fetch existing mappings
+        fetch(`/Admin/Menu/GetAssignedMenus?roleId=${roleId}&menuId=${menuId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                data.forEach(menuId => {
+                    let checkbox = document.querySelector(
+                        `.menu-checkbox[value='${menuId}']`
+                    );
+
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+
+                assignModal.show();
+            })
+            .catch(err => {
+                console.log(err);
+                assignModal.show();
+            });
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBoxT = document.getElementById("alertContainerT");
+        const alertBoxB = document.getElementById("alertContainerB");
+
+        if (alertBoxT && alertBoxT.innerHTML.trim() !== "") {
+            setTimeout(function () {
+
+                // Fade out effect
+                alertBoxT.style.transition = "opacity 0.5s ease";
+                alertBoxT.style.opacity = "0";
+
+                alertBoxB.style.transition = "opacity 0.5s ease";
+                alertBoxB.style.opacity = "0";
+
+                setTimeout(function () {
+                    alertBoxT.style.display = "none";
+                    alertBoxB.style.display = "none";
+
+                    // Remove content from DOM
+                    alertBoxT.innerHTML = "";
+                    alertBoxB.innerHTML = "";
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    var helpContent = document.getElementById("paraHelpContent").innerHTML;
+
+    new bootstrap.Tooltip(document.getElementById("helpIcon"), {
+        title: helpContent,
+        html: true,
+        placement: "left"
+    });
+
+});
+</script>

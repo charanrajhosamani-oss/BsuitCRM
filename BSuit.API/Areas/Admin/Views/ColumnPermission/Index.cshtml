@@ -1,0 +1,410 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model ColumnPermissionVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Column Permission Management</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Content -->
+<div id="helpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary">Column Permission Help</h6>
+        <ul class="mb-0 ps-3">
+            <li>Assign table column access</li>         
+            <li>User specific override support</li>
+            <li>View/Edit access control</li>
+            <li>Delete unwanted mappings</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Add New Column Permissions</h5>
+    </div>
+    <div class="card-body">
+        <!-- Role/User Filters -->
+        <form method="get">
+            <div class="row mb-3 align-items-end">
+
+                <!-- Role -->
+                <div class="col-md-5">
+                    <label>Select Role</label>
+                    <select name="roleId"
+                            class="form-select"
+                            onchange="reloadPage()">
+
+                        @foreach (var r in Model.Roles)
+                        {
+                            <option value="@r.Id"
+                                    selected="@(r.Id == Model.RoleId)">
+                                @r.Name
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <!-- OR -->
+                <div class="col-md-2 d-flex justify-content-center align-items-center">
+                    <div class="fw-bold text-muted mb-2">
+                        OR
+                    </div>
+                </div>
+
+                <!-- User -->
+                <div class="col-md-5">
+                    <label>Select User</label>
+
+                    <select name="userId"
+                            id="userDropdown"
+                            class="form-select"
+                            onchange="reloadPage()">
+
+                        <option value="">-- Role Only --</option>
+
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.Id"
+                                    selected="@(u.Id == Model.UserId)">
+                                @u.Name
+                            </option>
+                        }
+                    </select>
+                </div>
+
+            </div>
+        </form>
+
+        <!-- Add Permission -->
+        <form method="post" action="/Admin/ColumnPermission/Save">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="RoleId"
+                   value="@Model.RoleId" />
+
+            <input type="hidden"
+                   name="UserId"
+                   value="@Model.UserId" />
+
+            <div class="row align-items-end">
+
+                <div class="col-md-3">
+                    <label>Table</label>
+                    <select id="tableDropdown"
+                            name="EntityName"
+                            class="form-select"
+                            onchange="loadColumns()"
+                            required>
+                        <option value="">-- Select Table --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label>Column</label>
+                    <select id="columnDropdown"
+                            name="ColumnName"
+                            class="form-select"
+                            required>
+                        <option value="">-- Select Column --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="CanView"
+                               value="true"
+                               checked />
+                        <label class="form-check-label">
+                            Can View
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="CanEdit"
+                               value="true" />
+                        <label class="form-check-label">
+                            Can Edit
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-success w-100">
+                        Add Permission
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="card shadow-sm">
+
+    <!-- Card Header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Column Permissions</h5>
+
+        <button type="button"
+                class="btn btn-secondary btn-sm"
+                onclick="location.reload()">
+            Refresh
+        </button>
+    </div>
+
+    <div class="card-body">
+        <!-- Search -->
+        <div class="mb-3">
+            <input type="text"
+                   id="searchBox"
+                   class="form-control"
+                   placeholder="Search permissions..."
+                   onkeyup="filterGrid()" />
+        </div>
+
+        <!-- Grid -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="grid">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tenant</th>
+                        <th>User</th>                      
+                        <th>Table</th>
+                        <th>Column</th>
+                        <th>View</th>
+                        <th>Edit</th>
+                        <th width="120">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Assigned.Any())
+                    {
+                        @foreach (var item in Model.Assigned)
+                        {
+                            <tr>
+                                <td>@item.TenantName</td>
+                                <td>@item.UserName</td>                               
+                                <td>@item.EntityName</td>
+                                <td>@item.ColumnName</td>
+
+                                <td>
+                                    <span class="badge @(item.CanView ? "bg-success" : "bg-danger")">
+                                        @(item.CanView ? "Yes" : "No")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge @(item.CanEdit ? "bg-success" : "bg-danger")">
+                                        @(item.CanEdit ? "Yes" : "No")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-danger btn-sm"
+                                            onclick="deleteColumn('@Model.RoleId',
+                                                                                          '@item.EntityName',
+                                                                                          '@item.ColumnName',
+                                                                                          this)">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8"
+                                class="text-center text-muted">
+                                No records found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        loadTables();
+
+        // Help tooltip
+        let helpContent =
+            document.getElementById("helpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+
+    function loadTables() {
+        fetch('/Admin/ColumnPermission/GetTablesList')
+            .then(res => res.json())
+            .then(data => {
+
+                let ddl = document.getElementById("tableDropdown");
+                ddl.innerHTML =
+                    '<option value="">-- Select Table --</option>';
+
+                data.forEach(t => {
+                    ddl.innerHTML +=
+                        `<option value="${t}">${t}</option>`;
+                });
+            });
+    }
+
+
+    function loadColumns() {
+        let table =
+            document.getElementById("tableDropdown").value;
+
+        if (!table) return;
+
+        fetch('/Admin/ColumnPermission/GetColumnsByTable?table=' + table)
+            .then(res => res.json())
+            .then(data => {
+
+                let ddl =
+                    document.getElementById("columnDropdown");
+
+                ddl.innerHTML =
+                    '<option value="">-- Select Column --</option>';
+
+                data.forEach(c => {
+                    ddl.innerHTML +=
+                        `<option value="${c}">
+                            ${formatColumn(c)}
+                         </option>`;
+                });
+            });
+    }
+
+
+    function formatColumn(name) {
+        return name.replace(/([A-Z])/g, ' $1').trim();
+    }
+
+
+    function filterGrid() {
+        let val =
+            document.getElementById("searchBox")
+            .value.toLowerCase();
+
+        document.querySelectorAll("#grid tbody tr")
+            .forEach(tr => {
+                tr.style.display =
+                    tr.innerText.toLowerCase().includes(val)
+                        ? ""
+                        : "none";
+            });
+    }
+
+
+    function deleteColumn(roleId, entity, column, btn) {
+
+        if (!confirm("Delete this column permission?"))
+            return;
+
+        const userId =
+            document.getElementById("userDropdown").value;
+
+        fetch('/Admin/ColumnPermission/Delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken':
+                    document.querySelector(
+                        'input[name="__RequestVerificationToken"]'
+                    ).value
+            },
+            body: JSON.stringify({
+                roleId: roleId,
+                userId: userId,
+                entityName: entity,
+                columnName: column
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                btn.closest("tr").remove();
+            }
+        });
+    }
+
+
+    function reloadPage() {
+
+        const roleId =
+            document.querySelector('[name="roleId"]').value;
+
+        const userId =
+            document.getElementById("userDropdown").value;
+
+        let url =
+            `/Admin/ColumnPermission?roleId=${roleId}`;
+
+        if (userId) {
+            url += `&userId=${userId}`;
+        }
+
+        window.location.href = url;
+    }
+
+</script>

@@ -1,0 +1,306 @@
+﻿STEP — Identity Setup
+-----------------------
+
+1 Install Required NuGet Packages
+Microsoft.AspNetCore.Identity.EntityFrameworkCore
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+
+Microsoft.Extensions.Configuration
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+
+2 Design Identity Models
+extend built-in Identity models to support ERP needs (Tenant, audit fields, etc.)
+
+Create User
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace BSuit.Identity.Models
+{
+    public class ApplicationUser : IdentityUser
+    {
+        public string? FullName { get; set; }
+        public Guid? TenantId { get; set; }
+
+        public Guid? UserId { get; set; } = Guid.NewGuid();
+        // Audit
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true; 
+
+        // Reporting hierarchy
+        public string? ReportingManagerId { get; set; }
+        public ApplicationUser? ReportingManager { get; set; }
+
+        public string? SupervisorId { get; set; }
+        public ApplicationUser? Supervisor { get; set; }
+
+        // Reverse navigation
+        public ICollection<ApplicationUser> ReportingEmployees { get; set; }
+       = new List<ApplicationUser>();
+
+        public ICollection<ApplicationUser> SupervisedEmployees { get; set; }
+            = new List<ApplicationUser>();
+
+        [NotMapped]
+        public bool IsSuperAdmin { get; set; }
+
+        // For UI display only
+        [NotMapped]
+        public string SelectedRole { get; set; }
+    }
+}
+
+using Microsoft.AspNetCore.Identity;
+namespace BSuit.Identity.Models
+{
+    public class ApplicationRole : IdentityRole
+    {
+        public Guid TenantId { get; set; }
+        public string? Description { get; set; }
+        public bool IsActive { get; set; }
+
+        public bool IsSystemRole { get; set; }   // true: created by superadmin/admin
+        public string CreatedByUserId { get; set; } // optional
+    }
+}
+
+3 Identity Context
+using BSuit.Identity.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace BSuit.Identity.Data
+{
+    public class IdentityDbContext
+        : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    {
+        public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // ✅ Set default schema
+            builder.HasDefaultSchema("AUTH");
+
+            // ✅ Optional: Explicit table mapping (recommended for clarity)
+            builder.Entity<ApplicationUser>().ToTable("Users");
+            builder.Entity<ApplicationRole>().ToTable("Roles");
+
+            builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
+            builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
+            builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
+            builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
+            builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+
+
+            //ApplicationUser
+            builder.Entity<ApplicationUser>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.UserId)
+                      .ValueGeneratedNever();
+
+                entity.HasOne(x => x.ReportingManager)
+                    .WithMany(x => x.ReportingEmployees)
+                    .HasForeignKey(x => x.ReportingManagerId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(x => x.Supervisor)
+                    .WithMany(x => x.SupervisedEmployees)
+                    .HasForeignKey(x => x.SupervisorId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(x => x.ReportingManagerId);
+                entity.HasIndex(x => x.SupervisorId);
+            });
+
+
+            // Remove default unique index on NormalizedName
+            builder.Entity<ApplicationRole>()
+                .HasIndex(r => r.NormalizedName)
+                .IsUnique(false);
+
+            // Create composite unique index
+            builder.Entity<ApplicationRole>()
+                .HasIndex(r => new { r.TenantId, r.NormalizedName })
+                .IsUnique();          
+
+        }
+    }
+}
+
+
+
+4 Add Configuration Extension
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using BSuit.Identity.Data;
+using BSuit.Identity.Models;
+
+namespace BSuit.Identity
+{
+    public static class DependencyInjection
+    {
+        public static IServiceCollection AddBSuitIdentity(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddDbContext<IdentityDbContext>(options =>
+                options.UseSqlServer(
+                    configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentityCore<ApplicationUser>()
+                     .AddRoles<ApplicationRole>()
+                     .AddEntityFrameworkStores<IdentityDbContext>()
+                     .AddDefaultTokenProviders();
+
+            return services;
+        }
+    }
+}
+
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using BSuit.Identity.Data;
+
+namespace BSuit.Identity
+{
+    public class IdentityDbContextFactory
+        : IDesignTimeDbContextFactory<IdentityDbContext>
+    {
+        public IdentityDbContext CreateDbContext(string[] args)
+        {
+            // Load configuration from API project
+            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../BSuit.API");
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<IdentityDbContext>();
+
+            optionsBuilder.UseSqlServer(
+                config.GetConnectionString("DefaultConnection"));
+
+            return new IdentityDbContext(optionsBuilder.Options);
+        }
+    }
+}
+
+
+5 Update appsettings.json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=192.168.1.179;Database=SalesCRM;user id=devadmin; password=dev@admin; TrustServerCertificate=True;"
+}
+
+6
+//Add Project (BSuit.Identity) refrenece inside BSuit.API
+
+
+7
+// Add Identity
+builder.Services.AddBSuitIdentity(builder.Configuration);
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+
+
+8 Enable Migrations:
+
+Developer PowerShell:
+dotnet ef migrations add InitialIdentity --project BSuit.Identity --startup-project BSuit.API --context IdentityDbContext
+
+dotnet ef database update --project BSuit.Identity --startup-project BSuit.API --context IdentityDbContext
+
+
+Package Manager Console:
+Add-Migration InitialIdentity -Project BSuit.Identity -StartupProject BSuit.API -Context IdentityDbContext
+
+Update-Database -Project BSuit.Identity -StartupProject BSuit.API -Context IdentityDbContext
+
+
+
+GUARANTEES
+✔ Only tables from IdentityDbContext are created
+✔ All tables go under AUTH schema
+✔ No Core / Sales / HR tables are touched
+
+
+
+
+
+
+✅ 1. Structure Overview
+
+Areas/Identity/Pages/Account
+Handles authentication (login, register, password reset, etc.)
+
+Areas/Identity/Pages/Account/Manage
+Handles logged-in user profile management
+
+🔐 Authentication (Account)
+| File                    | Purpose             |
+| ----------------------- | ------------------- |
+| `Login.cshtml`          | User login page     |
+| `Logout.cshtml`         | Handles logout      |
+| `AccessDenied.cshtml`   | Unauthorized access |
+| `ForgotPassword.cshtml` | Request reset link  |
+| `ResetPassword.cshtml`  | Set new password    |
+| `ConfirmEmail.cshtml`   | Email verification  |
+| `Lockout.cshtml`        | Account locked      |
+|||||||||||||||||||||||||||||||||||||||||||||||||
+
+👤 User Profile Management (Manage)
+| File                             | Purpose                                 |
+| -------------------------------- | --------------------------------------- |
+| `Index.cshtml`                   | Profile details (email, phone, etc.)    |
+| `ChangePassword.cshtml`          | Change password                         |
+| `SetPassword.cshtml`             | Set password (for external login users) |
+| `TwoFactorAuthentication.cshtml` | 2FA settings                            |
+| `EnableAuthenticator.cshtml`     | Setup authenticator app                 |
+| `Disable2fa.cshtml`              | Disable 2FA                             |
+| `ResetAuthenticator.cshtml`      | Reset authenticator                     |
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+
+
+/Identity/Account/Login
+/Identity/Account/Manage
+
+
+🔁 Side-by-Side Comparison
+Feature	        Identity UI (Current)	    JWT API (Target)
+UI	            Razor Pages	                Angular / React
+Auth Type	    Cookies	                    JWT Token
+Backend	        Handles UI + Auth	        Only APIs
+Usage	        MVC / Razor apps	        SPA / Mobile apps
+Login	        Form Post	                API call
+Storage	        Cookies	                    LocalStorage / Memory
+
+
+
+our flow now works as:
+
+User enters username/password
+If TwoFactorEnabled = true → redirected to LoginWith2fa
+User enters OTP
+Identity validates OTP
+Default cookie removed
+Your custom claims cookie created
+User redirected back

@@ -1,0 +1,838 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.ProposalVM
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>
+        Proposal View
+    </title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #000;
+            background: #f3f3f3;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .page {
+            width: 850px;
+            margin: auto;
+            background: #fff;
+            border: 1px solid #999;
+            padding: 18px;
+        }
+
+        .top-header {
+            width: 100%;
+            margin-bottom: 15px;
+            border: none;
+        }
+
+            .top-header td {
+                border: none;
+                padding: 0;
+            }
+
+        .logo {
+            text-align: right;
+        }
+
+            .logo img {
+                height: 40px;
+            }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sub-text {
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .section-heading {
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        table, td, th {
+            border: 1px solid #000;
+        }
+
+        td, th {
+            padding: 6px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #d9e2f3;
+            text-align: left;
+        }
+
+        .label {
+            width: 180px;
+            font-weight: bold;
+            background: #f2f2f2;
+        }
+
+        .scope-box {
+            line-height: 1.7;
+        }
+
+            .scope-box ul {
+                margin: 5px 0 5px 20px;
+                padding: 0;
+            }
+
+            .scope-box li {
+                margin-bottom: 4px;
+            }
+
+        .small-text {
+            font-size: 10px;
+        }
+
+        .terms-box p {
+            margin: 4px 0;
+        }
+
+        .checkbox-area {
+            margin-top: 18px;
+            font-size: 11px;
+        }
+
+        .footer-btns {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .btn-approve {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-reject {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 3px;
+        }
+
+        .action-box {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .approved-box {
+            margin-top: 20px;
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .rejected-box {
+            margin-top: 20px;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border: 1px solid #f5c6cb;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <table class="top-header">
+
+            <tr>
+
+                <td>
+
+                    <div class="title">
+                        Proposal : @Model.ServiceName
+                    </div>
+
+                    <div class="sub-text">
+                        This proposal specifies the details of the scope of work,
+                        project terms and payment terms.
+                    </div>
+
+                </td>
+
+                <td class="logo">
+
+                    <img src="~/images/logo.png" />
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PROPOSAL INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            I. Proposal Information
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    Proposal Number
+                </td>
+
+                <td>
+                    @Model.ProposalNumber
+                </td>
+
+                <td class="label">
+                    Proposal Date
+                </td>
+
+                <td>
+                    @Model.CreatedOn?.ToString("dd-MMM-yyyy")
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Proposal Status
+                </td>
+
+                <td id="proposalStatus">
+                    @Model.ProposalStatus
+                </td>
+
+                <td class="label">
+                    Opportunity
+                </td>
+
+                <td>
+                    @Model.OpportunityName
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            II. Customer Details
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    Customer Name
+                </td>
+
+                <td>
+                    @Model.CustomerName
+                </td>
+
+                <td class="label">
+                    Company Name
+                </td>
+
+                <td>
+                    @Model.CompanyName
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer City
+                </td>
+
+                <td>
+                    @Model.CustomerCity
+                </td>
+
+                <td class="label">
+                    Customer Country
+                </td>
+
+                <td>
+                    @Model.CustomerCountry
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Address
+                </td>
+
+                <td>
+                    @Model.Address
+                </td>
+
+                <td class="label">
+                    Business Type
+                </td>
+
+                <td>
+                    @Model.BusinessType
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer Background
+                </td>
+
+                <td colspan="3">
+                    @Model.CustomerBackground
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PROJECT DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            III. Project Details
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    Service Name
+                </td>
+
+                <td>
+                    @Model.ServiceName
+                </td>
+
+                <td class="label">
+                    Industry
+                </td>
+
+                <td>
+                    @Model.IndustryName
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Estimated Hours
+                </td>
+
+                <td>
+                    @Model.EstimatedHours
+                </td>
+
+                <td class="label">
+                    Proposed Amount
+                </td>
+
+                <td>
+                    @Model.CurrencyCode @Model.ProposedAmount
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- SCOPE OF WORK -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            IV. Scope of Work
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="scope-box">
+
+                    @Html.Raw(Model.ScopeOfWork)
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- FINAL DELIVERABLES -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            V. Final Deliverables
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="scope-box">
+
+                    @Html.Raw(Model.FinalDeliverable)
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- EXPECTATION SETTING -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            VI. Expectation Setting
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="scope-box">
+
+                    @Html.Raw(Model.ExpectationSetting)
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER RESPONSIBILITIES -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            VII. Customer Responsibilities
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="scope-box">
+
+                    @Html.Raw(Model.CustomerResponsibilities)
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PAYMENT TERMS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            VIII. Payment Terms
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="terms-box">
+
+                    <p>
+                        a. Payments must be made as per agreed schedule.
+                    </p>
+
+                    <p>
+                        b. Payments can be made through Credit Card,
+                        PayPal or Wire Transfer.
+                    </p>
+
+                    <p>
+                        c. Additional scope or hours will be billed separately.
+                    </p>
+
+                    <p>
+                        d. Weekly / monthly reports will be shared.
+                    </p>
+
+                    <p>
+                        e. Timelines depend on timely feedback from customer.
+                    </p>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CONTACT DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            IX. Contact Details
+        </div>
+
+        <b>Brickwork</b>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Responsibility
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Title
+                    </th>
+
+                    <th>
+                        Email Id
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Sales, Scope Change & Escalation
+                    </td>
+
+                    <td>
+                        Kumaresan Nagarajan
+                    </td>
+
+                    <td>
+                        Account Manager
+                    </td>
+
+                    <td>
+                        kumaresan.ng@brickworkindia.com
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Quality Supervision
+                    </td>
+
+                    <td>
+                        Srinivasa Murthy K
+                    </td>
+
+                    <td>
+                        Project Manager
+                    </td>
+
+                    <td>
+                        srinivasa.murthy.k@brickworkindia.com
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Major Escalations
+                    </td>
+
+                    <td>
+                        Sangeeta Kulkarni
+                    </td>
+
+                    <td>
+                        Co-Founder & CEO
+                    </td>
+
+                    <td>
+                        sangeeta.kulkarni@brickworkindia.com
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER CONTACT -->
+        <!-- ================================================= -->
+
+        <b>Customer</b>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Responsibility
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Email Id
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Project Direction
+                    </td>
+
+                    <td>
+                        @Model.CustomerName
+                    </td>
+
+                    <td>
+@*                         @Model.CustomerEmail
+ *@                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Payments & Invoicing
+                    </td>
+
+                    <td>
+                        @Model.CustomerName
+                    </td>
+
+                    <td>
+@*                         @Model.CustomerEmail
+ *@                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- TERMS ACCEPTANCE -->
+        <!-- ================================================= -->
+
+        <div class="checkbox-area">
+
+            <input type="checkbox" id="agreeCheck" />
+
+            I agree to this proposal and the
+            <b>terms of service</b>
+
+        </div>
+
+        <!-- ================================================= -->
+        <!-- ACTION BUTTONS -->
+        <!-- ================================================= -->
+
+        <div class="action-box">
+
+            <a href="@Url.Action("ApprovalOpportunityList", "Opportunity")"
+               class="btn-back">
+
+                Back
+
+            </a>
+
+            <button type="button"
+                    class="btn btn-approve"
+                    onclick="submitProposal('Approved')">
+
+                Approve Proposal
+
+            </button>
+
+            <button type="button"
+                    class="btn btn-reject"
+                    onclick="submitProposal('Rejected')">
+
+                Reject Proposal
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+
+        function submitProposal(status) {
+
+        let isChecked = document.getElementById("agreeCheck").checked;
+
+        if (!isChecked) {
+        alert("Please accept terms before proceeding.");
+        return;
+        }
+
+        let proposalId = '@Model.ProposalId';
+
+        $.ajax({
+        url: '@Url.Action("ClientApproval", "Opportunity")',
+        type: 'POST',
+        data: {
+        proposalId: proposalId,
+        status: status
+        },
+        success: function (res) {
+
+        if (res.success) {
+
+        $("#proposalStatus").text(status);
+
+        alert("Proposal " + status + " successfully");
+
+        if (status === "Approved") {
+        window.location.href = res.redirectUrl;
+        }
+        }
+        else {
+        alert(res.message);
+        }
+        },
+        error: function (xhr) {
+        console.log(xhr.responseText);
+        alert("Something went wrong");
+        }
+        });
+        }
+
+    function submitProposal(status) {
+
+    let isChecked = document.getElementById("agreeCheck").checked;
+
+    if (!isChecked) {
+    alert("Please accept terms before proceeding.");
+    return;
+    }
+
+    let proposalId = '@Model.ProposalId';
+
+    $.ajax({
+    url: '@Url.Action("ClientApproval", "Opportunity")',    type: 'POST',
+    data: {
+    proposalId: proposalId,
+    status: status
+    },
+    success: function (res) {
+
+    if (res.success) {
+
+    $("#proposalStatus").text(status);
+
+    alert("Proposal " + status + " successfully");
+
+    if (status === "Approved") {
+    window.location.href = res.redirectUrl;
+    }
+    }
+    else {
+    alert(res.message);
+    }
+    },
+    error: function () {
+    alert("Something went wrong");
+    }
+    });
+    }
+
+    </script>
+
+</body>
+
+</html>

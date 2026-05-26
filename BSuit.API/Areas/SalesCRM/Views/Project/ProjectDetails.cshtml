@@ -1,0 +1,2420 @@
+﻿@using BSuit.SalesCRM.Models
+@using static BSuit.SalesCRM.Models.ProjectVM
+@model ProjectAccount
+
+
+
+<style>
+
+    #taskListSection,
+    #moduleListSection {
+        transition: all 0.3s ease;
+    }
+
+    #taskFormPanel,
+    #moduleFormPanel {
+        animation: slideInRight 0.25s ease;
+    }
+
+    @@keyframes slideInRight {
+
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+</style>
+
+@{
+    ViewData["Title"] = "Project Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<div class="crm-container">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <!-- TABS -->
+        <ul class="nav nav-tabs" id="projectTabs">
+
+            <li class="nav-item">
+                <a class="nav-link active"
+                   href="#tab-project-details"
+                   data-bs-toggle="tab">
+
+                    Project Details
+
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="#tab-project-module"
+                   data-bs-toggle="tab">
+
+                    Project Module
+
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="#tab-project-task"
+                   data-bs-toggle="tab">
+
+                    Project Task
+
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link"
+                   href="#tab-project-timelog"
+                   data-bs-toggle="tab">
+
+                    Project Time Log
+
+                </a>
+            </li>
+
+        </ul>
+
+        <!-- BACK BUTTON -->
+        <a href="@Url.Action("Index", "Project", new { area = "SalesCRM" })"
+           class="btn btn-sm btn-outline-secondary ms-3">
+
+            <i class="fa fa-arrow-left"></i>
+
+        </a>
+
+    </div>
+
+    <!-- TAB CONTENT -->
+    <div class="tab-content">
+
+        <!-- ===================================================== -->
+        <!-- PROJECT DETAILS -->
+        <!-- ===================================================== -->
+
+      <div class="tab-pane fade show active" id="tab-project-details">
+
+      <div class="row g-3">
+
+        <!-- LEFT SIDE -->
+        <div class="col-md-8">
+
+            <!-- ===================================================== -->
+            <!-- PROJECT DETAILS -->
+            <!-- ===================================================== -->
+
+            <div class="section-card green mb-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <div>
+                        <i class="bi bi-kanban"></i>
+                        Project Details
+                    </div>
+
+                    <a href="@Url.Action("GetEditPartial", "Project",
+                       new { area = "SalesCRM", id = Model.ProjectId })"
+                       class="text-decoration-none text-dark">
+
+                        <i class="bi bi-pencil"></i>
+
+                    </a>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Project Name
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.ProjectName
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Project Code
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.ProjectCode
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Customer
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.CustomerId
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Description
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.Description
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Start Date
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.StartDate?.ToString("dd-MMM-yyyy")
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            End Date
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.EndDate?.ToString("dd-MMM-yyyy")
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Priority
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.Priority
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Project Hours
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.ProjectHours
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col-md-4 info-label">
+                            Balance Hours
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.BalanceHours
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- ACCOUNT DETAILS -->
+            <!-- ===================================================== -->
+
+            <div class="section-card orange mb-3">
+
+                <div class="section-header">
+
+                    <i class="bi bi-building"></i>
+                    Account Details
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Account Name
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.AccountName
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Company
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.CompanyName
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Phone
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.Phone
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            Website
+                        </div>
+
+                        <div class="col-md-8 info-value">
+
+                            <a href="@Model.Website"
+                               target="_blank">
+
+                                @Model.Website
+
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            City
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.City
+                        </div>
+                    </div>
+
+                    <div class="row border-bottom py-2">
+                        <div class="col-md-4 info-label">
+                            State
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.State
+                        </div>
+                    </div>
+
+                    <div class="row py-2">
+                        <div class="col-md-4 info-label">
+                            Address
+                        </div>
+
+                        <div class="col-md-8 info-value">
+                            @Model.Address
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="col-md-4">
+
+            <!-- ===================================================== -->
+            <!-- TEAM DETAILS -->
+            <!-- ===================================================== -->
+
+            <div class="section-card red mb-3">
+
+                <div class="section-header">
+
+                    <i class="bi bi-people"></i>
+                    Team Details
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="info-row mb-3">
+
+                        <div class="info-label">
+                            Project Manager
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.ProjectManagerName
+
+                            <div class="small text-muted">
+                                @Model.ProjectManagerEmail
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-row mb-3">
+
+                        <div class="info-label">
+                            Project Supervisor
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.ProjectSupervisorName
+
+                            <div class="small text-muted">
+                                @Model.ProjectSupervisorEmail
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Primary Resource
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.PrimaryResourceName
+
+                            <div class="small text-muted">
+                                @Model.PrimaryResourceEmail
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Owner 
+                        </div>
+
+                        <div class="info-value">
+
+                            @Model.OwnerName
+
+                            <div class="small text-muted">
+                                @Model.OwnerEmail
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- AUDIT DETAILS -->
+            <!-- ===================================================== -->
+
+            <div class="section-card purple">
+
+                <div class="section-header">
+
+                    <i class="bi bi-clock-history"></i>
+                    Audit Information
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="info-row mb-3">
+
+                        <div class="info-label">
+                            Created By
+                        </div>
+
+                        <div class="info-value">
+                            @Model.CreatedBy
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            Created On
+                        </div>
+
+                        <div class="info-value">
+                            @Model.CreatedOn?.ToString("dd-MMM-yyyy")
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+        <!-- ===================================================== -->
+        <!-- PROJECT MODULE -->
+        <!-- ===================================================== -->
+       
+
+        <div class="tab-pane fade"
+             id="tab-project-module">
+
+            <div class="section-card purple">
+
+                <!-- HEADER -->
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-grid"></i>
+                        Project Modules
+                    </span>
+
+                    <button type="button"
+                            class="btn btn-sm btn-primary"
+                            onclick="openModulePanel()">
+
+                        <i class="bi bi-plus-lg"></i>
+                        Add Module
+
+                    </button>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row">
+
+                        <!-- MODULE LIST -->
+                        <div class="col-md-12 transition-all"
+                             id="moduleListSection">
+
+                            <div class="crm-table-wrapper">
+
+                                <table class="table table-bordered align-middle crm-table">
+
+                                    <thead>
+
+                                        <tr>
+                                            <th>Module Name</th>
+                                            <th>Description</th>
+                                            <th>Hours</th>
+                                            <th>Created On</th>
+                                            <th width="80">Action</th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        @if (Model.ProjectModules != null &&
+                                                                                Model.ProjectModules.Any())
+                                        {
+                                            foreach (var item in Model.ProjectModules)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @item.ModuleName
+                                                    </td>
+
+                                                    <td>
+                                                        @item.Description
+                                                    </td>
+
+                                                    <td>
+                                                        @item.EstimatedHours
+                                                    </td>
+
+                                                    <td>
+                                                        @item.CreatedOn.ToString("dd-MMM-yyyy")
+                                                    </td>
+
+                                                    <td>
+
+                                                       <button type="button"
+                                                                class="btn btn-sm btn-outline-primary"
+                                                                onclick="editModule('@item.ProjectModuleId')">
+
+                                                            <i class="bi bi-pencil"></i>
+
+                                                        </button>
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+
+                                                <td colspan="5"
+                                                    class="text-center text-muted py-4">
+
+                                                    No modules available
+
+                                                </td>
+
+                                            </tr>
+                                        }
+
+                                    </tbody>
+
+                                </table>
+                               <!-- MODULE PAGINATION -->
+                                <div class="d-flex justify-content-end align-items-center px-3 py-2 border-top bg-light pagination-wrapper">
+
+                                    <ul class="pagination pagination-sm mb-0 custom-pagination">
+
+                                        <!-- PREVIOUS -->
+                                        <li class="page-item @(ViewBag.ModulePageNumber == 1 ? "disabled" : "")">
+
+                                            <a class="page-link"
+                                               href="@Url.Action("ProjectDetails", new {
+                                                    id = Model.ProjectId,
+                                                    modulePageNumber = ViewBag.ModulePageNumber - 1,
+                                                    taskPageNumber = ViewBag.TaskPageNumber
+                                               })">
+
+                                                <i class="bi bi-chevron-left"></i>
+
+                                            </a>
+
+                                        </li>
+
+                                        <!-- NEXT -->
+                                        <li class="page-item @(ViewBag.ModulePageNumber == ViewBag.ModuleTotalPages ? "disabled" : "")">
+
+                                            <a class="page-link"
+                                               href="@Url.Action("ProjectDetails", new {
+                                                    id = Model.ProjectId,
+                                                    modulePageNumber = ViewBag.ModulePageNumber + 1,
+                                                    taskPageNumber = ViewBag.TaskPageNumber
+                                               })">
+
+                                                <i class="bi bi-chevron-right"></i>
+
+                                            </a>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT SIDE FORM -->
+                        <div class="col-md-4"
+                             id="moduleFormPanel"
+                             style="display:none;">
+
+                            <div class="card shadow-sm border-0">
+
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+                                   @*  <h6 class="mb-0">
+                                        Add Project Module
+                                    </h6> *@
+                                    <h6 class="mb-0" id="moduleFormTitle">
+                                        @(TempData["EditModule"] != null
+                                            ? "Edit Project Module"
+                                            : "Add Project Module")
+                                    </h6>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-light"
+                                            onclick="closeModulePanel()">
+
+                                        <i class="bi bi-x-lg"></i>
+
+                                    </button>
+
+                                </div>
+
+                                <div class="card-body">
+
+                                    <form id="moduleForm"
+                                            asp-action="@(TempData["EditModule"] != null
+                                                        ? "UpdateProjectModule"
+                                                        : "CreateProjectModule")"
+                                            asp-controller="Project"
+                                            asp-area="SalesCRM"
+                                            method="post">
+
+                                        @if (TempData["EditModule"] != null)
+                                        {
+                                            <input type="hidden"
+                                                    asp-for="NewProjectModule.ProjectModuleId" />
+                                        }
+
+                                        @* COMMON FOR ADD + EDIT *@
+                                        <input type="hidden"
+                                                asp-for="NewProjectModule.ProjectId" />
+                                        <!-- VALIDATION SUMMARY -->
+                                        <div asp-validation-summary="ModelOnly"
+                                             class="text-danger mb-3">
+                                        </div>
+                                        <!-- MODULE NAME -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Module Name
+                                            </label>
+
+                                            <input asp-for="NewProjectModule.ModuleName"
+                                                   class="form-control" />
+                                            <span asp-validation-for="NewProjectModule.ModuleName"
+                                             class="text-danger"></span>
+                                        </div>
+
+                                        <!-- DESCRIPTION -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Description
+                                            </label>
+
+                                            <textarea asp-for="NewProjectModule.Description"
+                                                      class="form-control"
+                                                      rows="4">
+                                            </textarea>
+                                                      <span asp-validation-for="NewProjectModule.Description"
+                                                     class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- HOURS -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Estimated Hours
+                                            </label>
+
+                                            <input asp-for="NewProjectModule.EstimatedHours"
+                                                   class="form-control" />
+                                                   <span asp-validation-for="NewProjectModule.EstimatedHours"
+                                              class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- BUTTON -->
+                                        <div class="text-end">
+
+                                            <button type="button"
+                                                    class="btn btn-light"
+                                                    onclick="closeModulePanel()">
+
+                                                Cancel
+
+                                            </button>
+                                            <button type="submit"
+                                                    class="btn btn-primary"
+                                                    id="moduleSubmitBtn">
+
+                                                @(TempData["EditModule"] != null
+                                                    ? "Update Module"
+                                                    : "Save Module")
+
+                                            </button>
+                                            @* <button type="submit"
+                                                    class="btn btn-primary">
+
+                                                Save Module
+
+                                            </button> *@
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- PROJECT TASK -->
+        <!-- ===================================================== -->
+        <div class="tab-pane fade"
+             id="tab-project-task">
+
+            <div class="section-card blue">
+
+                <!-- HEADER -->
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-list-task"></i>
+                        Project Tasks
+                    </span>
+
+                    <button type="button"
+                            class="btn btn-sm btn-primary"
+                            onclick="openTaskPanel()">
+
+                        <i class="bi bi-plus-lg"></i>
+                        Add Task
+
+                    </button>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row">
+
+                        <!-- TASK LIST -->
+                        <div class="col-md-12 transition-all"
+                             id="taskListSection">
+
+                            <div class="crm-table-wrapper">
+
+                                <table class="table table-bordered align-middle crm-table">
+
+                                    <thead>
+                                        <tr>
+                                            <th>Task Name</th>
+                                            <th>Module Name</th>
+                                            <th>Assigned To</th>
+                                            <th>Priority</th>
+                                            <th>Due Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @if (Model.ProjectTasks != null && Model.ProjectTasks.Any())
+                                        {
+                                            foreach (var item in Model.ProjectTasks)
+                                            {
+                                                <tr>
+
+                                                    <td>@item.TaskName</td>
+                                                    <td>@item.ModuleName</td>
+                                                    <td>@item.AssignedToName</td>
+                                                    <td>@item.PriorityName</td>
+
+                                                    <td>
+                                                        @item.DueDate?.ToString("dd-MMM-yyyy")
+                                                    </td>
+                                                    <td>
+
+                                                        <a asp-action="EditProjectTask"
+                                                            asp-controller="Project"
+                                                            asp-area="SalesCRM"
+                                                            asp-route-id="@item.ProjectTaskId"
+                                                            class="btn btn-sm btn-outline-primary">
+
+                                                            <i class="bi bi-pencil"></i>
+
+                                                        </a>
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+
+                                                <td colspan="4"
+                                                    class="text-center text-muted py-4">
+
+                                                    No tasks available
+
+                                                </td>
+
+                                            </tr>
+                                        }
+
+                                    </tbody>
+
+                                </table>
+                               <!-- TASK PAGINATION -->
+                                <div class="d-flex justify-content-end align-items-center px-3 py-2 border-top bg-light pagination-wrapper">
+
+                                    <ul class="pagination pagination-sm mb-0 custom-pagination">
+
+                                        <!-- PREVIOUS -->
+                                        <li class="page-item @(ViewBag.TaskPageNumber == 1 ? "disabled" : "")">
+
+                                            <a class="page-link"
+                                               href="@Url.Action("ProjectDetails", new {
+                                                    id = Model.ProjectId,
+                                                    taskPageNumber = ViewBag.TaskPageNumber - 1,
+                                                    modulePageNumber = ViewBag.ModulePageNumber
+                                               })">
+
+                                                <i class="bi bi-chevron-left"></i>
+
+                                            </a>
+
+                                        </li>
+
+                                        <!-- NEXT -->
+                                        <li class="page-item @(ViewBag.TaskPageNumber == ViewBag.TaskTotalPages ? "disabled" : "")">
+
+                                            <a class="page-link"
+                                               href="@Url.Action("ProjectDetails", new {
+                                                    id = Model.ProjectId,
+                                                    taskPageNumber = ViewBag.TaskPageNumber + 1,
+                                                    modulePageNumber = ViewBag.ModulePageNumber
+                                               })">
+
+                                                <i class="bi bi-chevron-right"></i>
+
+                                            </a>
+
+                                        </li>
+
+                                    </ul>
+
+                                </div>
+                            </div>
+
+                        </div>
+                      
+                        <!-- SIDE FORM PANEL -->
+                        <div class="col-md-4"
+                             id="taskFormPanel"
+                             style="display:none;">
+
+                            <div class="card shadow-sm border-0">
+
+                                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+                                    <h6 class="mb-0" id="taskFormTitle">
+
+                                        @(TempData["EditTask"] != null
+                                            ? "Edit Task"
+                                            : "Add Task")
+
+                                    </h6>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-light"
+                                            onclick="closeTaskPanel()">
+
+                                        <i class="bi bi-x-lg"></i>
+
+                                    </button>
+
+                                </div>
+                                <div class="card-body">
+
+                                    @{
+                                        bool isEditTask =
+                                            TempData["EditTask"] != null &&
+                                            TempData["EditTask"].ToString() == "true";
+                                    }
+
+                                    @if (isEditTask)
+                                    {
+                                        <form  id="editTaskForm"
+                                              asp-action="UpdateProjectTask"
+                                              asp-controller="Project"
+                                              asp-area="SalesCRM"
+                                              method="post">
+            
+                                            <div asp-validation-summary="ModelOnly"
+                                                 class="text-danger mb-3">
+                                            </div>
+                                           @Html.AntiForgeryToken()
+                                            @* ONLY FOR EDIT *@
+                                            @if (TempData["EditTask"] != null)
+                                            {
+                                                <input type="hidden"
+                                                        asp-for="NewProjectTask.ProjectTaskId" />
+                                            }
+
+                                            @* COMMON FOR ADD + EDIT *@
+                                            <input type="hidden"
+                                                    asp-for="NewProjectTask.ProjectId" />
+
+                                            <!-- TASK NAME -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Task Name
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.TaskName"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.TaskName"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- MODULE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Module Name
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.ProjectModuleId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Module --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectModule != null)
+                                                    {
+                                                        foreach (var module in Model.NewProjectTask.ProjectModule)
+                                                        {
+                                                            <option value="@module.Value">
+                                                                @module.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.ProjectModuleId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- ASSIGNED TO -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Assign To
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.AssignedTo"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select User --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.UserList != null)
+                                                    {
+                                                        foreach (var user in Model.NewProjectTask.UserList)
+                                                        {
+                                                            <option value="@user.Value">
+                                                                @user.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.AssignedTo"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- START DATE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Start Date
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.StartDate"
+                                                       type="date"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.StartDate"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- END DATE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    End Date
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.DueDate"
+                                                       type="date"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.DueDate"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- PRIORITY -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Priority
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.PriorityId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Priority --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectTaskPriorities != null)
+                                                    {
+                                                        foreach (var priority in Model.NewProjectTask.ProjectTaskPriorities)
+                                                        {
+                                                            <option value="@priority.Value">
+                                                                @priority.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.PriorityId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- STATUS -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Task Status
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.TaskStatusId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Status --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectTaskStatus != null)
+                                                    {
+                                                        foreach (var status in Model.NewProjectTask.ProjectTaskStatus)
+                                                        {
+                                                            <option value="@status.Value">
+                                                                @status.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.TaskStatusId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- HOURS -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Estimated Hours
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.EstimatedHours"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.EstimatedHours"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- DESCRIPTION -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Description
+                                                </label>
+
+                                                <textarea asp-for="NewProjectTask.Description"
+                                                          rows="4"
+                                                          class="form-control"></textarea>
+
+                                                <span asp-validation-for="NewProjectTask.Description"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <div class="text-end">
+
+                                                <button type="submit"
+                                                        class="btn btn-primary"
+                                                        id="taskSubmitBtn">
+
+                                                    Update Task
+
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form id="createTaskForm" 
+                                              asp-action="CreateProject"
+                                              asp-controller="Project"
+                                              asp-area="SalesCRM"
+                                              method="post">
+
+                                            <div asp-validation-summary="ModelOnly"
+                                                 class="text-danger mb-3">
+                                            </div>
+
+                                            <input asp-for="NewProjectTask.ProjectId"
+                                                   type="hidden" />
+
+                                            <!-- TASK NAME -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Task Name
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.TaskName"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.TaskName"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- MODULE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Module Name
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.ProjectModuleId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Module --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectModule != null)
+                                                    {
+                                                        foreach (var module in Model.NewProjectTask.ProjectModule)
+                                                        {
+                                                            <option value="@module.Value">
+                                                                @module.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.ProjectModuleId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- ASSIGNED TO -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Assign To
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.AssignedTo"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select User --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.UserList != null)
+                                                    {
+                                                        foreach (var user in Model.NewProjectTask.UserList)
+                                                        {
+                                                            <option value="@user.Value">
+                                                                @user.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.AssignedTo"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- START DATE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Start Date
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.StartDate"
+                                                       type="date"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.StartDate"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- END DATE -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    End Date
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.DueDate"
+                                                       type="date"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.DueDate"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- PRIORITY -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Priority
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.PriorityId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Priority --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectTaskPriorities != null)
+                                                    {
+                                                        foreach (var priority in Model.NewProjectTask.ProjectTaskPriorities)
+                                                        {
+                                                            <option value="@priority.Value">
+                                                                @priority.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.PriorityId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- STATUS -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Task Status
+                                                </label>
+
+                                                <select asp-for="NewProjectTask.TaskStatusId"
+                                                        class="form-select">
+
+                                                    <option value="">
+                                                        -- Select Status --
+                                                    </option>
+
+                                                    @if (Model.NewProjectTask?.ProjectTaskStatus != null)
+                                                    {
+                                                        foreach (var status in Model.NewProjectTask.ProjectTaskStatus)
+                                                        {
+                                                            <option value="@status.Value">
+                                                                @status.Text
+                                                            </option>
+                                                        }
+                                                    }
+
+                                                </select>
+
+                                                <span asp-validation-for="NewProjectTask.TaskStatusId"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- HOURS -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Estimated Hours
+                                                </label>
+
+                                                <input asp-for="NewProjectTask.EstimatedHours"
+                                                       class="form-control" />
+
+                                                <span asp-validation-for="NewProjectTask.EstimatedHours"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <!-- DESCRIPTION -->
+                                            <div class="mb-3">
+
+                                                <label class="form-label">
+                                                    Description
+                                                </label>
+
+                                                <textarea asp-for="NewProjectTask.Description"
+                                                          rows="4"
+                                                          class="form-control"></textarea>
+
+                                                <span asp-validation-for="NewProjectTask.Description"
+                                                      class="text-danger"></span>
+
+                                            </div>
+
+                                            <div class="text-end">
+
+                                                <button type="submit"
+                                                        class="btn btn-primary"
+                                                        id="taskSubmitBtn">
+
+                                                    Save Task
+
+                                                </button>
+
+                                            </div>
+
+                                        </form>
+                                    }
+
+                                </div>
+                               
+                           </div> 
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ===================================================== -->
+        <!-- PROJECT TIME LOG -->
+        <!-- ===================================================== -->
+
+        <div class="tab-pane fade"
+             id="tab-project-timelog">
+
+            <div class="section-card teal">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-clock-history"></i>
+                        Project Time Logs
+                    </span>
+
+                    <button class="btn btn-sm btn-outline-primary">
+
+                        <i class="bi bi-plus-lg"></i>
+                        Add Time Log
+
+                    </button>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-sm align-middle">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Date</th>
+                                    <th>Employee</th>
+                                    <th>Task</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Total Hours</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.ProjectTimeLogs != null && Model.ProjectTimeLogs.Any())
+                                {
+                                    foreach (var log in Model.ProjectTimeLogs)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                @log.WorkDate?.ToString("dd-MMM-yyyy")
+                                            </td>
+
+                                            <td>@log.EmployeeName</td>
+                                            <td>@log.TaskName</td>
+                                            <td>@log.StartTime</td>
+                                            <td>@log.EndTime</td>
+                                            <td>@log.TotalHours</td>
+
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+
+                                        <td colspan="6"
+                                            class="text-center text-muted py-4">
+
+                                            No time logs available
+
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@section Scripts{
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+
+        $(document).ready(function () {
+
+            var activeTab = '@TempData["ActiveTab"]';
+
+            if (activeTab) {
+
+                $('.nav-link[href="#' + activeTab + '"]').tab('show');
+
+            }
+
+            var openTaskPanel = '@TempData["OpenTaskPanel"]';
+
+            if (openTaskPanel === 'true') {
+
+                openTaskPanelFunction();
+
+            }
+
+        });
+
+        function openTaskPanelFunction() {
+
+            $("#taskFormPanel").show();
+
+            $("#taskListSection")
+                .removeClass("col-md-12")
+                .addClass("col-md-8");
+        }
+
+        $(document).ready(function () {
+
+        // ====================================
+        // ACTIVE TAB
+        // ====================================
+
+        var activeTab = '@TempData["ActiveTab"]';
+
+        if (activeTab) {
+
+            $('.nav-link[href="#' + activeTab + '"]')
+                .tab('show');
+        }
+
+        // =====================================
+        // OPEN TASK PANEL
+        // =====================================
+
+        var openTaskPanelFlag =
+            '@TempData["OpenTaskPanel"]';
+
+        var isEditTask =
+            '@TempData["EditTask"]';
+
+        if (openTaskPanelFlag === 'true') {
+
+            // EDIT MODE
+            if (isEditTask === 'true') {
+
+                openEditTaskPanel();
+            }
+            else {
+
+                // ADD MODE
+                openTaskPanel();
+            }
+        }
+
+   
+
+        // // ====================================
+        // // OPEN MODULE PANEL
+        // // ====================================
+        var openModulePanelFlag =
+            '@TempData["OpenModulePanel"]';
+
+        var isEditModule =
+            '@TempData["EditModule"]';
+
+        if (openModulePanelFlag === 'true') {
+
+            // EDIT MODE
+            if (isEditModule === 'true') {
+
+                openEditModulePanel();
+            }
+            else {
+
+                // ADD MODE
+                openModulePanel();
+            }
+        }
+
+       
+
+    });
+    function openModulePanel() {
+
+        $("#moduleFormPanel").show();
+
+        $("#moduleListSection")
+            .removeClass("col-md-12")
+            .addClass("col-md-8");
+
+        // ======================================
+        // CLEAR FORM
+        // ======================================
+
+        $("#NewProjectModule_ProjectModuleId").val('');
+
+        $("#NewProjectModule_ModuleName").val('');
+
+        $("#NewProjectModule_Description").val('');
+
+        $("#NewProjectModule_EstimatedHours").val('');
+
+        // ======================================
+        // TITLE
+        // ======================================
+
+        $("#moduleFormTitle")
+            .text("Add Project Module");
+
+        // ======================================
+        // BUTTON
+        // ======================================
+
+        $("#moduleSubmitBtn")
+            .text("Save Module");
+
+        // ======================================
+        // FORM ACTION
+        // ======================================
+
+        $("#moduleForm")
+            .attr("action",
+                "/SalesCRM/Project/CreateProjectModule");
+    }
+
+    // ======================================
+    // EDIT MODULE PANEL
+    // ======================================
+
+    function openEditModulePanel() {
+
+        $("#moduleFormPanel").show();
+
+        $("#moduleListSection")
+            .removeClass("col-md-12")
+            .addClass("col-md-8");
+
+        // ======================================
+        // TITLE
+        // ======================================
+
+        $("#moduleFormTitle")
+            .text("Edit Project Module");
+
+        // ======================================
+        // BUTTON
+        // ======================================
+
+        $("#moduleSubmitBtn")
+            .text("Update Module");
+
+        // ======================================
+        // FORM ACTION
+        // ======================================
+
+        $("#moduleForm")
+            .attr("action",
+                "/SalesCRM/Project/UpdateProjectModule");
+    }
+
+    function closeModulePanel() {
+
+        document.getElementById("moduleFormPanel").style.display = "none";
+
+        const list = document.getElementById("moduleListSection");
+
+        list.classList.remove("col-md-8");
+        list.classList.add("col-md-12");
+
+        $("#moduleForm")[0].reset();
+
+        $("#NewProjectModule_ProjectModuleId").val('');
+
+    }
+
+     function editModule(id) {
+
+        window.location.href =
+            '/SalesCRM/Project/EditProjectModule?id=' + id;
+    }
+
+    // =========================================
+    // ADD TASK PANEL
+    // =========================================
+
+    function openTaskPanel() {
+
+        $("#taskFormPanel").show();
+
+        $("#taskListSection")
+            .removeClass("col-md-12")
+            .addClass("col-md-8");
+
+        // =====================================
+        // CLEAR FORM VALUES
+        // =====================================
+
+        $("#NewProjectTask_ProjectTaskId").val('');
+
+        $("#NewProjectTask_TaskName").val('');
+
+        $("#NewProjectTask_ProjectModuleId").val('');
+
+        $("#NewProjectTask_AssignedTo").val('');
+
+        $("#NewProjectTask_StartDate").val('');
+
+        $("#NewProjectTask_DueDate").val('');
+
+        $("#NewProjectTask_PriorityId").val('');
+
+        $("#NewProjectTask_TaskStatusId").val('');
+
+        $("#NewProjectTask_EstimatedHours").val('');
+
+        $("#NewProjectTask_Description").val('');
+
+        // =====================================
+        // TITLE
+        // =====================================
+
+        $("#taskFormTitle")
+            .text("Add Task");
+
+        // =====================================
+        // BUTTON
+        // =====================================
+
+        $("#taskSubmitBtn")
+            .text("Save Task");
+
+        // =====================================
+        // FORM ACTION
+        // =====================================
+
+        $("#createTaskForm")
+            .attr("action",
+                "/SalesCRM/Project/CreateProject");
+    }
+
+    // =========================================
+    // EDIT TASK PANEL
+    // =========================================
+
+    function openEditTaskPanel() {
+
+        $("#taskFormPanel").show();
+
+        $("#taskListSection")
+            .removeClass("col-md-12")
+            .addClass("col-md-8");
+
+        // =====================================
+        // TITLE
+        // =====================================
+
+        $("#taskFormTitle")
+            .text("Edit Task");
+
+        // =====================================
+        // BUTTON
+        // =====================================
+
+        $("#taskSubmitBtn")
+            .text("Update Task");
+
+        // =====================================
+        // FORM ACTION
+        // =====================================
+
+        $("#editTaskForm")
+            .attr("action",
+                "/SalesCRM/Project/UpdateProjectTask");
+    }
+
+    // =========================================
+    // CLOSE PANEL
+    // =========================================
+
+    function closeTaskPanel() {
+
+        $("#taskFormPanel").hide();
+
+        $("#taskListSection")
+            .removeClass("col-md-8")
+            .addClass("col-md-12");
+
+        // =====================================
+        // CLEAR VALUES
+        // =====================================
+
+        $("#NewProjectTask_ProjectTaskId").val('');
+
+        $("#NewProjectTask_TaskName").val('');
+
+        $("#NewProjectTask_ProjectModuleId").val('');
+
+        $("#NewProjectTask_AssignedTo").val('');
+
+        $("#NewProjectTask_StartDate").val('');
+
+        $("#NewProjectTask_DueDate").val('');
+
+        $("#NewProjectTask_PriorityId").val('');
+
+        $("#NewProjectTask_TaskStatusId").val('');
+
+        $("#NewProjectTask_EstimatedHours").val('');
+
+        $("#NewProjectTask_Description").val('');
+    }
+
+    </script>
+}
+
+
+
+
+
+@*  function openModulePanel() {
+
+        document.getElementById("moduleFormPanel").style.display = "block";
+
+        const list = document.getElementById("moduleListSection");
+
+        list.classList.remove("col-md-12");
+        list.classList.add("col-md-8");
+    } *@
+    @* function closeModulePanel() {
+
+        document.getElementById("moduleFormPanel").style.display = "none";
+
+        const list = document.getElementById("moduleListSection");
+
+        list.classList.remove("col-md-8");
+        list.classList.add("col-md-12");
+    } *@
+
+  @*  <div class="mb-3">
+
+                                            <label class="form-label">
+                                                 Module Name
+                                            </label>
+
+                                            <select asp-for="NewProjectTask.ProjectModuleId"  class="form-select">
+
+                                                <option value="">
+                                                    -- Select User --
+                                                </option>
+
+                                                @foreach (var user in Model.NewProjectTask.ProjectModule)
+                                                {
+                                                    <option value="@user.Value">
+                                                        @user.Text
+                                                    </option>
+                                                }
+
+                                            </select>
+                                            <span asp-validation-for="NewProjectTask.ProjectModuleId" class="text-danger"></span>
+                                        </div> *@
+@* @using BSuit.SalesCRM.Models
+@using static BSuit.SalesCRM.Models.ProjectVM
+@model ProjectAccount
+@{
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+<style>
+    .col-md-4 {
+        position: sticky;
+        top: 90px;
+    }
+</style>
+<!-- TOP HEADER ACTION BAR -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-end align-items-center p-3 shadow-sm bg-white rounded">
+
+            <div class="d-flex gap-4">
+
+                <a href="@Url.Action("ProjectTask", "Project", new { area = "SalesCRM", projectId = Model.ProjectId })"
+                   class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-list-task me-1"></i> Project Tasks
+                </a>
+
+                <a href="@Url.Action("ProjectModules", "Project", new { area = "SalesCRM", projectId = Model.ProjectId })"
+                   class="btn btn-outline-success btn-sm">
+                    <i class="bi bi-box me-1"></i> Project Modules
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <!-- ================= LEFT SIDE (ACCORDION) ================= -->
+    <div class="col-md-7">
+
+        <div class="accordion" id="projectAccordion">
+
+            <!-- 🔹 PROJECT DETAILS -->
+            <div class="accordion-item border-0">
+
+                <!-- Edit Button -->
+                <div class="d-flex justify-content-end mb-2">
+                    <a class="btn btn-sm btn-primary"
+                       href="@Url.Action("GetEditPartial", "Project", new { area = "SalesCRM", id = Model.ProjectId })">
+                        <i class="bi bi-pencil-square me-1"></i> Edit
+                    </a>
+                </div>
+
+                <h2 class="accordion-header">
+                    <button class="accordion-button bg-white shadow-none fw-semibold text-warning"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#projectDetails"
+                            aria-expanded="true">
+                        Project Details
+                    </button>
+                </h2>
+
+                <div id="projectDetails" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Project Name</div>
+                            <div class="col-7 fw-medium">@Model.ProjectName</div>
+                        </div>
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Project Code</div>
+                            <div class="col-7 fw-medium">@Model.ProjectCode</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Description</div>
+                            <div class="col-7">@Model.Description</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Start Date</div>
+                            <div class="col-7">@Model.StartDate?.ToString("dd-MMM-yyyy")</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">End Date</div>
+                            <div class="col-7">@Model.EndDate?.ToString("dd-MMM-yyyy")</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Project Hours</div>
+                            <div class="col-7">@Model.ProjectHours</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Balance Hours</div>
+                            <div class="col-7">@Model.BalanceHours</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 ACCOUNT DETAILS -->
+            <div class="accordion-item border-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-white shadow-none fw-semibold text-warning"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#accountDetails">
+                        Account Details
+                    </button>
+                </h2>
+
+                <div id="accountDetails" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Account Name</div>
+                            <div class="col-7">@Model.AccountName</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Company</div>
+                            <div class="col-7">@Model.CompanyName</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Phone</div>
+                            <div class="col-7">@Model.Phone</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Website</div>
+                            <div class="col-7">
+                                <a href="@Model.Website" target="_blank">@Model.Website</a>
+                            </div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">City</div>
+                            <div class="col-7">@Model.City</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">State</div>
+                            <div class="col-7">@Model.State</div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Address</div>
+                            <div class="col-7">@Model.Address</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔹 TEAM DETAILS -->
+            <div class="accordion-item border-0">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed bg-white shadow-none fw-semibold text-warning"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#projectTeam">
+                        Team Details
+                    </button>
+                </h2>
+
+                <div id="projectTeam" class="accordion-collapse collapse">
+                    <div class="accordion-body">
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Project Manager</div>
+                            <div class="col-7">
+                                @Model.ProjectManagerName<br />
+                                <small class="text-muted">@Model.ProjectManagerEmail</small>
+                            </div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Project Supervisor</div>
+                            <div class="col-7">
+                                @Model.ProjectSupervisorName<br />
+                                <small class="text-muted">@Model.ProjectSupervisorEmail</small>
+                            </div>
+                        </div>
+
+                        <div class="row border-bottom py-2">
+                            <div class="col-5 text-muted">Primary Resource</div>
+                            <div class="col-7">
+                                @Model.PrimaryResourceName<br />
+                                <small class="text-muted">@Model.PrimaryResourceEmail</small>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= RIGHT SIDE (TASK CARD) ================= -->
+    <div class="col-md-5">
+
+        <div class="card shadow-sm">
+            <div class="card-header fw-semibold d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-list-task me-1"></i> Project Tasks
+                </span>
+            </div>
+
+            <div class="card-body p-2">
+
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+
+                        <!-- ✅ HEADER ADDED -->
+                        <thead class="table-light">
+                            <tr>
+                                <th>Project Task</th>
+                                <th>Resource</th>
+                                <th>Hours Allocated</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (ViewBag.Tasks != null && ViewBag.Tasks.Count > 0)
+                            {
+                                foreach (var item in ViewBag.Tasks)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold text-primary">
+                                            @item.TaskName
+                                        </td>
+                                        <td class="small text-muted">
+                                            @item.AssignedTo
+                                        </td>
+                                        <td>
+                                            @item.EstimatedHours
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-3">
+                                        No tasks
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                </div>
+
+                <!-- View All -->
+                <div class="text-center mt-2">
+                    <a href="@Url.Action("ProjectTask", "Project", new { area = "SalesCRM", projectId = Model.ProjectId })"
+                       class="text-primary small">
+                        View All
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- 🔙 BACK BUTTON -->
+<div class="text-end mt-3">
+    <a href="@Url.Action("Index", "Project", new { area = "SalesCRM" })"
+       class="btn btn-outline-dark">
+        Back
+    </a>
+</div>
+ *@
+
+                    @*  <div class="card-body">
+
+                                  <form asp-action="CreateProject"
+                                          asp-controller="Project"
+                                          asp-area="SalesCRM"
+                                          method="post">
+
+                                        <div asp-validation-summary="ModelOnly"
+                                             class="text-danger mb-3">
+                                        </div>
+
+                                        <input asp-for="NewProjectTask.ProjectId" type="hidden" />
+
+                                        <!-- TASK NAME -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Task Name
+                                            </label>
+
+                                            <input asp-for="NewProjectTask.TaskName"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="NewProjectTask.TaskName"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- MODULE -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Module Name
+                                            </label>
+
+                                            <select asp-for="NewProjectTask.ProjectModuleId"
+                                                    class="form-select">
+
+                                                <option value="">
+                                                    -- Select Module --
+                                                </option>
+
+                                                @if (Model.NewProjectTask?.ProjectModule != null)
+                                                {
+                                                    foreach (var module in Model.NewProjectTask.ProjectModule)
+                                                    {
+                                                        <option value="@module.Value">
+                                                            @module.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <span asp-validation-for="NewProjectTask.ProjectModuleId"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- ASSIGNED TO -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Assign To
+                                            </label>
+
+                                            <select asp-for="NewProjectTask.AssignedTo"
+                                                    class="form-select">
+
+                                                <option value="">
+                                                    -- Select User --
+                                                </option>
+
+                                                @if (Model.NewProjectTask?.UserList != null)
+                                                {
+                                                    foreach (var user in Model.NewProjectTask.UserList)
+                                                    {
+                                                        <option value="@user.Value">
+                                                            @user.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <span asp-validation-for="NewProjectTask.AssignedTo"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- START DATE -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Start Date
+                                            </label>
+
+                                            <input asp-for="NewProjectTask.StartDate"
+                                                   type="date"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="NewProjectTask.StartDate"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- END DATE -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                End Date
+                                            </label>
+
+                                            <input asp-for="NewProjectTask.DueDate"
+                                                   type="date"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="NewProjectTask.DueDate"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- PRIORITY -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Priority
+                                            </label>
+
+                                            <select asp-for="NewProjectTask.PriorityId"
+                                                    class="form-select">
+
+                                                <option value="">
+                                                    -- Select Priority --
+                                                </option>
+
+                                                @if (Model.NewProjectTask?.ProjectTaskPriorities != null)
+                                                {
+                                                    foreach (var priority in Model.NewProjectTask.ProjectTaskPriorities)
+                                                    {
+                                                        <option value="@priority.Value">
+                                                            @priority.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <span asp-validation-for="NewProjectTask.PriorityId"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- STATUS -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Task Status
+                                            </label>
+
+                                            <select asp-for="NewProjectTask.TaskStatusId"
+                                                    class="form-select">
+
+                                                <option value="">
+                                                    -- Select Status --
+                                                </option>
+
+                                                @if (Model.NewProjectTask?.ProjectTaskStatus != null)
+                                                {
+                                                    foreach (var status in Model.NewProjectTask.ProjectTaskStatus)
+                                                    {
+                                                        <option value="@status.Value">
+                                                            @status.Text
+                                                        </option>
+                                                    }
+                                                }
+
+                                            </select>
+
+                                            <span asp-validation-for="NewProjectTask.TaskStatusId"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- HOURS -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Estimated Hours
+                                            </label>
+
+                                            <input asp-for="NewProjectTask.EstimatedHours"
+                                                   class="form-control" />
+
+                                            <span asp-validation-for="NewProjectTask.EstimatedHours"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <!-- DESCRIPTION -->
+                                        <div class="mb-3">
+
+                                            <label class="form-label">
+                                                Description
+                                            </label>
+
+                                            <textarea asp-for="NewProjectTask.Description"
+                                                      rows="4"
+                                                      class="form-control"></textarea>
+
+                                            <span asp-validation-for="NewProjectTask.Description"
+                                                  class="text-danger"></span>
+
+                                        </div>
+
+                                        <div class="text-end">
+
+                                            <button type="submit"
+                                                    class="btn btn-primary">
+
+                                                Save Task
+
+                                            </button>
+
+                                        </div>
+
+                                  </form>
+
+                                </div> *@

@@ -1,0 +1,312 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model UserServiceMappingVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Map Services - <u>@Model.TenantName</u></h3>
+    <div>
+        <a href="/Admin/TenantUsers?tenantId=@Model.TenantId"
+           class="btn btn-secondary me-2">
+            ← Back
+        </a>
+
+        <span id="helpIcon" class="help-icon">?</span>
+    </div>
+</div>
+
+<!-- Help Tooltip -->
+<div id="serviceHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Service Mapping Help</h6>
+
+        <ul class="mb-0 ps-3">
+            <li>Assign services to selected user role</li>
+            <li>Map multiple services at once</li>
+            <li>View previously assigned services</li>
+            <li>Delete unwanted service mappings</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+</div>
+
+<div class="card">
+
+    <!-- Card Header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Mapped Services</h5>
+
+        <div>
+            <button type="button"
+                    class="btn btn-secondary btn-sm me-2"
+                    onclick="location.reload()">
+                Refresh
+            </button>
+
+            <button type="button"
+                    class="btn btn-success btn-sm"
+                    onclick="openMappingModal()">
+                + Map Services
+            </button>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>User</th>
+                    <th>Service Name</th>
+                    <th>Assigned On</th>
+                    <th width="150">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.ExistingMappings != null && Model.ExistingMappings.Any())
+                {
+                    @foreach (var item in Model.ExistingMappings)
+                    {
+                        <tr>
+                            <td>@item.RoleName</td>
+                            <td>@item.UserName</td>
+                            <td>@item.ServiceName</td>
+                            <td>@item.AssignedOn.ToString("dd-MMM-yyyy")</td>
+
+                            <td>
+                                <form method="post"
+                                      action="/Admin/TenantUsers/DeleteMappedService"
+                                      style="display:inline;">
+
+                                    <input type="hidden"
+                                           name="userId"
+                                           value="@item.UserId" />
+
+                                    <input type="hidden"
+                                           name="serviceId"
+                                           value="@item.ServiceId" />
+
+                                    <input type="hidden"
+                                           name="roleId"
+                                           value="@item.RoleId" />
+
+                                    <button class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Delete this service mapping?')">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4"
+                            class="text-center text-muted">
+                            No service mappings found
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MAP SERVICE MODAL -->
+<div class="modal fade"
+     id="mappingModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form method="post">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        Map Services
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           asp-for="UserId" />
+
+                    <!-- Role -->
+                    <div class="mb-3">
+                        <label>Select Role</label>
+
+                        <select id="roleDropdown"
+                                name="SelectedRoleId"
+                                class="form-select"
+                                required>
+                            <option value="">
+                                -- Select Role --
+                            </option>
+
+                            @foreach (var role in Model.Roles)
+                            {
+                                <option value="@role.Value">
+                                    @role.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Select Users</label>
+
+                        <select id="userDropdown"
+                                name="SelectedUserIds"
+                                class="form-select"
+                                multiple
+                                style="height:200px;"
+                                required>
+                        </select>
+                    </div>
+
+                
+
+                    <!-- Services -->
+                    <div class="mb-3">
+                        <label>Select Services</label>
+
+                        <select name="SelectedServiceIds"
+                                class="form-select"
+                                style="height:250px;"
+                                multiple
+                                required>
+
+                            @foreach (var item in Model.Services)
+                            {
+                                <option value="@item.Value">
+                                    @item.Text
+                                </option>
+                            }
+                        </select>
+
+                        <small class="text-muted">
+                            Hold Ctrl (Windows) / Cmd (Mac) to select multiple services.
+                        </small>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">
+                        Save Mapping
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let mappingModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        mappingModal = new bootstrap.Modal(
+            document.getElementById("mappingModal")
+        );
+
+        // Help tooltip
+        let helpContent =
+            document.getElementById("serviceHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto-hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+    function openMappingModal() {
+        mappingModal.show();
+    }
+
+
+
+    document.getElementById("roleDropdown")
+        .addEventListener("change", function () {
+
+        let roleId = this.value;
+        let tenantId = '@Model.TenantId';
+
+        let userDropdown =
+            document.getElementById("userDropdown");
+
+        userDropdown.innerHTML = "";
+
+        if (!roleId) return;
+
+        fetch(`/Admin/TenantUsers/GetUsersByRole?tenantId=${tenantId}&roleId=${roleId}`)
+            .then(res => res.json())
+            .then(data => {
+
+                data.forEach(user => {
+                    let option = document.createElement("option");
+                    option.value = user.id;
+                    option.text = user.name;
+
+                    userDropdown.appendChild(option);
+                });
+            });
+    });
+
+</script>

@@ -1,0 +1,911 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.WorkOrderVM
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>
+        Work Order Agreement
+    </title>
+
+    <style>
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #000;
+            background: #f3f3f3;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .page {
+            width: 850px;
+            margin: auto;
+            background: #fff;
+            border: 1px solid #999;
+            padding: 18px;
+        }
+
+        .top-header {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .top-header td {
+            border: none;
+            padding: 0;
+        }
+
+        .logo {
+            text-align: right;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .sub-text {
+            font-size: 11px;
+            margin-bottom: 15px;
+        }
+
+        .section-heading {
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        table, td, th {
+            border: 1px solid #000;
+        }
+
+        td, th {
+            padding: 6px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #d9e2f3;
+            text-align: left;
+        }
+
+        .label {
+            width: 180px;
+            font-weight: bold;
+            background: #f2f2f2;
+        }
+
+        .scope-box {
+            line-height: 1.7;
+        }
+
+        .scope-box ul {
+            margin: 5px 0 5px 20px;
+            padding: 0;
+        }
+
+        .scope-box li {
+            margin-bottom: 4px;
+        }
+
+        .small-text {
+            font-size: 10px;
+        }
+
+        .terms-box p {
+            margin: 4px 0;
+        }
+
+        .checkbox-area {
+            margin-top: 18px;
+            font-size: 11px;
+        }
+
+        .footer-btns {
+            margin-top: 25px;
+            text-align: right;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 3px;
+        }
+
+        .approved-box {
+            margin-top: 20px;
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .rejected-box {
+            margin-top: 20px;
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border: 1px solid #f5c6cb;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <table class="top-header">
+
+            <tr>
+
+                <td>
+
+                    <div class="title">
+                        Work Order : @Model.ServiceName
+                    </div>
+
+                    <div class="sub-text">
+                        This Work Order specifies the details of the scope of work,
+                        project terms and payment terms.
+                    </div>
+
+                </td>
+
+                <td class="logo">
+
+                    <img src="~/images/logo.png" />
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PROJECT INFORMATION -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            I. Project Information
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    WO Number
+                </td>
+
+                <td>
+                    @Model.WorkOrderNumber
+                </td>
+
+                <td class="label">
+                    WO Date
+                </td>
+
+                <td>
+                    @Model.CreatedOn?.ToString("dd-MMM-yyyy")
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Proposal Number
+                </td>
+
+                <td>
+                    @Model.ProposalNumber
+                </td>
+
+                <td class="label">
+                    Opportunity
+                </td>
+
+                <td>
+                    @Model.OpportunityName
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            II. Customer Details
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    Customer Name
+                </td>
+
+                <td>
+                    @Model.CustomerName
+                </td>
+
+                <td class="label">
+                    Customer ID
+                </td>
+
+                <td>
+@*                     @Model.CustomerId
+ *@                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer City
+                </td>
+
+                <td>
+                    @Model.CustomerCity
+                </td>
+
+                <td class="label">
+                    Customer Country
+                </td>
+
+                <td>
+                    @Model.CustomerCountry
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Company Name
+                </td>
+
+                <td>
+                    @Model.CompanyName
+                </td>
+
+                <td class="label">
+                    Invoicing Address
+                </td>
+
+                <td>
+                    @Model.Address
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer Background
+                </td>
+
+                <td>
+                    @Model.CustomerBackground
+                </td>
+
+                <td class="label">
+                    Project Industry
+                </td>
+
+                <td>
+                    @Model.ProjectIndustry
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer Business Type
+                </td>
+
+                <td colspan="3">
+                    @Model.BusinessType
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PROJECT DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            III. Project Details
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="label">
+                    Project Start Date
+                </td>
+
+                <td>
+@*                     @Model.ProjectStartDate?.ToString("dd-MMM-yyyy")
+ *@                </td>
+
+                <td class="label">
+                    Project End Date
+                </td>
+
+                <td>
+@*                     @Model.ProjectEndDate?.ToString("dd-MMM-yyyy")
+ *@                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Engagement Model
+                </td>
+
+                <td>
+                    @Model.EngagementModelName
+                </td>
+
+                <td class="label">
+                    No. of Months
+                </td>
+
+                <td>
+@*                     @Model.NoOfMonths
+ *@                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Service Name
+                </td>
+
+                <td>
+                    @Model.ServiceName
+                </td>
+
+                <td class="label">
+                    Industry
+                </td>
+
+                <td>
+                    @Model.IndustryName
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Estimated Hours
+                </td>
+
+                <td>
+                    @Model.EstimatedHours
+                </td>
+
+                <td class="label">
+                    Proposed Amount
+                </td>
+
+                <td>
+                    @Model.CurrencyCode @Model.ProposedAmount
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Scope of Work
+                </td>
+
+                <td colspan="3" class="scope-box">
+
+                    @Html.Raw(Model.ScopeOfWork)
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Deliverables
+                </td>
+
+                <td colspan="3" class="scope-box">
+
+                    @Html.Raw(Model.FinalDeliverable)
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Expectation Setting
+                </td>
+
+                <td colspan="3" class="scope-box">
+
+                    @Html.Raw(Model.ExpectationSetting)
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Customer Responsibilities
+                </td>
+
+                <td colspan="3" class="scope-box">
+
+                    @Html.Raw(Model.CustomerResponsibilities)
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <td class="label">
+                    Hours of Support
+                </td>
+
+                <td colspan="3">
+
+                    Monday to Friday - 10 AM to 6 PM IST
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PAYMENT SCHEDULE -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            IV. Payment Schedule
+        </div>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        S.No
+                    </th>
+
+                    <th>
+                        Start Date
+                    </th>
+
+                    <th>
+                        End Date
+                    </th>
+
+                    <th>
+                        Hours
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Payment Due Date
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        1
+                    </td>
+
+                    <td>
+@*                         @Model.ProjectStartDate?.ToString("dd-MMM-yyyy")
+ *@                    </td>
+
+                    <td>
+@*                         @Model.ProjectEndDate?.ToString("dd-MMM-yyyy")
+ *@                    </td>
+
+                    <td>
+                        @Model.EstimatedHours
+                    </td>
+
+                    <td>
+                        @Model.CurrencyCode @Model.ProposedAmount
+                    </td>
+
+                    <td>
+                        @DateTime.Now.AddDays(7).ToString("dd-MMM-yyyy")
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PAYMENT TERMS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            V. Payment Terms
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="terms-box">
+
+                    <p>a. Payments must be made as per agreed schedule.</p>
+
+                    <p>b. Payment can be made through Credit Card, PayPal or Wire Transfer.</p>
+
+                    <p>c. Unused hours expire after 30 days.</p>
+
+                    <p>d. Additional scope will be billed separately.</p>
+
+                    <p>e. Weekly or monthly reports will be shared.</p>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- PROJECT TERMS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            VI. Project Terms
+        </div>
+
+        <table>
+
+            <tr>
+
+                <td class="scope-box">
+
+                    <b>Project Team</b>
+
+                    <ul>
+
+                        <li>
+                            Team will be introduced after payment confirmation.
+                        </li>
+
+                        <li>
+                            Account Manager will be the main point of contact.
+                        </li>
+
+                    </ul>
+
+                    <b>Data Security</b>
+
+                    <ul>
+
+                        <li>
+                            Information security follows ISO standards.
+                        </li>
+
+                        <li>
+                            Confidential information will remain protected.
+                        </li>
+
+                    </ul>
+
+                    <b>Project Feedback</b>
+
+                    <ul>
+
+                        <li>
+                            Feedback may be shared via email or meetings.
+                        </li>
+
+                        <li>
+                            Escalations must be raised within 5 business days.
+                        </li>
+
+                    </ul>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CONTACT DETAILS -->
+        <!-- ================================================= -->
+
+        <div class="section-heading">
+            VII. Contact Details
+        </div>
+
+        <b>Brickwork</b>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Responsibility
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Title
+                    </th>
+
+                    <th>
+                        Email Id
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Sales, Scope Change & Escalation
+                    </td>
+
+                    <td>
+                        Kumaresan Nagarajan
+                    </td>
+
+                    <td>
+                        Account Manager
+                    </td>
+
+                    <td>
+                        kumaresan.ng@brickworkindia.com
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Quality Supervision
+                    </td>
+
+                    <td>
+                        Srinivasa Murthy K
+                    </td>
+
+                    <td>
+                        Project Manager
+                    </td>
+
+                    <td>
+                        srinivasa.murthy.k@brickworkindia.com
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Major Escalations
+                    </td>
+
+                    <td>
+                        Sangeeta Kulkarni
+                    </td>
+
+                    <td>
+                        Co-Founder & CEO
+                    </td>
+
+                    <td>
+                        sangeeta.kulkarni@brickworkindia.com
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- CUSTOMER -->
+        <!-- ================================================= -->
+
+        <b>Customer</b>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Responsibility
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Email Id
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        Project Direction
+                    </td>
+
+                    <td>
+                        @Model.CustomerName
+                    </td>
+
+                    <td>
+@*                         @Model.CustomerEmail
+ *@                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td>
+                        Payments & Invoicing
+                    </td>
+
+                    <td>
+                        @Model.CustomerName
+                    </td>
+
+                    <td>
+@*                         @Model.CustomerEmail
+ *@                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+        <!-- ================================================= -->
+        <!-- AGREEMENT -->
+        <!-- ================================================= -->
+
+        <div class="checkbox-area">
+
+            <input type="checkbox" id="agreeTerms" />
+
+            I agree to this work order and the
+            <b>terms of service</b>
+
+        </div>
+
+        <!-- ================================================= -->
+        <!-- BUTTONS -->
+        <!-- ================================================= -->
+
+        <div class="footer-btns">
+
+            <a href="@Url.Action("ApprovalOpportunityList", "Opportunity")"
+               class="btn-back">
+
+                Back
+
+            </a>
+
+            <form method="post"
+                  action="/WorkOrder/ClientSignOff"
+                  style="display:inline;">
+
+                <input type="hidden"
+                       name="workOrderId"
+                       value="@Model.WorkOrderId" />
+
+                <button type="submit"
+                        class="btn btn-submit">
+
+                    Submit
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

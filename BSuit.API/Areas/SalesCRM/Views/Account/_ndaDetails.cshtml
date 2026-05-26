@@ -1,0 +1,246 @@
+﻿@using BSuit.API.Areas.SalesCRM.Models
+@model NDASignatureVM
+
+<div class="container-fluid">
+
+    <div class="section-card red mt-3">
+
+        <div class="section-header d-flex justify-content-between align-items-center">
+            <span>
+                <i class="bi bi-shield-lock"></i>&nbsp; NDA Details
+            </span>
+        </div>
+
+        <div class="section-body">
+
+            <div class="row g-3">
+
+                <!-- ACCEPT NDA -->
+                <div class="col-md-3">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="AcceptNDAAgreement"
+                               name="AcceptNonDisclosureAgreement"
+                               @(Model?.AcceptNonDisclosureAgreement == true ? "checked" : "") />
+
+                        <label class="form-check-label" for="AcceptNDAAgreement">
+                            Accept NDA Agreement
+                        </label>
+                    </div>
+                </div>
+
+                <!-- SCANNED DOC -->
+                <div class="col-md-3">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="AcceptScannedDocuments"
+                               name="AcceptScannedDocumentsNDA"
+                               @(Model?.AcceptScannedDocumentsNDA == true ? "checked" : "") />
+
+                        <label class="form-check-label" for="AcceptScannedDocuments">
+                            Accept Scanned Documents
+                        </label>
+                    </div>
+                </div>
+
+                <!-- EXECUTED -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Executed</label>
+
+                    <select class="form-select" id="NDAExecuted" name="NDAExecuted">
+                        <option value="">Select</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <!-- EXECUTED DATE -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Executed Date</label>
+
+                    <input type="date"
+                           class="form-control"
+                           id="NDAExecutedDate"
+                           name="ExecutedDate"
+                           value="@(Model?.ExecutedDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <!-- START -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Start Date</label>
+
+                    <input type="date"
+                           class="form-control"
+                           name="NDAStartDate"
+                           value="@(Model?.NDAStartDate?.ToString())" />
+                </div>
+
+                <!-- END -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA End Date</label>
+
+                    <input type="date"
+                           class="form-control"
+                           name="NDAEndDate"
+                           value="@(Model?.NDAEndDate?.ToString())" />
+                </div>
+
+                <!-- RENEWAL -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Renewal Date</label>
+
+                    <input type="date"
+                           class="form-control"
+                           name="NDARenewalDate"
+                           value="@(Model?.NDARenewalDate?.ToString())" />
+                </div>
+
+                <!-- CUSTOMER -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Customer Name</label>
+
+                    <input type="text"
+                           class="form-control"
+                           name="NDACustomerName"
+                           value="@Model?.NDACustomerName"
+                           placeholder="Enter customer name" />
+                </div>
+
+                <!-- VERSION -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Version Number</label>
+
+                    <input type="text"
+                           class="form-control"
+                           name="NDAVersionNumber"
+                           value="@Model?.NDAVersionNumber"
+                           readonly />
+                </div>
+
+                <!-- NDA NUMBER -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Number</label>
+
+                    <input type="text"
+                           class="form-control"
+                           name="NDANumber"
+                           value="@Model?.NDANumber"
+                           placeholder="Enter NDA number" />
+                </div>
+
+                <!-- FORMAT -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Format</label>
+
+                    <select class="form-select" name="NDAFormat">
+                        <option value="">Select Format</option>
+                        <option value="PDF">PDF</option>
+                        <option value="DOCX">DOCX</option>
+                    </select>
+                </div>
+
+                <!-- LINK -->
+                <div class="col-md-3">
+                    <label class="form-label">NDA Link</label>
+
+                    @if (!string.IsNullOrEmpty(Model?.NDALink))
+                    {
+                        <a href="@Model.NDALink"
+                           target="_blank"
+                           class="text-primary text-decoration-none fw-semibold">
+                            @Model.NDALink
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No link available</span>
+                    }
+                </div>
+
+                <!-- ORG CLAUSE -->
+                <div class="col-md-6">
+                    <label class="form-label">NDA Special Clause (For Org)</label>
+
+                    <textarea class="form-control"
+                              rows="3"
+                              name="NDASpecialClauseForOrg">@Model?.NDASpecialClauseForOrg</textarea>
+                </div>
+
+                <!-- INTERNAL CLAUSE -->
+                <div class="col-md-6">
+                    <label class="form-label">NDA Special Clause (For Internal)</label>
+
+                    <textarea class="form-control"
+                              rows="3"
+                              name="NDASpecialClauseForInternal">@Model?.NDASpecialClauseForInternal</textarea>
+                </div>
+
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+
+                <button type="button" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Cancel
+                </button>
+
+                <button type="button" id="btnSaveNDA" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Save NDA
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    $("#btnSaveNDA").click(function () {
+
+        var model = {
+            NDAID: 0, // set if update later
+            LeadId: null,
+            AccountId: null,
+
+            AcceptNonDisclosureAgreement: $("#AcceptNDAAgreement").is(":checked"),
+            AcceptScannedDocumentsNDA: $("#AcceptScannedDocuments").is(":checked"),
+
+            NDAStartDate: $("#NDAStartDate").val(),
+            NDAEndDate: $("#NDAEndDate").val(),
+            NDARenewalDate: $("#NDARenewalDate").val(),
+
+            NDACustomerName: $("input[name='NDACustomerName']").val(),
+            NDAVersionNumber: $("input[name='NDAVersionNumber']").val(),
+            NDANumber: $("input[name='NDANumber']").val(),
+            NDAFormat: $("select[name='NDAFormat']").val(),
+
+            NDASpecialClauseForOrg: $("textarea[name='NDASpecialClauseForOrg']").val(),
+            NDASpecialClauseForInternal: $("textarea[name='NDASpecialClauseForInternal']").val(),
+
+            ExecutedDate: $("#NDAExecutedDate").val(),
+            NDAExecuted: $("#NDAExecuted").val()
+        };
+
+        $.ajax({
+           
+            url: '@Url.Action("SaveNDA", "Account", new { area = "SalesCRM" })',
+
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (response) {
+                alert("NDA saved successfully!");
+                console.log(response);
+            },
+            error: function (xhr) {
+                alert("Error saving NDA");
+                console.log(xhr.responseText);
+            }
+        });
+    });
+</script>

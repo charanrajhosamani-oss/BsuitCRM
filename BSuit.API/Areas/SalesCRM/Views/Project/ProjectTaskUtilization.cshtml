@@ -1,0 +1,683 @@
+﻿@model BSuit.SalesCRM.Models.ProjectTaskUtilizationVM
+
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+   
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    /* Wrapper */
+    .pagination-wrapper {
+        position: relative;
+        z-index: 10;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 6px 10px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Pagination container spacing */
+    .custom-pagination {
+        gap: 6px;
+    }
+
+        /* Buttons */
+        .custom-pagination .page-link {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb; /* 👈 outline style */
+            background: #ffffff;
+            color: #6c757d;
+            font-size: 15px;
+            transition: all 0.25s ease;
+        }
+
+            /* Icon style (lighter feel) */
+            .custom-pagination .page-link i {
+                font-size: 16px;
+                transition: transform 0.2s ease;
+            }
+
+            /* Hover effect */
+            .custom-pagination .page-link:hover {
+                z-index: 5;
+                background: #0d6efd;
+                border-color: #0d6efd;
+                color: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
+            }
+
+                /* Slight icon animation */
+                .custom-pagination .page-link:hover i {
+                    transform: scale(1.1);
+                }
+
+            /* Click effect */
+            .custom-pagination .page-link:active {
+                transform: scale(0.92);
+                box-shadow: none;
+            }
+
+        /* Disabled */
+        .custom-pagination .page-item.disabled .page-link {
+            background: #f1f3f5;
+            border-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Focus remove (clean UI) */
+        .custom-pagination .page-link:focus {
+            box-shadow: none;
+        }
+
+        /* Optional: smooth spacing for icons */
+        .custom-pagination .page-link i {
+            pointer-events: none;
+        }
+</style>
+
+@functions {
+    private string GetStageColor(string stage)
+    {
+        var colors = new[]
+        {
+            "#F4F8FF", // blue
+            "#F3FBF5", // green
+            "#FFF8F1", // orange
+            "#FAF5FF", // purple
+            "#F2FBFC", // cyan
+            "#FFF4F7", // pink
+            "#F7FAF0", // lime
+            "#FFFDF5", // yellow
+            "#F6F4FF", // lavender
+            "#F2FAF8", // mint
+            "#FFF6F3", // peach
+            "#F5F7FF", // indigo
+            "#FDECEC", // soft red
+            "#EEF9FF", // sky
+            "#F1FAF1", // soft green
+            "#FFF1ED"  // soft peach
+        };
+
+        if (string.IsNullOrWhiteSpace(stage))
+            return "#F5F7FF";
+
+        // 🔥 Stable hash for consistent colors
+        int hash = 0;
+
+        foreach (char c in stage.ToLower())
+        {
+            hash += c;
+        }
+
+        int index = hash % colors.Length;
+
+        return colors[index];
+    }
+
+    private string GetColor(string firstName, string lastName)
+    {
+        var colors = new[]
+        {
+            "#FBE4E4", // soft red
+            "#FCE7F1", // soft pink
+            "#F4E8FC", // soft violet
+            "#EEE9FC", // soft purple
+            "#E7ECFF", // soft indigo
+            "#E5F4FF", // soft blue
+            "#E4F7FF", // soft sky
+            "#E5FCFB", // soft cyan
+            "#E7F8F5", // soft teal
+            "#EBF8EB", // soft green
+            "#F2F8E5", // soft lime
+            "#FFFBE5", // soft yellow
+            "#FFF4DD", // soft amber
+            "#FFF0E0", // soft orange
+            "#FFECE5", // soft peach
+            "#EEF2FF"  // pale indigo
+        };
+
+        int hash = (firstName + lastName).GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+
+    private string GetTabColor(string key)
+    {
+        var colors = new[]
+        {
+            "#EAF2FF", // light blue
+            "#EAF8EE", // light green
+            "#FFF2E8", // light orange
+            "#F5ECFF", // light purple
+            "#E8F8FA", // light cyan
+            "#FFEAF1", // light pink
+            "#F2F7E8", // light lime
+            "#FFF9EA", // light yellow
+            "#EFEAFF", // lavender
+            "#EAF7F4", // mint
+            "#FFF0EB", // peach
+            "#EEF2FF"  // pale indigo
+        };
+
+        int hash = key.GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+
+}
+
+<!-- ===================================================== -->
+<!-- PROJECT TIME LOG -->
+<!-- ===================================================== -->
+@*
+<div class="container-fluid"> *@
+
+<div class="crm-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+       
+        <!-- Back Button -->
+        <a href="@Url.Action("ProjectTaskUtilization", "Project", new { area = "SalesCRM" })"
+               class="btn btn-sm btn-outline-secondary ms-3">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+
+    
+ 
+    <div class="row g-3">
+        <!-- LEFT SIDE -->
+        <div class="col-md-8">
+            <div class="section-card ">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-clock-history"></i>
+                        Project Time Logs
+                    </span>
+                    @*
+                    <button class="btn btn-sm btn-outline-primary">
+
+                        <i class="bi bi-plus-lg"></i> Add Time Log
+
+                    </button> *@
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="table-responsive">
+                        <input type="hidden" id="taskLogId" value="0" />
+                        <table class="table table-sm align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Employee</th>
+                                    <th>Task</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
+                                    <th>Total Hours</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="taskTimeLogBody">
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="col-md-4">
+            <div id="errorMessages" class="alert alert-danger" style="display:none;"></div>
+
+          
+
+            <form id="addUtilizationForm" class="form1">
+
+                <div class="card section-card">
+
+          
+                    <div class="section-header"><i class="bi bi-clock-history"></i> Add Utilization Information</div>
+
+                    <div class="section-body">
+
+                        <input type="hidden" asp-for="ProjectTaskId" />
+
+                        <div class="row">
+                            <!-- Project Task -->
+                            <div class="col-md-12">
+                                <label>Project Task *</label>
+                                <select id="projectTaskId" class="form-select">
+                                    <option value="">-- Select --</option>
+                                    @foreach (var itm in Model.ProjectTasks)
+                                    {
+                                        <option value="@itm.Value">@itm.Text</option>
+                                    }
+                                </select>
+                                <span id="projectTaskId-error" class="text-danger"></span>
+                            </div>
+
+                   
+
+                   
+
+                        </div>
+
+                        
+
+                        <div class="row">
+
+                               
+                            <!-- Work Date -->
+                            <div class="col-md-12">
+                                <label>Login/Work Date *</label>
+                                <input type="text" id="workDate" class="form-control WorkDatedatepicker" />
+                                <span id="workDate-error" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mt-3">
+                            <!-- Start Date -->
+                            <div class="col-md-12">
+                                <label>Start Date & Time *</label>
+                                <input type="text" id="startDateAndTime" class="form-control startDateAndTimePicker" />
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            
+                            <!-- End Date Time -->
+                            <div class="col-md-12">
+                                <label>End Date & Time *</label>
+                                <input type="text" id="endDateAndTime" class="form-control endDateAndTimePicker" />
+                            </div>
+                        </div>
+
+                       
+                       
+                        <div class="row mt-3">
+
+                           
+
+                   
+
+
+              
+
+                            <!-- Hours -->
+                            <div class="col-md-12">
+                                <label>Hours Spent *</label>
+                                <input id="hoursSpent" class="form-control" />
+                                <span id="hoursSpent-error" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-3">
+                            <!-- Description -->
+                            <div class="col-md-12">
+                                <label>Description *</label>
+                                <textarea asp-for="Description"
+                                          id="description"
+                                          class="form-control"
+                                          rows="4" maxlength="1000"></textarea>
+                                <span id="description-error" class="text-danger"></span>
+                                <small id="charCount">1000 characters remaining</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mt-3">
+
+                           
+                            <div class="d-flex gap-2">
+                                <a href="@Url.Action("ProjectTaskUtilization", "Project", new { area = "SalesCRM" })"
+                                       class="btn btn-sm btn-secondary">
+                                    Cancel
+                                </a>
+
+                                <button class="btn btn-sm btn-primary" type="button" id="btnSave">Save</button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+
+    
+
+ 
+
+</div>
+
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script>
+
+ 
+    $("#btnSave").click(function (e) {
+
+    e.preventDefault();
+
+    let isValid = true;
+    let errorMessages = [];
+
+    $("#description-error").text("");
+    $("#workDate-error").text("");
+    $("#projectTaskId-error").text("");
+    $("#startTime-error").text("");
+    $("#endTime-error").text("");
+    $("#hoursSpent-error").text("");
+
+    let description = ($("#description").val() || "").trim();
+    let workDate = ($("#workDate").val() || "").trim();
+    let projectTaskId = $("#projectTaskId").val();
+    let startTime = $("#startTime").val();
+    let endTime = $("#endTime").val();
+    let hoursSpent = ($("#hoursSpent").val() || "").trim();
+
+    if (!description) {
+    $("#description-error").text("Description is required.");
+    errorMessages.push("Description is required.");
+    isValid = false;
+    }
+
+    if (!workDate) {
+    $("#workDate-error").text("Work Date is required.");
+    errorMessages.push("Work Date is required.");
+    isValid = false;
+    }
+
+    if (!projectTaskId) {
+    $("#projectTaskId-error").text("Project Task is required.");
+    errorMessages.push("Project Task is required.");
+    isValid = false;
+    }
+
+
+    if (!hoursSpent) {
+    $("#hoursSpent-error").text("Hours Spent is required.");
+    errorMessages.push("Hours Spent is required.");
+    isValid = false;
+    }
+
+    if (startTime && endTime && startTime >= endTime) {
+    $("#endTime-error").text("End Time must be greater than Start Time.");
+    errorMessages.push("End Time must be greater than Start Time.");
+    isValid = false;
+    }
+
+    if (!isValid) {
+
+    // Show in div
+    $("#errorMessages")
+    .html("<ul><li>" + errorMessages.join("</li><li>") + "</li></ul>")
+    .show();
+
+    // Show popup
+    Swal.fire({
+    icon: 'error',
+    title: 'Validation Error',
+    html:
+    "<ul style='text-align:left;'>" +
+    "<li>" + errorMessages.join("</li><li>") +
+    "</li></ul>"
+    });
+
+    return;
+    }
+
+    let formData = new FormData();
+
+    formData.append("Description", description);
+    formData.append("WorkDate", workDate);
+    formData.append("ProjectTaskId", projectTaskId);
+    formData.append("StartTime", startTime);
+    formData.append("EndTime", endTime);
+    formData.append("HoursSpent", hoursSpent);
+
+    $.ajax({
+    url: '@Url.Action("AddUpdateTimeLogs", "Project")',
+    type: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+
+    success: function (response) {
+
+    if (response.success) {
+
+    Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: response.message
+    });
+
+    $("#addUtilizationForm")[0].reset();
+
+    } else {
+
+    Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: response.message
+    });
+    }
+    },
+
+    error: function () {
+
+    Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: 'Save failed. Please try again.'
+    });
+    }
+    });
+
+    });
+
+
+</script>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const desc = document.getElementById("description");
+    const counter = document.getElementById("charCount");
+
+    const maxLength = 1000;
+
+    desc.addEventListener("input", function () {
+
+    // Prevent more than 1000 characters
+    if (desc.value.length > maxLength) {
+    desc.value = desc.value.substring(0, maxLength);
+    }
+
+    const remaining = maxLength - desc.value.length;
+
+    counter.textContent = remaining + " characters remaining";
+
+    // Color change logic
+    if (remaining <= 100) {
+    counter.style.color = "red";
+    } else if (remaining <= 300) {
+    counter.style.color = "orange";
+    } else {
+    counter.style.color = "green";
+    }
+    });
+
+    // Work Date picker
+    flatpickr(".WorkDatedatepicker", {
+    enableTime: false,
+    time_24hr: false,
+    minuteIncrement: 30,
+    dateFormat: "d-M-Y",
+    allowInput: false,
+    maxDate: "today",
+    maxDate: new Date().fp_incr(1),
+    minDate: new Date().fp_incr(-30)
+    });
+
+    // Start Date Picker
+    flatpickr(".startDateAndTimePicker", {
+    enableTime: true,
+    time_24hr: true,
+    minuteIncrement: 30,
+    dateFormat: "d-M-Y H:i",
+    allowInput: true,
+    maxDate: "today",
+    onChange: calculateHours
+    });
+
+    // End Date Picker
+    flatpickr(".endDateAndTimePicker", {
+    enableTime: true,
+    time_24hr: true,
+    minuteIncrement: 30,
+    dateFormat: "d-M-Y H:i",
+    allowInput: true,
+    maxDate: "today",
+    maxDate: new Date().fp_incr(1),
+    onChange: calculateHours
+    });
+
+    function calculateHours() {
+
+    var start = document.getElementById("startDateAndTime").value;
+    var end = document.getElementById("endDateAndTime").value;
+
+    if (start && end) {
+
+    var startDate = new Date(start);
+    var endDate = new Date(end);
+
+    var diffMs = endDate - startDate;
+
+    if (diffMs >= 0) {
+
+    var diffHours = diffMs / (1000 * 60 * 60);
+
+    document.getElementById("hoursSpent").value =
+    diffHours.toFixed(2);
+
+    document.getElementById("hoursSpent-error").innerText = "";
+    }
+    else {
+    document.getElementById("hoursSpent").value = "";
+    document.getElementById("hoursSpent-error").innerText =
+    "End Date must be greater than Start Date";
+    }
+    }
+    }
+
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+    loadProjectTimeLogs();
+
+    function loadProjectTimeLogs() {
+
+    $.ajax({
+
+    url: '@Url.Action("GetProjectTimeLogs", "Project", new { area = "SalesCRM" })',
+    type: 'GET',
+
+    success: function (response) {
+
+    var rows = '';
+
+    if (response.length > 0) {
+
+    $.each(response, function (i, log) {
+
+    rows += `
+    <tr>
+    <td>${log.workDate}</td>
+    <td>${log.employeeName}</td>
+    <td>${log.taskName}</td>
+    <td>${log.startTime}</td>
+    <td>${log.endTime}</td>
+    <td>${log.hoursSpent}</td>
+    </tr>
+    `;
+    });
+
+    } else {
+
+    rows = `
+    <tr>
+    <td colspan="6"
+    class="text-center text-muted py-4">
+    No time logs available
+    </td>
+    </tr>
+    `;
+    }
+
+    $('#taskTimeLogBody').html(rows);
+    },
+
+    error: function (xhr) {
+
+    console.log(xhr.responseText);
+
+    alert('Error loading time logs');
+    }
+
+    });
+    }
+
+    });
+</script>
+
+
+

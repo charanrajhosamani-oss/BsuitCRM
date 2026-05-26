@@ -1,0 +1,135 @@
+﻿@model BSuit.API.Models.MyProfileVM
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">My Tenant Details</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Tenant ID</label>
+                    <div>@Model.TenantId</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Tenant Name</label>
+                    <div>@Model.TenantName</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Email</label>
+                    <div>@Model.TenantEmail</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Domain</label>
+                    <div>@Model.DomainName</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Created On</label>
+                    <div>@Model.CreatedOn.ToString("dd-MMM-yyyy")</div>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Status</label>
+
+                    @if (Model.TenantStatus == "Active")
+                    {
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inactive
+                        </span>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <h3>My Profile</h3>
+
+    <div class="card p-3 mb-4">
+        <h5>Profile Information</h5>
+
+        <div class="mb-2">
+            <label>Full Name</label>
+            <input id="fullName" class="form-control" value="@Model.FullName" />
+        </div>
+
+        <div class="mb-2">
+            <label>Email</label>
+            <input class="form-control" value="@Model.Email" readonly />
+        </div>
+
+        <div class="mb-2">
+            <label>Phone</label>
+            <input id="phone" class="form-control" value="@Model.PhoneNumber" />
+        </div>
+
+        <div class="mb-2">
+            <label>Role</label>
+            <input class="form-control" value="@Model.RoleName" readonly />
+        </div>
+
+        <button id="btnUpdateProfile" class="btn btn-primary">
+            Update Profile
+        </button>
+    </div>
+
+    <div class="card p-3 mb-4">
+        <h5>Change Password</h5>
+
+        <input type="password" id="currentPassword"
+               class="form-control mb-2"
+               placeholder="Current Password" />
+
+        <input type="password" id="newPassword"
+               class="form-control mb-2"
+               placeholder="New Password" />
+
+        <button id="btnChangePassword" class="btn btn-warning">
+            Change Password
+        </button>
+    </div>
+
+  
+   
+
+</div>
+<script>
+    $(function () {
+
+        $("#btnUpdateProfile").click(function () {
+            $.post('/Home/UpdateProfile', {
+                FullName: $("#fullName").val(),
+                PhoneNumber: $("#phone").val()
+            }, function (res) {
+                alert(res.message);
+            });
+        });
+
+        $("#btnChangePassword").click(function () {
+            $.post('/Home/ChangePassword', {
+                CurrentPassword: $("#currentPassword").val(),
+                NewPassword: $("#newPassword").val()
+            }, function (res) {
+                alert(res.message);
+            });
+        });
+
+       
+
+    });
+</script>
+
+

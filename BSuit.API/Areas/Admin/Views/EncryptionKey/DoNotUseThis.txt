@@ -1,0 +1,6 @@
+﻿namespace BSuit.API.Areas.Admin.Views.EncryptionKey
+{
+    public class DoNotUseThis
+    {
+    }
+}

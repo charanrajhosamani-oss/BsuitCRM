@@ -1,0 +1,427 @@
+﻿\(BSuit.Core)\
+--------------------------------
+Code First, CORE schema
+
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.Relational
+Microsoft.Extensions.Configuration
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+Microsoft.EntityFrameworkCore.SqlServer
+
+1. Create Entities (BSuits.Core)
+
+TenantMaster
+public class TenantMaster
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public string? Domain { get; set; }
+
+    public bool IsActive { get; set; }
+    public DateTime CreatedOn { get; set; }
+
+    public ICollection<TenantSubscription> Subscriptions { get; set; }
+}
+
+ModuleMaster
+public class ModuleMaster
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }   // SalesCRM, HR
+    public string Code { get; set; }   // SALES, HR
+
+    public bool IsActive { get; set; }
+}
+
+SubscriptionMaster (Plan)
+public class SubscriptionMaster
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }   // Basic, Pro, Enterprise
+    public decimal Price { get; set; }
+
+    public int DurationInDays { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public ICollection<TenantSubscription> TenantSubscriptions { get; set; }
+}
+
+TenantSubscription (Tenant buys a plan)
+public class TenantSubscription
+{
+    public Guid Id { get; set; }
+
+    public Guid TenantId { get; set; }
+    public int SubscriptionId { get; set; }
+
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public TenantMaster Tenant { get; set; }
+    public SubscriptionMaster Subscription { get; set; }
+
+    public ICollection<TenantSubscriptionModule> Modules { get; set; }
+}
+
+TenantSubscriptionModule (Modules inside that subscription)
+public class TenantSubscriptionModule
+{
+    public Guid Id { get; set; }
+
+    public Guid TenantSubscriptionId { get; set; }
+    public int ModuleId { get; set; }
+
+    public bool IsActive { get; set; }
+
+    public TenantSubscription TenantSubscription { get; set; }
+    public ModuleMaster Module { get; set; }
+}
+
+
+PermissionMaster
+public class PermissionMaster
+{
+      public string Module { get; set; }
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public string Field { get; set; } = "ALL"; // default
+        public string CrudType { get; set; } // CREATE, READ, UPDATE, DELETE
+
+        // Optional (for caching / debugging)
+        public string Code { get; set; }
+}
+
+
+RolePermission
+public class RolePermission
+{
+    public Guid Id { get; set; }
+     public Guid TenantId { get; set; }
+    public string RoleId { get; set; }   // Identity RoleId
+    public int PermissionId { get; set; }
+
+    public PermissionMaster Permission { get; set; }
+}
+
+
+public class AuditLog
+{
+    public long Id { get; set; }
+
+    public string TableName { get; set; }
+    public string Action { get; set; } // CREATE, UPDATE, DELETE
+
+    public string? KeyValues { get; set; }
+    public string? OldValues { get; set; }
+    public string? NewValues { get; set; }
+
+    public string? ChangedColumns { get; set; }
+
+    public string? UserId { get; set; }
+    public Guid? TenantId { get; set; }
+
+    public DateTime ChangedOn { get; set; } = DateTime.UtcNow;
+    public string? Remarks { get; set; }
+}
+
+
+
+
+2.IUserContext
+namespace BSuit.Contracts.Services
+{
+    public interface IUserContext
+    {
+        string? UserId { get; }
+        string? UserName { get; }
+        Guid? TenantId { get; }
+        bool IsAuthenticated { get; }
+    }
+}
+
+namespace BSuit.Contracts.Services;
+public class UserContext : IUserContext
+{
+    public string? UserId => "SYSTEM";
+    public string? UserName => "System Seeder";
+    public Guid? TenantId => null;
+    public bool IsAuthenticated => false;
+}
+
+
+
+using BSuit.Contracts;
+using System.Security.Claims;
+
+namespace BSuit.API.Infrastructure.Services;
+public class HttpUserContext : IUserContext
+{
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public HttpUserContext(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
+    private ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+
+    public string? UserId =>
+        User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    public string? UserName =>
+        User?.Identity?.Name;
+
+    public Guid? TenantId
+    {
+        get
+        {
+            var tenantClaim = User?.FindFirst("tenant_id")?.Value;
+
+            if (Guid.TryParse(tenantClaim, out var tenantId))
+                return tenantId;
+
+            return null;
+        }
+    }
+
+    public bool IsAuthenticated =>
+        User?.Identity?.IsAuthenticated ?? false;
+}
+
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
+
+
+
+//Set tenantId during Login Time
+new Claim("TenantId", user.TenantId.ToString())
+
+AuditHelper.CreateAuditLog(
+    entry,
+    _userContext?.UserId,
+    _userContext?.TenantId);
+
+    OR
+
+public class TenantService
+{
+    private readonly IUserContext _userContext;
+
+    public TenantService(IUserContext userContext)
+    {
+        _userContext = userContext;
+    }
+
+    public Guid? GetCurrentTenant()
+    {
+        return _userContext.TenantId;
+    }
+}
+
+
+
+
+
+
+3. Context Setup
+
+
+using BSuit.Contracts;
+using BSuit.Core.Audit;
+using BSuit.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+
+namespace BSuit.Identity.Data
+{
+    public class CoreDbContext:DbContext
+    {
+        private readonly IUserContext _userContext;
+
+        public CoreDbContext(
+             DbContextOptions<CoreDbContext> options,
+             IUserContext userContext)
+             : base(options)
+        {
+            _userContext = userContext;
+        }
+
+
+
+
+        #region DbSets
+        public DbSet<TenantMaster> Tenants { get; set; }
+        public DbSet<ModuleMaster> Modules { get; set; }
+        public DbSet<SubscriptionMaster> Subscriptions { get; set; }
+        public DbSet<TenantSubscription> TenantSubscriptions { get; set; }
+        public DbSet<TenantSubscriptionModule> TenantSubscriptionModules { get; set; }
+
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<LogEntry> Logs { get; set; }
+
+        #endregion
+
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // ✅ Set default schema
+            builder.HasDefaultSchema("CORE");
+
+            // ✅ Table naming (optional but clean)
+            builder.Entity<TenantMaster>().ToTable("TenantMaster");
+            builder.Entity<ModuleMaster>().ToTable("ModuleMaster");
+            builder.Entity<SubscriptionMaster>().ToTable("SubscriptionMaster");
+            builder.Entity<TenantSubscription>().ToTable("TenantSubscription");
+            builder.Entity<TenantSubscriptionModule>().ToTable("TenantSubscriptionModule");
+            builder.Entity<AuditLog>().ToTable("AuditLog");
+
+            // ✅ Relationships
+
+            builder.Entity<TenantSubscription>()
+                .HasOne(ts => ts.Tenant)
+                .WithMany(t => t.Subscriptions)
+                .HasForeignKey(ts => ts.TenantId);
+
+            builder.Entity<TenantSubscription>()
+                .HasOne(ts => ts.Subscription)
+                .WithMany(s => s.TenantSubscriptions)
+                .HasForeignKey(ts => ts.SubscriptionId);
+
+            builder.Entity<TenantSubscriptionModule>()
+                .HasOne(tsm => tsm.TenantSubscription)
+                .WithMany(ts => ts.Modules)
+                .HasForeignKey(tsm => tsm.TenantSubscriptionId);
+
+            builder.Entity<TenantSubscriptionModule>()
+                .HasOne(tsm => tsm.Module)
+                .WithMany()
+                .HasForeignKey(tsm => tsm.ModuleId);
+
+            // ✅ Indexes (important for performance)
+            builder.Entity<TenantMaster>()
+                .HasIndex(t => t.Name)
+                .IsUnique();
+
+            builder.Entity<ModuleMaster>()
+                .HasIndex(m => m.Code)
+                .IsUnique();
+           
+            builder.Entity<TenantMaster>().HasQueryFilter(x => x.IsActive);
+
+            builder.Entity<LogEntry>(entity =>
+            {
+                entity.ToTable("Logs");
+
+                entity.HasKey(x => x.Id);
+
+                entity.Property(x => x.Level).HasMaxLength(50);
+                entity.Property(x => x.SourceContext).HasMaxLength(500);
+                entity.Property(x => x.RequestPath).HasMaxLength(500);
+
+                entity.Property(x => x.Message).HasColumnType("nvarchar(max)");
+                entity.Property(x => x.Exception).HasColumnType("nvarchar(max)");
+                entity.Property(x => x.Properties).HasColumnType("nvarchar(max)");
+                entity.Property(x => x.LogEvent).HasColumnType("nvarchar(max)");
+                entity.Property(x => x.Remarks).HasColumnType("nvarchar(500)");
+
+
+                entity.HasIndex(x => x.Timestamp);
+                entity.HasIndex(x => x.Level);
+            });
+        }
+
+
+
+
+        #region SaveChanges Override (Audit Logging)
+
+        public override async Task<int> SaveChangesAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var auditEntries = new List<AuditLog>();
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity is AuditLog ||
+                    entry.State == EntityState.Detached ||
+                    entry.State == EntityState.Unchanged)
+                    continue;
+
+                var audit = AuditHelper.CreateAuditLog(
+                    entry,
+                    _userContext?.UserId,
+                    _userContext?.TenantId);
+
+                if (audit != null)
+                    auditEntries.Add(audit);
+            }
+
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            if (auditEntries.Any())
+            {
+                AuditLogs.AddRange(auditEntries);
+                await base.SaveChangesAsync(cancellationToken);
+            }
+
+            return result;
+        }
+
+        #endregion
+
+
+    }
+}
+
+
+using BSuit.Identity.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
+
+namespace BSuit.Core
+{
+    /// <summary>
+    /// EF CLI design-time factory for CoreDbContext
+    /// </summary>
+    public class CoreDbContextFactory
+        : IDesignTimeDbContextFactory<CoreDbContext>
+    {
+        public CoreDbContext CreateDbContext(string[] args)
+        {
+            // Load configuration from API project
+            var basePath = Path.Combine(Directory.GetCurrentDirectory(), "../BSuit.API");
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(basePath)
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<CoreDbContext>();
+
+            optionsBuilder.UseSqlServer(
+                config.GetConnectionString("DefaultConnection"));
+
+            // ✅ Pass NULL for IUserContext (design-time only)
+            return new CoreDbContext(optionsBuilder.Options, null);
+        }
+    }
+}
+
+
+
+4. Migration Activation
+Add-Migration InitialCore -StartupProject BSuit.API -Context CoreDbContext
+Update-Database -StartupProject BSuit.API -Context CoreDbContext
+
+Add-Migration UserMenus -StartupProject BSuit.API -Context CoreDbContext -Project BSuit.Core 

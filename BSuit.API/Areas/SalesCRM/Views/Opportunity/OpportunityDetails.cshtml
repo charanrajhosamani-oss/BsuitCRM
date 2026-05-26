@@ -1,0 +1,239 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.OpportunityVM
+
+@{
+    ViewData["Title"] = "Opportunity Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var service = Model.SingleService;
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet" />
+
+<div class="container-fluid pt-3 crm-container">
+
+    <!-- HEADER -->
+    <div class="section-card purple">
+        <div class="section-header">
+            Opportunity Details
+        </div>
+
+        <div class="section-body d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1">@Model.OpportunityName</h5>
+                <div class="text-muted">Manage opportunity and work order information</div>
+            </div>
+
+            <div>
+               @*  <a href="@Url.Action("EditOpportunity", new { id = Model.OpportunityId })"
+                       class="btn btn-primary">
+                    Edit Opportunity
+                </a> *@
+
+                <a href="@Url.Action("OpportunityScoperView", "Opportunity")"
+                       class="btn btn-outline-secondary ms-2">
+                    Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= BASIC ================= -->
+    <div class="section-card green">
+        <div class="section-header">
+            Basic Information
+        </div>
+
+        <div class="section-body">
+
+            @if (ViewBag.LeadDetails != null)
+            {
+                var lead = ViewBag.LeadDetails;
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Lead Details</div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">First Name</div>
+                                <div class="info-value">@lead.FirstName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Last Name</div>
+                                <div class="info-value">@lead.LastName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">@lead.Email</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">@lead.Phone</div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">Company</div>
+                                <div class="info-value">@lead.CompanyName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Industry</div>
+                                <div class="info-value">@lead.Industry</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">City</div>
+                                <div class="info-value">@lead.City</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Country</div>
+                                <div class="info-value">@lead.Country</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="info-row mt-2">
+                        <div class="info-label">Opportunity</div>
+                        <div class="info-value">@Model.OpportunityName</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Engagement Model</div>
+                        <div class="info-value">@service?.EngagementModelName</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Industry</div>
+                        <div class="info-value">@service?.IndustryName</div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    @if (service != null)
+    {
+        <!-- ================= CONFIG ================= -->
+        <div class="section-card">
+            <div class="section-header">Configuration</div>
+
+            <div class="section-body">
+                <div class="info-row">
+                    <div class="info-label">Stage</div>
+                    <div class="info-value">@service.StageName</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCOPE ================= -->
+        <div class="section-card orange">
+            <div class="section-header">Scope & Requirements</div>
+
+            <div class="section-body">
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Scope Of Work</div>
+                    <div class="view-box">@Html.Raw(service.ScopeofWork)</div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Final Deliverable</div>
+                    <div class="view-box">@Html.Raw(service.FinalDeliverableUsage)</div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Expectation</div>
+                    <div class="view-box">@Html.Raw(service.ExpectationSetting)</div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Customer Responsibilities</div>
+                    <div class="view-box">@Html.Raw(service.CustomerResponsibilities)</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= MODULE ================= -->
+        <div class="section-card purple">
+
+            <div class="section-header">
+                Module Breakdown
+            </div>
+
+            <div class="section-body table-responsive">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>Module</th>
+                            <th>Est Hrs</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (service.Details != null && service.Details.Any())
+                        {
+                            int i = 1;
+
+                            foreach (var m in service.Details)
+                            {
+                                <tr>
+
+                                    <td>@i</td>
+
+                                    <td>
+                                        @m.ModuleName
+                                    </td>
+
+                                    <td>
+                                        @m.EstimatedHours
+                                    </td>
+
+                                </tr>
+
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="3"
+                                    class="text-center text-muted">
+
+                                    No modules found
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    }
+
+</div>

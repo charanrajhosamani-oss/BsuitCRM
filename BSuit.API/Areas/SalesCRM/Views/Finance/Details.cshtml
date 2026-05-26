@@ -1,0 +1,260 @@
+﻿@using BSuit.SalesCRM.Models
+@model PaymentMilestoneDetails
+
+@{
+    ViewData["Title"] = "Payment Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                Payment Milestone Details
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-asp-area="SalesCRM" asp-controller="Finance" asp-action="UpdateFinanceDetails" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="PaymentId" />
+                <input type="hidden" asp-for="WorkOrderId" />
+
+                <div class="row">
+
+                    <!-- Opportunity -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">
+                            Opportunity Name
+                        </label>
+
+                        <input asp-for="OpportunityName"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- Service -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">
+                            Service Name
+                        </label>
+
+                        <input asp-for="ServiceName"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- Hours -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">
+                            Hours
+                        </label>
+
+                        <input asp-for="Hours"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- Hourly Rate -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">
+                            Hourly Rate
+                        </label>
+
+                        <input asp-for="HourlyRate"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- Invoice Amount -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">
+                            Invoice Amount
+                        </label>
+
+                        <input asp-for="InvoiceAmount"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- Due Date -->
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold">
+                            Payment Due Date
+                        </label>
+
+                        <input asp-for="PaymentDueDate"
+                               type="date"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    <!-- BD Remarks -->
+                    <div class="col-md-12 mb-3">
+
+                        <label class="form-label fw-bold">
+                            BD Remarks
+                        </label>
+
+                        <textarea asp-for="BDRemarks"
+                                  class="form-control"
+                                  rows="3"
+                                  ></textarea>
+
+                    </div>
+
+                    <!-- Payment Link -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="form-label fw-bold d-block">
+                            Payment Link
+                        </label>
+
+                        @if (!string.IsNullOrEmpty(Model.PaymentLink))
+                        {
+                            <a href="@Model.PaymentLink"
+                               target="_blank"
+                               class="btn btn-outline-primary">
+
+                                <i class="fa-solid fa-eye"></i>
+                                View Payment
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <h5 class="mb-4 text-primary">
+                    Finance Team Update
+                </h5>
+
+                <div class="row">
+
+                    <!-- Transaction Number -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Transaction Number
+                        </label>
+
+                        <input asp-for="TransactionNumber"
+                               class="form-control"
+                               placeholder="Enter transaction number" />
+
+                    </div>
+
+                    <!-- Payment Received Date -->
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Payment Received Date & Time
+                        </label>
+
+                        <input asp-for="PaymentReceivedDateTime"
+                               type="datetime-local"
+                               class="form-control" />
+
+                    </div>
+
+                    <!-- Amount Received -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Amount Received
+                        </label>
+
+                        <input asp-for="AmountReceived"
+                               class="form-control"
+                               placeholder="Enter amount received" />
+
+                    </div>
+
+                    <!-- Mode Of Payment -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Mode Of Payment
+                        </label>
+
+                        <select asp-for="ModeOfPayment"
+                                class="form-select">
+
+                            <option value="">-- Select --</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="Card">Card</option>
+                            <option value="Wire Transfer">Wire Transfer</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Currency -->
+                    <div class="col-md-4 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Payment Currency
+                        </label>
+
+                        <select asp-for="PaymentCurrency"
+                                class="form-select">
+
+                            <option value="">-- Select --</option>
+                            <option value="INR">INR</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="AED">AED</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Finance Details
+
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-secondary">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

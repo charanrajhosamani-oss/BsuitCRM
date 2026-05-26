@@ -1,0 +1,42 @@
+﻿@using static BSuit.SalesCRM.Models.ProjectVM
+@model ProjectModuleVM
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+}
+
+
+<form asp-action="CreateProjectModule" method="post">
+    <div class="col-12 mb-4">
+        <h1 class="main-title green-txt"> Project Module</h1>
+    </div>
+
+    <input type="hidden" asp-for="ProjectId" />
+
+    <div class="mb-3">
+        <label>Module Name</label>
+        <input asp-for="ModuleName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Estimated Hours</label>
+        <input asp-for="EstimatedHours" class="form-control" />
+    </div>
+    <div class="text-end">
+        <a href="@Url.Action("ProjectModules", "Project", new { area = "SalesCRM", projectId = Model.ProjectId })"
+           class="btn btn-outline-dark ms-2">
+
+            Cancel
+        </a>
+
+        <button type="submit" class="btn btn1 ps-4 pe-4">
+            Submit
+        </button>
+    </div>
+    
+
+</form>

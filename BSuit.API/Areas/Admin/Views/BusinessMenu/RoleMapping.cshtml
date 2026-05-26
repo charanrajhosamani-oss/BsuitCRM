@@ -1,0 +1,338 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model BusinessRoleMenuMappingVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h3>
+        Business Role Menu Mapping
+        <span class="text-primary">
+            :
+            <b>@Model.MenuName</b>
+        </span>
+    </h3>
+
+    <span id="helpIcon" class="help-icon">
+        ?
+    </span>
+
+</div>
+
+<!-- HELP -->
+<div id="paraHelpContent" style="display:none;">
+    <div class="p-2">
+
+        <h6 class="mb-2 text-primary">
+            Business Menu Role Mapping Help
+        </h6>
+
+        <p class="mb-2 text-white">
+            Assign business roles to selected tenant menus.
+            Only mapped roles can access these menus
+            in dashboard navigation.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Assign menus to business roles</li>
+            <li>Tenant-specific role mapping</li>
+            <li>Supports N-Level menu hierarchy</li>
+            <li>Dynamic dashboard visibility</li>
+            <li>Update mappings anytime</li>
+        </ul>
+
+    </div>
+</div>
+
+<!-- ALERT -->
+<div id="alertContainerT">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+<!-- SEARCH -->
+<div class="row align-items-center mb-3">
+
+    <div class="col-md-8">
+
+        <form method="get" class="d-flex">
+
+            <input type="hidden"
+                   name="MenuId"
+                   value="@Model.MenuId" />
+
+            <input type="text"
+                   name="Search"
+                   value="@Model.Search"
+                   class="form-control me-2"
+                   placeholder="Search role..." />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+
+            <button type="button"
+                    onclick="location.reload()"
+                    class="btn btn-secondary ms-2">
+                Refresh
+            </button>
+
+            <a href="/Admin/BusinessMenu"
+               class="btn btn-info ms-2">
+                Back
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- TABLE -->
+<table class="table table-bordered table-hover">
+
+    <thead>
+
+        <tr>
+
+            <th width="80">#</th>
+
+            <th>
+                <a asp-route-SortColumn="Name"
+                   asp-route-SortDirection="@(Model.SortColumn == "Name" && Model.SortDirection == "asc" ? "desc" : "asc")"
+                   asp-route-Search="@Model.Search"
+                   asp-route-MenuId="@Model.MenuId">
+                    Role Name
+                </a>
+            </th>
+
+            <th width="150">
+                Assigned
+            </th>
+
+            <th width="180">
+                Action
+            </th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @{
+            int sno = ((Model.PageNumber - 1) * Model.PageSize);
+        }
+
+        @foreach (var r in Model.Roles)
+        {
+            sno++;
+
+            <tr>
+
+                <td>@sno</td>
+
+                <td>
+                    @r.Name
+                </td>
+
+                <td>
+
+                    @if (Model.AssignedRoleIds.Contains(r.Id))
+                    {
+                        <span class="badge bg-success">
+                            Assigned
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            Not Assigned
+                        </span>
+                    }
+
+            </td>
+
+            <td>
+                <button type="button"
+                        class="btn btn-sm @(Model.AssignedRoleIds.Contains(r.Id) ? "btn-danger" : "btn-success")"
+                        onclick="toggleRole('@r.Id')">
+                    @(Model.AssignedRoleIds.Contains(r.Id)
+                                        ? "Remove"
+                                        : "Assign")
+                </button>
+            </td>
+
+            </tr>
+                }
+
+    </tbody>
+
+</table>
+
+<!-- PAGINATION -->
+@{
+    var totalPages =
+        (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<div class="mt-3 d-flex flex-wrap gap-2">
+
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        <form method="get" class="d-inline">
+
+            <input type="hidden"
+                   name="PageNumber"
+                   value="@i" />
+
+            <input type="hidden"
+                   name="Search"
+                   value="@Model.Search" />
+
+            <input type="hidden"
+                   name="SortColumn"
+                   value="@Model.SortColumn" />
+
+            <input type="hidden"
+                   name="SortDirection"
+                   value="@Model.SortDirection" />
+
+            <input type="hidden"
+                   name="MenuId"
+                   value="@Model.MenuId" />
+
+            <button type="submit"
+                    class="btn btn-sm @(i == Model.PageNumber ? "btn-primary" : "btn-light")">
+
+                @i
+
+            </button>
+
+        </form>
+    }
+
+</div>
+
+<!-- HIDDEN FORM -->
+<form method="post"
+      id="toggleForm"
+      action="/Admin/BusinessMenu/SaveRoleMapping">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden"
+           id="RoleId"
+           name="RoleId" />
+
+    <input type="hidden"
+           name="MenuId"
+           value="@Model.MenuId" />
+
+</form>
+
+<!-- ALERT -->
+<div id="alertContainerB" class="mt-3">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+<script>
+
+    function toggleRole(roleId) {
+
+        document.getElementById("RoleId").value = roleId;
+
+        document.getElementById("toggleForm").submit();
+    }
+
+</script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const alertBoxT =
+            document.getElementById("alertContainerT");
+
+        const alertBoxB =
+            document.getElementById("alertContainerB");
+
+        if (alertBoxT &&
+            alertBoxT.innerHTML.trim() !== "") {
+
+            setTimeout(function () {
+
+                alertBoxT.style.transition =
+                    "opacity 0.5s ease";
+
+                alertBoxT.style.opacity = "0";
+
+                alertBoxB.style.transition =
+                    "opacity 0.5s ease";
+
+                alertBoxB.style.opacity = "0";
+
+                setTimeout(function () {
+
+                    alertBoxT.style.display = "none";
+                    alertBoxB.style.display = "none";
+
+                    alertBoxT.innerHTML = "";
+                    alertBoxB.innerHTML = "";
+
+                }, 500);
+
+            }, 3000);
+        }
+
+    });
+
+</script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var helpContent =
+            document.getElementById("paraHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            });
+
+    });
+
+</script>

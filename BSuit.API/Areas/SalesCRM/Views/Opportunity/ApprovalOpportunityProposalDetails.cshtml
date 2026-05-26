@@ -1,0 +1,798 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.OpportunityVM
+
+@{
+    ViewData["Title"] = "Approval Opportunity Proposal Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var service = Model.SingleService;
+
+    var status = ViewBag.ApprovalStatus as string;
+    var isApproved = status == "Approved";
+    var isRejected = status == "Rejected";
+
+    var hasWorkOrder = ViewBag.HasWorkOrder == true;
+    var workOrder = ViewBag.WorkOrder as BSuit.SalesCRM.VM._Opportunity_.WorkOrderVM;
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<div class="container-fluid pt-3 crm-container">
+
+    <!-- ================= TABS ================= -->
+    <div class="section-card purple">
+
+        <div class="section-header">
+            Details View
+        </div>
+
+        <div class="section-body d-flex justify-content-between align-items-center">
+
+            <div class="d-flex gap-2">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="btnOpportunity">
+                    Opportunity
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        id="btnProposal">
+                    Proposal
+                </button>
+
+                @if (hasWorkOrder)
+                {
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            id="btnWorkOrder">
+                        Work Order
+                    </button>
+                }
+
+            </div>
+            <div>
+
+                <a href="@Url.Action("ApprovalOpportunityList", "Opportunity")"
+                       class="btn btn-light">
+
+                    <i class="fa fa-arrow-left me-1"></i>
+                    Back
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- ================= OPPORTUNITY SECTION ================= -->
+    <div id="opportunitySection">
+
+        <!-- HEADER -->
+        <div class="section-card purple">
+
+            <div class="section-header">
+                Opportunity Details
+            </div>
+
+            <div class="section-body">
+
+                <h5>@Model.OpportunityName</h5>
+
+            </div>
+
+        </div>
+
+        <!-- BASIC -->
+        <div class="section-card green">
+
+            <div class="section-header">
+                Basic Information
+            </div>
+
+            <div class="section-body">
+
+                <div class="info-row">
+                    <div class="info-label">Opportunity</div>
+                    <div class="info-value">@Model.OpportunityName</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Service</div>
+                    <div class="info-value">@service?.ServiceName</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Stage</div>
+                    <div class="info-value">@service?.StageName</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">Industry</div>
+                    <div class="info-value">@service?.IndustryName</div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- LEAD -->
+        @if (ViewBag.LeadDetails != null)
+        {
+            var lead = ViewBag.LeadDetails;
+
+            <div class="section-card green">
+
+                <div class="section-header">
+                    Lead Details
+                </div>
+
+                <div class="section-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">First Name</div>
+                                <div class="info-value">@lead.FirstName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Last Name</div>
+                                <div class="info-value">@lead.LastName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">@lead.Email</div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">Company</div>
+                                <div class="info-value">@lead.CompanyName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">City</div>
+                                <div class="info-value">@lead.City</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Country</div>
+                                <div class="info-value">@lead.Country</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+        <!-- SCOPE -->
+        <div class="section-card orange">
+
+            <div class="section-header">
+                Scope & Requirements
+            </div>
+
+            <div class="section-body">
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Scope Of Work</div>
+                    <div class="view-box">
+                        @Html.Raw(service?.ScopeofWork)
+                    </div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Final Deliverable</div>
+                    <div class="view-box">
+                        @Html.Raw(service?.FinalDeliverableUsage)
+                    </div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Expectation</div>
+                    <div class="view-box">
+                        @Html.Raw(service?.ExpectationSetting)
+                    </div>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Customer Responsibilities</div>
+                    <div class="view-box">
+                        @Html.Raw(service?.CustomerResponsibilities)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MODULES -->
+        <div class="section-card purple">
+
+            <div class="section-header">
+                Module Breakdown
+            </div>
+
+            <div class="section-body table-responsive">
+
+                <table class="table table-bordered">
+
+                    <thead>
+
+                        <tr>
+                            <th>#</th>
+                            <th>Module</th>
+                            <th>Est Hrs</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (service?.Details != null && service.Details.Any())
+                        {
+                            int i = 1;
+
+                            foreach (var item in service.Details)
+                            {
+                                <tr>
+
+                                    <td>@i</td>
+
+                                    <td>
+                                        @item.ModuleName
+                                    </td>
+
+                                    <td>
+                                        @item.EstimatedHours
+                                    </td>
+
+                                </tr>
+
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="3"
+                                    class="text-center text-muted">
+
+                                    No modules found
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- ================= PROPOSAL SECTION ================= -->
+
+    <div id="proposalSection" style="display:none;">
+
+        <div class="section-card orange">
+
+            <div class="section-header">
+                Proposal Details
+            </div>
+
+            <div class="section-body">
+
+                <input type="hidden"
+                       id="opportunityId"
+                       value="@Model.OpportunityId" />
+
+                <input type="hidden"
+                       id="serviceId"
+                       value="@service?.OpportunityServiceId" />
+
+                <div class="row">
+
+                    <div class="col-md-6">
+
+                        <div class="info-row">
+                            <div class="info-label">Opportunity Name</div>
+                            <div class="info-value">
+                                @Model.OpportunityName
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Service Name</div>
+                            <div class="info-value">
+                                @service?.ServiceName
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">Total Estimated Hours</div>
+                            <div class="info-value">
+                                @ViewBag.TotalHours
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <div class="info-row">
+                            <div class="info-label">
+                                Low Price / Hour (@ViewBag.CurrencyCode)
+                            </div>
+
+                            <div class="info-value">
+                                @ViewBag.CurrencyCode @ViewBag.LowPrice
+                            </div>
+                        </div>
+
+                        <div class="info-row">
+                            <div class="info-label">
+                                High Price / Hour (@ViewBag.CurrencyCode)
+                            </div>
+
+                            <div class="info-value">
+                                @ViewBag.CurrencyCode @ViewBag.HighPrice
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <div class="row">
+
+                    <!-- HOURS -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Hours
+                        </label>
+
+                        <input type="number"
+                               id="hours"
+                               class="form-control"
+                               value="@ViewBag.TotalHours" />
+
+                    </div>
+
+                    <!-- RATE -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Rate (@ViewBag.CurrencyCode)
+                        </label>
+
+                        <input type="number"
+                               id="rate"
+                               class="form-control"
+                               value="@(
+                                                   (
+                                                   Convert.ToDecimal(ViewBag.LowPrice)
+                                                   +
+                                                   Convert.ToDecimal(ViewBag.HighPrice)
+                                                   ) / 2
+                                                                          )" />
+
+                        <small class="text-muted">
+                            Average of low and high price
+                        </small>
+
+                    </div>
+
+                    <!-- SELLING PRICE -->
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Selling Price (@ViewBag.CurrencyCode)
+                        </label>
+
+                        <input type="number"
+                               id="sellingPrice"
+                               class="form-control"
+                               value="@ViewBag.SellingPrice"
+                               readonly />
+
+                    </div>
+
+                </div>
+
+                <!-- PROPOSAL URL -->
+                <div class="row mt-4" id="proposalUrlSection" style="display:none;">
+
+                    <div class="col-md-12">
+
+                        <div class="info-row">
+
+                            <div class="info-label">
+                                Proposal URL
+                            </div>
+
+                            <div class="info-value">
+
+                                <a href="#"
+                                       id="proposalUrl"
+                                       target="_blank"
+                                       class="btn btn-outline-primary btn-sm">
+
+                                    View Proposal
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- UPDATE BUTTON -->
+                <div class="text-end mt-4">
+
+                    <button type="button"
+                            class="btn btn-success"
+                            onclick="updateProposal()">
+
+                        <i class="fa fa-save me-1"></i>
+                        Update Proposal
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- ================= WORK ORDER SECTION ================= -->
+    @if (hasWorkOrder && workOrder != null)
+    {
+        <div id="workOrderSection" style="display:none;">
+
+            <div class="section-card green">
+
+                <div class="section-header">
+                    Work Order & Finance Handover
+                </div>
+
+                <div class="section-body">
+
+                    <!-- ================= WORK ORDER INFO ================= -->
+
+                    <div class="info-row">
+                        <div class="info-label">Work Order No</div>
+                        <div class="info-value">
+                            @workOrder.WorkOrderNumber
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Opportunity</div>
+                        <div class="info-value">
+                            @Model.OpportunityName
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Service</div>
+                        <div class="info-value">
+                            @service?.ServiceName
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Estimated Hours</div>
+                        <div class="info-value">
+                            @workOrder.EstimatedHours
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Status</div>
+                        <div class="info-value">
+                            @workOrder.WorkOrderStatus
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- ================= WORK ORDER LINK ================= -->
+                    @if (!string.IsNullOrEmpty(workOrder.WorkOrderURL))
+                    {
+                        <div class="info-row">
+                            <div class="info-label">Work Order</div>
+                            <div class="info-value">
+                                <a href="@workOrder.WorkOrderURL"
+                                       target="_blank"
+                                       class="btn btn-outline-primary btn-sm">
+                                    View Work Order
+                                </a>
+                            </div>
+                        </div>
+                    }
+
+                    <hr />
+
+                    <!-- ================= FINANCE INFO ================= -->
+
+                    <div class="section-title">
+                        Finance Handover
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Client</div>
+                       @*  <div class="info-value">
+                            @workOrder.ClientName
+                        </div> *@
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">Amount</div>
+                        <div class="info-value">
+                            @ViewBag.SellingPrice @ViewBag.CurrencyCode
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <!-- ================= BUTTON ================= -->
+
+                    <div class="text-end">
+
+                        <button type="button"
+                                class="btn btn-warning"
+                                onclick="sendToFinance('@workOrder.WorkOrderId')">
+
+                            <i class="fa fa-paper-plane me-1"></i>
+                            Send to Finance
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    <!-- ================= SCRIPT ================= -->
+    <script>
+            function toggleReasonBox() {
+                var val = document.getElementById("isExecuted").value;
+                var box = document.getElementById("reasonBox");
+
+                if (val === "false") {
+                    box.style.display = "block";
+                } else {
+                    box.style.display = "none";
+                }
+            }
+    </script>
+    <script>
+
+            const btnOpportunity =
+                document.getElementById("btnOpportunity");
+
+            const btnProposal =
+                document.getElementById("btnProposal");
+
+            const btnWorkOrder =
+                document.getElementById("btnWorkOrder");
+
+            const opportunitySection =
+                document.getElementById("opportunitySection");
+
+            const proposalSection =
+                document.getElementById("proposalSection");
+
+            const workOrderSection =
+                document.getElementById("workOrderSection");
+
+            // =========================
+            // OPPORTUNITY TAB
+            // =========================
+
+            if (btnOpportunity) {
+
+                btnOpportunity.addEventListener("click", function () {
+
+                    opportunitySection.style.display = "block";
+
+                    proposalSection.style.display = "none";
+
+                    if (workOrderSection) {
+                        workOrderSection.style.display = "none";
+                    }
+
+                    btnOpportunity.classList.add("btn-primary");
+                    btnOpportunity.classList.remove("btn-outline-primary");
+
+                    btnProposal.classList.remove("btn-primary");
+                    btnProposal.classList.add("btn-outline-primary");
+
+                    if (btnWorkOrder) {
+                        btnWorkOrder.classList.remove("btn-primary");
+                        btnWorkOrder.classList.add("btn-outline-primary");
+                    }
+                });
+            }
+
+            // =========================
+            // PROPOSAL TAB
+            // =========================
+
+            if (btnProposal) {
+
+                btnProposal.addEventListener("click", function () {
+
+                    opportunitySection.style.display = "none";
+
+                    proposalSection.style.display = "block";
+
+                    if (workOrderSection) {
+                        workOrderSection.style.display = "none";
+                    }
+
+                    btnProposal.classList.add("btn-primary");
+                    btnProposal.classList.remove("btn-outline-primary");
+
+                    btnOpportunity.classList.remove("btn-primary");
+                    btnOpportunity.classList.add("btn-outline-primary");
+
+                    if (btnWorkOrder) {
+                        btnWorkOrder.classList.remove("btn-primary");
+                        btnWorkOrder.classList.add("btn-outline-primary");
+                    }
+                });
+            }
+
+            // =========================
+            // WORK ORDER TAB
+            // =========================
+
+            if (btnWorkOrder) {
+
+                btnWorkOrder.addEventListener("click", function () {
+
+                    opportunitySection.style.display = "none";
+
+                    proposalSection.style.display = "none";
+
+                    if (workOrderSection) {
+                        workOrderSection.style.display = "block";
+                    }
+
+                    btnWorkOrder.classList.add("btn-primary");
+                    btnWorkOrder.classList.remove("btn-outline-primary");
+
+                    btnOpportunity.classList.remove("btn-primary");
+                    btnOpportunity.classList.add("btn-outline-primary");
+
+                    btnProposal.classList.remove("btn-primary");
+                    btnProposal.classList.add("btn-outline-primary");
+                });
+            }
+
+            // =========================
+            // SELLING PRICE CALCULATION
+            // =========================
+
+            const hoursInput = document.getElementById("hours");
+
+            const rateInput = document.getElementById("rate");
+
+            const sellingPriceInput =
+                document.getElementById("sellingPrice");
+
+            function calculateSellingPrice() {
+
+                let hours = parseFloat(hoursInput.value || 0);
+
+                let rate = parseFloat(rateInput.value || 0);
+
+                let total = hours * rate;
+
+                sellingPriceInput.value = total.toFixed(2);
+            }
+
+            if (hoursInput && rateInput) {
+
+                hoursInput.addEventListener("input",
+                    calculateSellingPrice);
+
+                rateInput.addEventListener("input",
+                    calculateSellingPrice);
+            }
+                                function updateProposal() {
+
+                debugger;
+
+                let opportunityId =
+                    document.getElementById("opportunityId").value;
+
+                let serviceId =
+                    document.getElementById("serviceId").value;
+
+                let hours =
+                    document.getElementById("hours").value;
+
+                let rate =
+                    document.getElementById("rate").value;
+
+                let sellingPrice =
+                    document.getElementById("sellingPrice").value;
+
+                console.log(opportunityId);
+                console.log(serviceId);
+                console.log(hours);
+                console.log(rate);
+                console.log(sellingPrice);
+
+                $.ajax({
+
+                    url: '@Url.Action("UpdateProposal", "Opportunity")',
+
+                    type: 'POST',
+
+                    contentType: 'application/json',
+
+                    data: JSON.stringify({
+
+                        OpportunityId: opportunityId,
+                        ServiceId: serviceId,
+                        EstimatedHours: hours,
+                        Rate: rate,
+                        ProposedAmount: sellingPrice
+
+                    }),
+
+                    success: function (response) {
+
+                        console.log(response);
+
+                        if (response.success) {
+
+
+                            $("#proposalUrlSection").show();
+
+                            $("#proposalUrl")
+                                .attr("href", response.proposalUrl);
+
+                        }
+                        else {
+
+                        }
+                    },
+
+                    error: function (xhr) {
+
+                        console.log(xhr);
+
+                        toastr.error("Something went wrong");
+                    }
+
+                });
+            }
+    </script>

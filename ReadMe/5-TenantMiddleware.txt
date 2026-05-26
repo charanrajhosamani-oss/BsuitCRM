@@ -1,0 +1,67 @@
+﻿STEP 5 — Tenant Middleware (Subdomain)
+
+Core building block of multi-tenancy.
+It identifies which tenant is making the request based on the subdomain and 
+stores it in the request pipeline.
+
+Intercepts Every Request
+Reads the Request Host
+Extracts Subdomain
+Fetch Tenant from Database
+Store Tenant in Request Context
+Continue Pipeline
+
+
+using BSuit.Core.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace BSuit.API.Infrastructure.Services
+{
+    public class TenantMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public TenantMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext context, Core.Data.CoreDbContext dbContext)
+        {
+            var host = context.Request.Host.Host;
+
+            var subdomain = host.Split('.')[0];
+
+            var tenant = await dbContext.Tenants
+             .AsNoTracking()
+             .FirstOrDefaultAsync(x => x.Domain == subdomain);
+
+
+            if (tenant != null)
+                context.Items["TenantId"] = tenant.Id;
+
+            await _next(context);
+        }
+    }
+}
+
+
+Register:
+
+app.UseMiddleware<TenantMiddleware>();
+
+
+
+
+In ASP.NET Core:
+
+Middleware runs once per HTTP request, not once per session/user.
+Every request (page load, API call, CSS, JS, AJAX, etc.) goes through the pipeline.
+
+Use HttpContext.Items (per request cache):
+This prevents duplicate execution within same request pipeline (rare but safe)
+if (!context.Items.ContainsKey("TenantValidated"))
+{
+    context.Items["TenantValidated"] = true;
+    // Your validation logic here
+}

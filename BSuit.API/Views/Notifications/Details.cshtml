@@ -1,0 +1,83 @@
+﻿@using BSuit.Core.Entities
+@model NotificationRecipient
+
+@{
+    var iconClass = "";
+    var iconBgClass = "";
+    var cardBgClass = "";
+
+    switch (Model.Notification.NotificationType)
+    {
+        case NotificationType.Success:
+            iconClass = "bi bi-check-circle-fill";
+            iconBgClass = "success-bg";
+            cardBgClass = "success-light";
+            break;
+
+        case NotificationType.Error:
+            iconClass = "bi bi-x-circle-fill";
+            iconBgClass = "error-bg";
+            cardBgClass = "error-light";
+            break;
+
+        case NotificationType.Warning:
+            iconClass = "bi bi-exclamation-triangle-fill";
+            iconBgClass = "warning-bg";
+            cardBgClass = "warning-light";
+            break;
+
+        case NotificationType.Info:
+            iconClass = "bi bi-info-circle-fill";
+            iconBgClass = "info-bg";
+            cardBgClass = "info-light";
+            break;
+
+        default:
+            iconClass = "bi bi-bell-fill";
+            iconBgClass = "default-bg";
+            cardBgClass = "default-light";
+            break;
+    }
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0 @cardBgClass">
+
+        <div class="card-header">
+            <div class="d-flex align-items-center gap-2">
+
+                <span class="notification-icon @iconBgClass">
+                    <i class="@iconClass"></i>
+                </span>
+
+                <h4 class="mb-0">
+                    @Model.Notification.Title
+                </h4>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3 text-muted">
+                <div>
+                    <strong>Sent On:</strong>
+                    @Model.Notification.CreatedOn.ToString("dd-MMM-yyyy hh:mm tt")
+                </div>
+
+               @*  <div>
+                    <strong>Created By:</strong>
+                    @Model.Notification.CreatedByUser?.UserName
+                </div> *@
+            </div>
+
+            <div class="mb-3">
+                @Html.Raw(Model.Notification.Message)
+            </div>
+
+            <a href="/Notifications/ViewAll"
+               class="btn btn-secondary">
+                ← Back to Notifications
+            </a>
+        </div>
+    </div>
+</div>

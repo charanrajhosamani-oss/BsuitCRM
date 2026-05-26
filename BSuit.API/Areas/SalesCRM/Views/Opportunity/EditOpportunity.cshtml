@@ -1,0 +1,467 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model BSuit.SalesCRM.VM._Opportunity_.OpportunityVM
+
+@{
+    ViewData["Title"] = "Edit Opportunity";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var service = Model.EditServices.FirstOrDefault();
+    
+ 
+    var enableStage = ViewBag.EnableStage == true;
+
+
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet" />
+
+<div class="container-fluid pt-3 crm-container">
+
+    <!-- HEADER -->
+    <div class="section-card purple">
+        <div class="section-header">
+            Edit Opportunity
+        </div>
+
+        <div class="section-body d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">@Model.OpportunityName</h5>
+                <small class="text-muted">Update opportunity configuration and scope</small>
+            </div>
+
+            <div>
+                <a href="@Url.Action("OpportunityDetails", "Opportunity",
+                                                new { id = Model.OpportunityId, serviceId = Model.EditServices[0].ServiceId })"
+                       class="btn btn-outline-info btn-sm me-2">
+                    View
+                </a>
+
+                <a href="@Url.Action("OpportunityScoperView", "Opportunity")"
+                       class="btn btn-outline-secondary btn-sm">
+                    Back
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= LEAD ================= -->
+    @if (ViewBag.LeadDetails != null)
+    {
+        var lead = ViewBag.LeadDetails;
+
+        <div class="section-card green">
+            <div class="section-header">
+                Lead Details
+            </div>
+
+            <div class="section-body">
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Basic Info</div>
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">First Name</div>
+                                <div class="info-value">@lead.FirstName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Last Name</div>
+                                <div class="info-value">@lead.LastName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">@lead.Email</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Phone</div>
+                                <div class="info-value">@lead.Phone</div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="info-row">
+                                <div class="info-label">Company</div>
+                                <div class="info-value">@lead.CompanyName</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Industry</div>
+                                <div class="info-value">@lead.Industry</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">City</div>
+                                <div class="info-value">@lead.City</div>
+                            </div>
+
+                            <div class="info-row">
+                                <div class="info-label">Country</div>
+                                <div class="info-value">@lead.Country</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    }
+
+    <form asp-action="Edit" method="post">
+
+        <input type="hidden" asp-for="OpportunityId" />
+        <input type="hidden" asp-for="EditServices[0].LeadId" />
+        <input type="hidden" asp-for="EditServices[0].ServiceId" />
+        <input type="hidden" asp-for="EditServices[0].OpportunityStageId" />
+
+        <!-- ================= CONFIG ================= -->
+        <div class="section-card">
+            <div class="section-header">Configuration</div>
+
+            <div class="section-body">
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="info-row">
+                            <div class="info-label">Service</div>
+                            <div class="info-value">
+                                <select asp-for="EditServices[0].ServiceId"
+                                        asp-items="ViewBag.ServiceList"
+                                        class="form-select" disabled></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-row">
+                            <div class="info-label">Stage</div>
+                            <div class="info-value">
+                                @if (enableStage)
+                                {
+                                    <select asp-for="EditServices[0].OpportunityStageId"
+                                            asp-items="ViewBag.StageList"
+                                            class="form-select">
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select asp-for="EditServices[0].OpportunityStageId"
+                                            asp-items="ViewBag.StageList"
+                                            class="form-select"
+                                            disabled>
+                                    </select>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-row">
+                            <div class="info-label">Engagement</div>
+                            <div class="info-value">
+                                <select asp-for="EditServices[0].EngagementModelId"
+                                        asp-items="ViewBag.EngagementModelList"
+                                        class="form-select">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mt-2">
+                        <div class="info-row">
+                            <div class="info-label">Industry</div>
+                            <div class="info-value">
+                                <select asp-for="EditServices[0].IndustryId"
+                                        asp-items="ViewBag.Industries"
+                                        class="form-select">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- TURN HOURS / DAYS -->
+                    <div class="col-md-4 mt-2">
+                        <div class="info-row">
+                            <div class="info-label">Turn Around Days</div>
+                            <div class="info-value">
+                                <input asp-for="EditServices[0].TurnHoursDays"
+                                       type="number"
+                                       class="form-control"
+                                       placeholder="Enter Days" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NUMBER OF MONTHS -->
+                    <div class="col-md-4 mt-2">
+                        <div class="info-row">
+                            <div class="info-label">No Of Months</div>
+                            <div class="info-value">
+                                <input asp-for="EditServices[0].NoOfMonth"
+                                       type="number"
+                                       class="form-control"
+                                       placeholder="Enter Months" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CUSTOMER SUPPORT -->
+                    <div class="col-md-4 mt-2">
+                        <div class="info-row">
+                            <div class="info-label">Support Time</div>
+                            <div class="info-value">
+                                <input asp-for="EditServices[0].CustomerSupport"
+                                       class="form-control"
+                                       placeholder="Example: Mon-Fri 10 AM - 6 PM IST" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= SCOPE ================= -->
+        <div class="section-card orange">
+            <div class="section-header">Scope & Requirements</div>
+
+            <div class="section-body">
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Scope Of Work</div>
+                    <textarea asp-for="EditServices[0].ScopeofWork" class="form-control"></textarea>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Final Deliverable</div>
+                    <textarea asp-for="EditServices[0].FinalDeliverableUsage" class="form-control"></textarea>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Expectation</div>
+                    <textarea asp-for="EditServices[0].ExpectationSetting" class="form-control"></textarea>
+                </div>
+
+                <div class="sub-card">
+                    <div class="sub-card-title">Customer Responsibilities</div>
+                    <textarea asp-for="EditServices[0].CustomerResponsibilities" class="form-control"></textarea>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= MODULE ================= -->
+        <!-- ================= MODULE ================= -->
+        <div class="section-card purple">
+
+            <div class="section-header">
+                Module Breakdown
+            </div>
+
+            <div class="section-body table-responsive">
+
+                <table class="table table-bordered align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Module</th>
+                            <th>Est Hrs</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="detailsBody">
+
+                        @for (int j = 0; j < service.Details.Count; j++)
+                        {
+                            <tr>
+
+                                <td class="slno">
+                                    @(j + 1)
+                                </td>
+
+                                <td>
+                                    <input asp-for="EditServices[0].Details[@j].ModuleName"
+                                           class="form-control" />
+                                </td>
+
+                                <td>
+                                    <input asp-for="EditServices[0].Details[@j].EstimatedHours"
+                                           class="form-control est" />
+                                </td>
+
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm removeRow">
+                                        X
+                                    </button>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+
+                        <tr>
+                            <td colspan="2" class="text-end">
+                                <b>Total</b>
+                            </td>
+
+                            <td>
+                                <input id="totalHours"
+                                       class="form-control"
+                                       readonly />
+                            </td>
+
+                            <td></td>
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+
+            </div>
+
+            <button type="button"
+                    onclick="addRow()"
+                    class="btn btn-primary btn-sm">
+
+                + Add Module
+
+            </button>
+
+        </div>
+
+        <!-- ================= SUBMIT ================= -->
+        <div class="section-card green">
+            <div class="section-body text-end">
+                <button type="submit" class="btn btn-success">
+                    Update
+                </button>
+            </div>
+        </div>
+
+    </form>
+</div>
+@section Scripts {
+    <script>
+              let index = document.querySelectorAll("#detailsBody tr").length;
+
+        function addRow() {
+
+            let tbody = document.getElementById("detailsBody");
+
+            let row = `
+            <tr>
+
+                <td class="slno"></td>
+
+                <td>
+                    <input name="EditServices[0].Details[${index}].ModuleName"
+                           class="form-control"/>
+                </td>
+
+                <td>
+                    <input name="EditServices[0].Details[${index}].EstimatedHours"
+                           class="form-control est"/>
+                </td>
+
+                <td>
+                    <button type="button"
+                            class="btn btn-danger btn-sm removeRow">
+                        X
+                    </button>
+                </td>
+
+            </tr>`;
+
+            tbody.insertAdjacentHTML("beforeend", row);
+
+            index++;
+
+            update();
+        }
+
+        document.addEventListener("click", e => {
+
+            if (e.target.closest(".removeRow")) {
+
+                e.target.closest("tr").remove();
+
+                update();
+            }
+
+        });
+
+        document.addEventListener("input", e => {
+
+            if (e.target.classList.contains("est")) {
+
+                update();
+            }
+
+        });
+
+        function update() {
+
+            let total = 0;
+
+            document.querySelectorAll("#detailsBody tr")
+                .forEach((row, i) => {
+
+                row.querySelector(".slno").innerText = i + 1;
+
+                let est =
+                    parseFloat(row.querySelector(".est")?.value) || 0;
+
+                total += est;
+            });
+
+            document.getElementById("totalHours").value =
+                total.toFixed(2);
+        }
+
+        window.onload = update;
+    </script>
+
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <script>
+      document.querySelectorAll("textarea").forEach(el => {
+    ClassicEditor.create(el, {
+        toolbar: {
+            items: [
+                'bold', 'italic', 'underline', '|',
+                'bulletedList', 'numberedList', '|',
+                'undo', 'redo'
+            ]
+        }
+    }).then(editor => {
+        editor.editing.view.change(writer => {
+            writer.setStyle(
+                'height',
+                '100px',   // 👈 increase here (try 200px, 300px, etc.)
+                editor.editing.view.document.getRoot()
+            );
+        });
+    }).catch(err => console.error(err));
+});
+    </script>
+}

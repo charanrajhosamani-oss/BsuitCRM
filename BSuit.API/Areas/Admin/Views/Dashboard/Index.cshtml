@@ -1,0 +1,290 @@
+﻿@inject BSuit.Contracts.Services.IUserContext UserContext
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0">Dashboard</h3>
+            <small class="text-muted">
+                Welcome, @User.Identity?.Name
+            </small>
+        </div>
+
+        <div>
+            @if (User.IsInRole(BSuit.Identity.AppRoles.SUPERADMIN))
+            {
+                <a href="/Admin/Tenants" class="btn btn-primary btn-sm">
+                    <i class="fa fa-building"></i> Tenants
+                </a>
+            }
+            <a href="/Admin/TenantUsers?tenantId=@UserContext.TenantId" class="btn btn-success btn-sm">
+                <i class="fa fa-users"></i> Users
+            </a>
+
+            <a href="/Admin/Roles" class="btn btn-warning btn-sm">
+                <i class="fa fa-user-shield"></i> Roles
+            </a>
+        </div>
+    </div>
+
+
+    <!-- KPI CARDS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Users</small>
+                        <h3>@Model.TotalUsers</h3>
+                    </div>
+                    <i class="fa fa-users fa-2x text-primary"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Roles</small>
+                        <h3>@Model.TotalRoles</h3>
+                    </div>
+                    <i class="fa fa-user-shield fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <small>Total Menus</small>
+                        <h3>@Model.TotalMenus</h3>
+                    </div>
+                    <i class="fa fa-bars fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.TotalTenants > 1)
+        {
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <small>Total Tenants</small>
+                            <h3>@Model.TotalTenants</h3>
+                        </div>
+                        <i class="fa fa-building fa-2x text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+
+    <!-- SECOND ROW -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Subscriptions</h6>
+                    <h3>@Model.ActiveSubscriptions</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Assigned Modules</h6>
+                    <h3>@Model.TotalAssignedModules</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>User Permissions</h6>
+                    <h3>@Model.TotalUserPermissions</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center">
+                    <h6>Mapped Services</h6>
+                    <h3>@Model.TotalMappedServices</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS SECTION -->
+    <div class="row mb-4">
+
+        <!-- User Creation Chart -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header">
+                    Weekly User Creation
+                </div>
+                <div class="card-body">
+                    <canvas id="userChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Chart -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header">
+                    Roles (Users) Counts
+                </div>
+                <div class="card-body">
+                    <canvas id="roleChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- RECENT ACTIVITY -->
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model.RecentActivities)
+            {
+                <tr>
+                    <td>@a.UserName</td>
+                    <td>@a.Description</td>
+                    <td>@a.CreatedOn.ToString("dd-MMM HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <!-- QUICK ACTIONS -->
+    @if (User.IsInRole(BSuit.Identity.AppRoles.SUPERADMIN))
+    {
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header">
+                        Quick Actions
+                    </div>
+
+                    <div class="card-body">
+
+                        <a href="/Admin/Tenants"
+                           class="btn btn-primary btn-sm me-2 mb-2">
+                            Add Tenant
+                        </a>
+
+                        <a href="/Admin/TenantUsers?tenantId=@UserContext.TenantId"
+                           class="btn btn-success btn-sm me-2 mb-2">
+                            Add User
+                        </a>
+
+                        <a href="/Admin/Roles"
+                           class="btn btn-warning btn-sm me-2 mb-2">
+                            Create Role
+                        </a>
+
+                        <a href="/Admin/Subscriptions"
+                           class="btn btn-info btn-sm me-2 mb-2">
+                            Manage Subscription
+                        </a>
+
+                        <a href="/Admin/TenantModules"
+                           class="btn btn-secondary btn-sm me-2 mb-2">
+                            Manage Modules
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+    var labels = @Html.Raw(ViewBag.ChartLabels);
+    var data = @Html.Raw(ViewBag.ChartData);
+
+    new Chart(document.getElementById('userChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Users Created',
+                data: data
+            }]
+        }
+    });
+
+     var roleData = @Html.Raw(Json.Serialize(Model.RolesWithUsers));
+       const roleChart = new Chart(document.getElementById('roleChart'), {
+        type: 'doughnut',
+        data: {
+            labels: roleData.map(x => `${x.label} (${x.value})`),
+            datasets: [{
+                data: roleData.map(x => x.value)
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        },
+        plugins: [ChartDataLabels],
+        options: {
+            plugins: {
+                datalabels: {
+                    color: '#fff',
+                    formatter: function(value) {
+                        return value;
+                    }
+                }
+            }
+        }
+    });
+        backgroundColor: [
+        '#36A2EB',
+        '#4BC0C0',
+        '#FFCE56',
+        '#FF6384'
+    ]
+</script>

@@ -1,0 +1,90 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36930.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.API", "BSuit.API\BSuit.API.csproj", "{492CA8D3-CEB4-4DFE-852E-B1513D1A6119}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.Core", "BSuit.Core\BSuit.Core.csproj", "{FF365DD4-494C-48EE-999A-DBFA1F413E3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.Identity", "BSuit.Identity\BSuit.Identity.csproj", "{E1E1BF0D-4518-41A5-B952-307AC361ABD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.Contracts", "BSuit.Contracts\BSuit.Contracts.csproj", "{D83519D8-2169-41F8-B599-AFD90BD2095D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.SalesCRM", "BSuit.SalesCRM\BSuit.SalesCRM.csproj", "{576C838A-54A9-4F5B-AB75-A5D19C341507}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.HR", "BSuit.HR\BSuit.HR.csproj", "{E206D86A-9744-4185-9E3F-BC7B3517DCF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BSuit.Infrastructure", "BSuit.Infrastructure\BSuit.Infrastructure.csproj", "{D37BA7DC-CCCE-493A-B838-2315AF659202}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadMe", "ReadMe", "{0BE4CD08-DD89-4E91-9C67-02AD7B91A868}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe\0-CRM Workflow.xlsx = ReadMe\0-CRM Workflow.xlsx
+		ReadMe\1-SolutionSetup.txt = ReadMe\1-SolutionSetup.txt
+		ReadMe\10-BSuit.Infrastructure.txt = ReadMe\10-BSuit.Infrastructure.txt
+		ReadMe\11-0-Authirization-POC.txt = ReadMe\11-0-Authirization-POC.txt
+		ReadMe\11-1-Authorization.txt = ReadMe\11-1-Authorization.txt
+		ReadMe\12-API-Data-Post&Consume.txt = ReadMe\12-API-Data-Post&Consume.txt
+		ReadMe\2-DatabaseSetup.txt = ReadMe\2-DatabaseSetup.txt
+		ReadMe\2-IdentitySetup.txt = ReadMe\2-IdentitySetup.txt
+		ReadMe\3-BSuitCore.txt = ReadMe\3-BSuitCore.txt
+		ReadMe\3-DatabaseFirstEFCore.txt = ReadMe\3-DatabaseFirstEFCore.txt
+		ReadMe\4-DataSeeding.txt = ReadMe\4-DataSeeding.txt
+		ReadMe\5-TenantMiddleware.txt = ReadMe\5-TenantMiddleware.txt
+		ReadMe\6-ModuleAccessMiddleware.txt = ReadMe\6-ModuleAccessMiddleware.txt
+		ReadMe\7-PermissionSetup.txt = ReadMe\7-PermissionSetup.txt
+		ReadMe\7-SalesCRMModule.txt = ReadMe\7-SalesCRMModule.txt
+		ReadMe\8-Contracts.txt = ReadMe\8-Contracts.txt
+		ReadMe\9-SuperadminUI.txt = ReadMe\9-SuperadminUI.txt
+		ReadMe\Brickwork_ERP.pptx = ReadMe\Brickwork_ERP.pptx
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{492CA8D3-CEB4-4DFE-852E-B1513D1A6119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{492CA8D3-CEB4-4DFE-852E-B1513D1A6119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{492CA8D3-CEB4-4DFE-852E-B1513D1A6119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{492CA8D3-CEB4-4DFE-852E-B1513D1A6119}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF365DD4-494C-48EE-999A-DBFA1F413E3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF365DD4-494C-48EE-999A-DBFA1F413E3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF365DD4-494C-48EE-999A-DBFA1F413E3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF365DD4-494C-48EE-999A-DBFA1F413E3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1E1BF0D-4518-41A5-B952-307AC361ABD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1E1BF0D-4518-41A5-B952-307AC361ABD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1E1BF0D-4518-41A5-B952-307AC361ABD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1E1BF0D-4518-41A5-B952-307AC361ABD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D83519D8-2169-41F8-B599-AFD90BD2095D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D83519D8-2169-41F8-B599-AFD90BD2095D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D83519D8-2169-41F8-B599-AFD90BD2095D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D83519D8-2169-41F8-B599-AFD90BD2095D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576C838A-54A9-4F5B-AB75-A5D19C341507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576C838A-54A9-4F5B-AB75-A5D19C341507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576C838A-54A9-4F5B-AB75-A5D19C341507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576C838A-54A9-4F5B-AB75-A5D19C341507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E206D86A-9744-4185-9E3F-BC7B3517DCF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E206D86A-9744-4185-9E3F-BC7B3517DCF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E206D86A-9744-4185-9E3F-BC7B3517DCF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E206D86A-9744-4185-9E3F-BC7B3517DCF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37BA7DC-CCCE-493A-B838-2315AF659202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37BA7DC-CCCE-493A-B838-2315AF659202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37BA7DC-CCCE-493A-B838-2315AF659202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37BA7DC-CCCE-493A-B838-2315AF659202}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{576C838A-54A9-4F5B-AB75-A5D19C341507} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E206D86A-9744-4185-9E3F-BC7B3517DCF5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{0BE4CD08-DD89-4E91-9C67-02AD7B91A868} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FD6B4362-E8BD-4F83-805C-B0BD7DE26F9F}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,80 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model EncryptionKeyVM
+@{
+     Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h3>Encryption Key Management</h3>
+
+<form method="get" class="mb-2">
+    <input name="Search" value="@Model.Search" placeholder="Search Version..." />
+    <button class="btn btn-primary">Search</button>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tenant</th>
+            <th>Version</th>
+            <th>Status</th>
+            <th>Created</th>
+           @*  <th width="250">Action</th> *@
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            var tenant = Model.Tenants.FirstOrDefault(t => t.Id == item.TenantId);
+
+            <tr>
+                <td>@tenant?.Name</td>
+                <td>@item.Version</td>
+                <td>@(item.IsActive ? "Active" : "Inactive")</td>
+                <td>@item.CreatedOn</td>
+              @*   <td>
+                    <form asp-action="Regenerate" method="post" style="display:inline">
+                        <input type="hidden" name="tenantId" value="@item.TenantId" />
+                        <button class="btn btn-warning btn-sm"
+                                onclick="return confirm('Generate new key version?')">
+                            Regenerate Key
+                        </button>
+                    </form>
+
+                    <button onclick="del('@item.Id')" class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td> *@
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div>
+    @for (int i = 1; i <= Math.Ceiling((double)Model.TotalCount / Model.PageSize); i++)
+    {
+        <a asp-route-PageNumber="@i"
+           class="btn btn-sm @(i == Model.PageNumber ? "btn-primary" : "btn-light")">
+            @i
+        </a>
+    }
+</div>
+
+<script>
+    function del(id){
+        if(confirm("Delete this key?")){
+            var f=document.createElement('form');
+            f.method='post';
+            f.action='/Admin/EncryptionKey/Delete';
+
+            var i=document.createElement('input');
+            i.name='id';
+            i.value=id;
+
+            f.appendChild(i);
+            document.body.appendChild(f);
+            f.submit();
+        }
+    }
+</script>

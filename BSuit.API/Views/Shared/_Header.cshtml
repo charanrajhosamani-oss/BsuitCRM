@@ -1,0 +1,59 @@
+﻿<div class="header">
+    <div class="hdr-content-left">
+        <div class="burger" onclick="toggleSidebar()">
+            <i class="bi bi-list"></i>
+        </div>      
+    </div>
+
+    <div class="hdr-content-right">      
+
+        <a href="/Home/Dashboard"><i class="bi bi-grid icon-btn d-none d-sm-block"></i></a>
+        <a href="/Home/MyProfile"><i class="bi bi-sun icon-btn d-none d-sm-block"></i></a>
+        <a href="/UserSettings"><i class="bi bi-gear icon-btn d-none d-sm-block"></i></a>
+
+        <!-- Notification -->
+        @await Component.InvokeAsync("Notification")
+              
+
+        <!-- Profile -->
+        <div class="dropdown">
+            <div class="profile-img dropdown-toggle" data-bs-toggle="dropdown">
+                <img src="~/images/profile-img.jpg" />
+            </div>
+
+            <div class="dropdown">               
+                <div class="dropdown-menu dropdown-menu-end shadow">
+                    <div class="profile-header">@User.Identity?.Name</div>
+
+                    <a href="/Home/MyProfile" class="dropdown-item">
+                        <i class="bi bi-person"></i> View Profile
+                    </a>
+
+                    <a href="/UserSettings" class="dropdown-item">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+
+                    <form asp-area="Identity"
+                          asp-page="/Account/Logout"
+                          asp-route-returnUrl="/Identity/Account/Login"
+                          method="post"
+                          style="margin:0;">
+
+                        <button type="submit" class="dropdown-item">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        dropdownElementList.map(function (dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+    });
+</script>

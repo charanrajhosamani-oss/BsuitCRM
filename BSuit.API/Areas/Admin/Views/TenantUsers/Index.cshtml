@@ -1,0 +1,571 @@
+﻿@model BSuit.API.Areas.Admin.Models.TenantUsersVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>
+        Manage Users - <u>@Model.TenantName</u>
+    </h3>
+
+    <div>
+        <a href="/Admin/Tenants/Index"
+           class="btn btn-secondary me-2">
+            ← Back
+        </a>
+
+        <span id="helpIcon" class="help-icon">?</span>
+    </div>
+</div>
+
+<!-- Help Tooltip -->
+<div id="userHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Tenant User Help</h6>
+
+        <ul class="mb-0 ps-3">
+            <li>Create tenant users</li>
+            <li>Assign multiple roles</li>
+            <li>Map reporting manager/supervisor</li>
+            <li>Activate/Deactivate users</li>
+            <li>Edit user details</li>
+            <li>Map services</li>
+            <li>Enable/Disable 2FA</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<div class="card">
+
+    <!-- Card Header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>User List</h5>
+
+        <div>
+            <button type="button"
+                    class="btn btn-secondary btn-sm me-2"
+                    onclick="location.reload()">
+                Refresh
+            </button>
+
+            <button type="button"
+                    class="btn btn-success btn-sm"
+                    onclick="openCreateModal()">
+                + Add User
+            </button>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card-body border-bottom">
+        <form method="get" class="row">
+            <input type="hidden"
+                   name="tenantId"
+                   value="@Context.Request.Query["tenantId"]" />
+            <div class="col-md-4">
+                <input name="search"
+                       class="form-control"
+                       placeholder="Search user..."
+                       value="@Context.Request.Query["search"]" />
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary" type="submit">
+                    Search
+                </button>
+            </div>
+
+            <!-- Reset button -->
+            <div class="col-md-2">
+                <a class="btn btn-secondary"
+                   href="/Admin/TenantUsers?tenantId=@Context.Request.Query["tenantId"]">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- User Grid -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th width="280">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Users.Any())
+                {
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr class="@(user.IsActive ? "" : "table-secondary")">
+
+                            <td>@user.SelectedRole</td>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+
+                            <td class="@(user.IsSuperAdmin ? "disabled-actions" : "")"
+                                title="">
+                                <form action="/Admin/TenantUsers/ToggleActive"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@user.Id" />
+
+                                    @if (user.IsActive)
+                                    {
+                                        <button class="btn btn-danger btn-sm"
+                                                title="Deactivate User">
+                                            Deactivate
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success btn-sm"
+                                                title="Activate User">
+                                            Activate
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+
+                            <td class="@(user.IsSuperAdmin ? "disabled-actions" : "")"
+                                title="">
+                                <button class="btn btn-primary btn-sm btn-edit"
+                                        title="Edit User"
+                                        data-id="@user.Id"
+                                        data-fullname="@user.FullName"
+                                        data-email="@user.Email"
+                                        data-roles="@(user.SelectedRoles != null && user.SelectedRoles.Any()
+                                                                                    ? string.Join(",", user.SelectedRoles)
+                                                                                    : "")"
+                                data-reportingmanagerid="@user.ReportingManagerId"
+                                data-supervisorid="@user.SupervisorId">
+                            Edit
+                        </button>
+
+                                <a href="@Url.Action("MapServices", "TenantUsers", new { area = "Admin", userId = user.Id })"
+                                   class="btn btn-info btn-sm"
+                                   title="Map Services">
+                                    Services
+                                </a>
+
+
+
+                        @if (user.TwoFactorEnabled)
+                                {
+                                    <form action="/Admin/TenantUsers/DisableTwoFactor"
+                                          method="post"
+                                          style="display:inline;">
+
+                                        <input type="hidden"
+                                               name="userId"
+                                               value="@user.Id" />
+
+                                        <button type="submit"
+                                                class="btn btn-warning btn-sm"
+                                                onclick="return confirm('Disable 2FA for this user?')">
+                                            Disable 2FA
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form action="/Admin/TenantUsers/EnableTwoFactor"
+                                          method="post"
+                                          style="display:inline;">
+
+                                        <input type="hidden"
+                                               name="userId"
+                                               value="@user.Id" />
+
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm"
+                                                onclick="return confirm('Enable 2FA for this user?')">
+                                            Enable 2FA
+                                        </button>
+                                    </form>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5"
+                            class="text-center text-muted">
+                            No users found
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* ---------------------------------------------------
+CREATE USER MODAL
+--------------------------------------------------- *@
+<div class="modal fade" id="createUserModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form method="post"
+                  asp-action="Create">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        Create User
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           name="tenantId"
+                           value="@Model.TenantId" />
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            <input name="fullName"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input name="email"
+                                   class="form-control"
+                                   required />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Password</label>
+                            <input name="password"
+                                   type="password"
+                                   class="form-control"
+                                   required />
+                            <small id="passwordMessage"></small>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Roles</label>
+                            <select class="form-select"
+                                    name="SelectedRoleIds"
+                                    multiple>
+                                @foreach (var role in Model.RoleList)
+                                {
+                                    <option value="@role.Value">
+                                        @role.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Reporting Manager</label>
+                            <select name="reportingManagerId"
+                                    class="form-select">
+                                <option value="">Select</option>
+
+                                @foreach (var item in Model.ReportingManagers)
+                                {
+                                    <option value="@item.Value">
+                                        @item.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Supervisor</label>
+                            <select name="supervisorId"
+                                    class="form-select">
+                                <option value="">Select</option>
+
+                                @foreach (var item in Model.Supervisors)
+                                {
+                                    <option value="@item.Value">
+                                        @item.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">
+                        Save
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@* ---------------------------------------------------
+EDIT USER MODAL
+--------------------------------------------------- *@
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form id="editUserForm">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5>Edit User</h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden" id="editId" name="Id" />
+
+                    <div class="mb-2">
+                        <label>Full Name</label>
+                        <input type="text"
+                               id="editFullName"
+                               name="FullName"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Email</label>
+                        <input type="email"
+                               id="editEmail"
+                               name="Email"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Password (Optional)</label>
+                        <input type="password"
+                               id="editPassword"
+                               name="Password"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Roles</label>
+                        <select class="form-select"
+                                id="editSelectedRoleIds"
+                                name="SelectedRoleIds"
+                                multiple>
+                            @foreach (var role in Model.RoleList)
+                            {
+                                <option value="@role.Value">
+                                    @role.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Reporting Manager</label>
+                        <select name="reportingManagerId"
+                                id="editReportingManagerId"
+                                class="form-select">
+                            <option value="">Select</option>
+
+                            @foreach (var item in Model.ReportingManagers)
+                            {
+                                <option value="@item.Value">
+                                    @item.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Supervisor</label>
+                        <select name="supervisorId" id="editSupervisorId"
+                                class="form-select">
+                            <option value="">Select</option>
+
+                            @foreach (var item in Model.Supervisors)
+                            {
+                                <option value="@item.Value">
+                                    @item.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success">
+                        Update
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let createModal;
+    let editModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        createModal = new bootstrap.Modal(
+            document.getElementById("createUserModal")
+        );
+
+        editModal = new bootstrap.Modal(
+            document.getElementById("editUserModal")
+        );
+
+        // Help tooltip
+        let helpContent =
+            document.getElementById("userHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+    function openCreateModal() {
+        createModal.show();
+    }
+
+    $(document).on("click", ".btn-edit", function () {
+
+        $("#editId").val($(this).data("id"));
+        $("#editFullName").val($(this).data("fullname"));
+        $("#editEmail").val($(this).data("email"));
+        $("#editPassword").val("");
+
+
+        // Reporting manager
+        var reportingManagerId=$(this).data("reportingmanagerid");
+        $("#editReportingManagerId").val(
+            reportingManagerId ? reportingManagerId.toString() : ""
+        );
+
+        // Supervisor
+        var supervisorId = $(this).data("supervisorid");
+        $("#editSupervisorId").val(
+            supervisorId ? supervisorId.toString() : ""
+        );
+
+        // Multi select roles
+        var roleIds = $(this).data("roles");
+        if (roleIds) {
+            let rolesArray = roleIds.toString().split(",");
+            $("#editSelectedRoleIds")
+            .val(rolesArray)
+            .trigger("change");
+        } else {
+            $("#editSelectedRoleIds").val([]);
+        }
+
+        editModal.show();
+    });
+
+    $("#editUserForm").submit(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '@Url.Action("EditAjax", "TenantUsers")',
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function (res) {
+                if (res.success) {
+                    location.reload();
+                }
+                else {
+                    alert(res.message);
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    .disabled-actions {
+        pointer-events: none;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+        .disabled-actions button,
+        .disabled-actions a,
+        .disabled-actions form {
+            pointer-events: none;
+        }
+</style>

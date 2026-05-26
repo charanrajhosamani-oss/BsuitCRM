@@ -1,0 +1,71 @@
+﻿@using static BSuit.SalesCRM.Models.ProjectVM
+@model List<ProjectModuleVM>
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+}
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h4 class="fw-semibold">Project Modules</h4>
+
+
+            <a href="@Url.Action("CreateProjectModule", "Project", new { area = "SalesCRM", projectId = ViewBag.ProjectId })"
+               class="btn btn-outline-primary">
+                <i class="bi bi-box"></i> Add Project Module
+
+            </a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="row">
+    <div class="col-12 pt-4 pb-4">
+        <div class="table-container table-responsive">
+            <table class="table table1 align-middle">
+                <thead>
+                    <tr>
+                        <th>Module Name</th>
+                        <th>Description</th>
+                        <th>Estimated Hours</th>
+                        <th>Created On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ModuleName</td>
+                            <td>@item.Description</td>
+                            <td>@item.EstimatedHours</td>
+                            <td>@item.CreatedOn.ToString("dd-MM-yyyy")</td>
+                            <td>
+
+
+                                <a class="btn btn2 btn-sm"
+                                   href="@Url.Action("GetEditPartial", "Project", new { area = "SalesCRM", id = item.ProjectId })">
+                                    <i class="bi bi-pencil-square me-1"></i>
+                                </a>
+
+                                <button class="btn btn2 btn-sm"
+                                        onclick="deleteProject('@item.ProjectId')">
+                                    <i class="bi bi-trash me-1"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<a href="@Url.Action("ProjectDetails", "Project", new { area = "SalesCRM", id = ViewBag.ProjectId })"
+   class="btn btn-outline-dark ms-2">
+    Back
+</a>

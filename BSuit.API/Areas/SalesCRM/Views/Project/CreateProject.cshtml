@@ -1,0 +1,61 @@
+﻿@model BSuit.SalesCRM.Models.ProjectVM.ProjectTaskVM
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+}
+
+
+<form asp-action="CreateProject" method="post">
+    <div class="col-12 mb-4">
+        <h1 class="main-title green-txt"> Project Task</h1>
+    </div>
+
+    <input type="hidden" asp-for="ProjectId" />
+
+    <div class="mb-3">
+        <label>Task Name</label>
+        <input asp-for="TaskName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label>Assign To</label>
+        <select asp-for="AssignedTo" asp-items="Model.UserList" class="form-control">
+            <option value="">-- Select User --</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Start Date</label>
+        <input asp-for="StartDate" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Due Date</label>
+        <input asp-for="DueDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Priority</label>
+        <select asp-for="PriorityId" class="form-control" asp-items="Model.PriorityList">
+            <option value="">-- Select Priority --</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Estimated Hours</label>
+        <input asp-for="EstimatedHours" class="form-control" />
+    </div>
+
+    <div class="text-end">
+        <a href="@Url.Action("CreateProject", "Project", new { area = "SalesCRM", projectId = Model.ProjectId })"
+           class="btn btn-outline-dark ms-2">
+
+            Cancel
+        </a>
+
+        <button type="submit" class="btn btn1 ps-4 pe-4">
+            Submit
+        </button>
+    </div>
+
+</form>

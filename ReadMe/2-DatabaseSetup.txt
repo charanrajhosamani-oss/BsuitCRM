@@ -1,0 +1,33 @@
+﻿🗄️ STEP 2 — Create Database
+
+2.1: Create DB: BSuitERP
+
+2.2 Schema Setup
+AUTH
+CORE
+SALESCRM
+
+
+2.3: 
+
+Core Tables:
+Code First with Shared CoreDbContext
+✔ Why this is best
+Single source of truth
+Strong typing
+Works perfectly with Identity & Modules
+Easy multi-tenant filtering later
+
+Define Entities (BSuits.Core)
+namespace BSuits.Core.Entities
+{
+    public class TenantMaster
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string? Domain { get; set; }
+
+        public bool IsActive { get; set; }
+        public DateTime CreatedOn { get; set; }
+    }
+}

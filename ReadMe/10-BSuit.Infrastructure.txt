@@ -1,0 +1,4 @@
+BSuit.Infrastructure:
+Infrastructure-related (Email, File, External APIs)
+
+QuestPDF

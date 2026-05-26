@@ -1,0 +1,1594 @@
+﻿@using BSuit.SalesCRM.VM.Lead
+@model LeadInfo;
+@{
+    ViewData["Title"] = "Lead Comprehensive View";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+    var lead = Model;
+}
+@functions {
+    public string GetFileIcon(string fileName)
+    {
+        var ext = System.IO.Path.GetExtension(fileName)?.ToLower();
+
+        return ext switch
+        {
+            ".pdf" => "bi bi-file-earmark-pdf text-danger",
+            ".xls" or ".xlsx" => "bi bi-file-earmark-excel text-success",
+            ".doc" or ".docx" => "bi bi-file-earmark-word text-primary",
+            ".zip" => "bi bi-file-earmark-zip text-warning",
+            _ => "bi bi-file-earmark text-secondary"
+        };
+    }
+}
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+
+
+<div class="crm-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="crmTabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#tab-overview" data-bs-toggle="tab">Overview</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-initial" data-bs-toggle="tab">Email Communication</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-lead" data-bs-toggle="tab">Lead Details</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-business" data-bs-toggle="tab">Business Enquiry</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-documents" data-bs-toggle="tab">Documents</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-activity" data-bs-toggle="tab">Lead Activity</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-opportunities" data-bs-toggle="tab">Opportunities</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-nda" data-bs-toggle="tab">NDA</a>
+            </li>
+        </ul>
+
+        <!-- Back Button -->
+        <a href="@Url.Action("Index", "Lead", new { area = "SalesCRM" })"
+               class="btn btn-sm btn-outline-secondary ms-3">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="tab-overview">
+            <div class="row" style="margin-left:5px;">
+                <div class="col-md-6 card section-card green mb-3">
+
+                    <div class="section-header d-flex justify-content-between align-items-center">
+    
+                        <!-- LEFT -->
+                        <div>
+                            <i class="bi bi-person"></i> Lead Details
+                        </div>
+
+                        <!-- RIGHT (Outline Icon) -->
+                        <a href="@Url.Action("Edit", "Lead", new { id = Model.LeadId })"
+                               class="text-decoration-none text-dark">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                    </div>
+
+                    <div class="section-body">
+
+                        <!-- 🔷 BASIC -->
+                        <div class="sub-card">
+                            <div class="sub-card-header">👤 Basic Info</div>
+                            <div class="sub-card-body">
+                                <div class="info-row">
+                                    <div class="info-label">Name</div>
+                                    <div class="info-value">@Model.FirstName @Model.LastName</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Gender</div>
+                                    <div class="info-value">@Model.Gender</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🔷 CONTACT -->
+                        <div class="sub-card">
+                            <div class="sub-card-header">📞 Contact Info</div>
+                            <div class="sub-card-body">
+                                <div class="info-row"><div class="info-label">Email</div><div class="info-value">@Model.Email</div></div>
+                                <div class="info-row"><div class="info-label">Phone</div><div class="info-value">@Model.Phone</div></div>
+                                <div class="info-row"><div class="info-label">Personal Email 1</div><div class="info-value">@Model.PersonalEmail1</div></div>
+                            </div>
+                        </div>
+
+                        <!-- 🔷 LOCATION -->
+                        <div class="sub-card">
+                            <div class="sub-card-header">📍 Location</div>
+                            <div class="sub-card-body">
+                                <div class="info-row"><div class="info-label">City</div><div class="info-value">@Model.City</div></div>
+                                <div class="info-row"><div class="info-label">Country</div><div class="info-value">@Model.Country</div></div>
+                                <div class="info-row"><div class="info-label">Zip</div><div class="info-value">@Model.ZipCode</div></div>
+                            </div>
+                        </div>
+
+                        <!-- 🔷 COMPANY -->
+                        <div class="sub-card">
+                            <div class="sub-card-header">🏢 Company</div>
+                            <div class="sub-card-body">
+                                <div class="info-row"><div class="info-label">Company</div><div class="info-value">@Model.CompanyName</div></div>
+                                <div class="info-row"><div class="info-label">Industry</div><div class="info-value">@Model.Industry</div></div>
+                                <div class="info-row"><div class="info-label">Size</div><div class="info-value">@Model.CompanySize</div></div>
+                            </div>
+                        </div>
+
+                        <!-- 🔷 LEAD INFO -->
+                        <div class="sub-card">
+                            <div class="sub-card-header">📊 Lead Info</div>
+                            <div class="sub-card-body">
+                                <div class="info-row"><div class="info-label">Source</div><div class="info-value">@Model.LeadSource</div></div>
+                                <div class="info-row"><div class="info-label">Stage</div><div class="info-value">@Model.LeadStage</div></div>
+                                <div class="info-row"><div class="info-label">Assigned</div><div class="info-value">@Model.SalesExecutive</div></div>
+                                <div class="info-row"><div class="info-label">Created</div><div class="info-value">@Model.LeadCreatedOn?.ToString("dd-MMM-yyyy")</div></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Business Enquiry + Documents -->
+                <div class="col-md-6">
+                    <div class="section-card orange">
+                        <div class="section-header"><i class="bi bi-briefcase"></i>&nbsp;  Business Enquiry</div>
+                        <div class="section-body">
+                            <div>
+                                <strong>Client Selected Service:</strong>
+
+                                @if (lead.SelectedServices != null && lead.SelectedServices.Any())
+                                {
+                                    <div class="mt-2 d-flex flex-wrap gap-2">
+                                        @foreach (var s in lead.SelectedServices)
+                                        {
+                                            <span class="badge rounded-pill bg-light text-dark border service-tag">
+                                                <i class="bi bi-check-circle me-1 text-primary"></i>
+                                                @s.ServiceName
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i> No Services Selected
+                                    </div>
+                                }
+                            </div>
+                            <hr />
+                            <p><strong>Description:</strong>@lead.RequirementDetails</p>
+                        </div>
+                    </div>
+
+                    <div class="section-card red mt-3">
+
+                        <div class="section-header d-flex justify-content-between align-items-center">
+
+                            <span>
+                                <i class="bi bi-folder"></i>&nbsp; Documents
+                            </span>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger ms-auto"
+                                    id="btnUploadDocument"
+                                    data-leadid="@Model.LeadId">
+
+                                <i class="bi bi-upload"></i>
+
+                            </button>
+
+                            <input type="file"
+                                   id="documentFileInput"
+                                   hidden />
+
+                        </div>
+
+                        <div class="section-body">
+
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">File Name</th>
+                                            <th class="text-center">Uploaded On</th>
+                                            <th class="text-center" width="120">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @if (Model.LeadDocuments != null && Model.LeadDocuments.Any())
+                                        {
+                                            foreach (var doc in Model.LeadDocuments)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <i class="@GetFileIcon(doc.FileName)"></i>
+                                                        @doc.FileName
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        @doc.UploadedOn.ToString("dd-MMM-yyyy")
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="@doc.FilePath"
+                                                               download
+                                                               target="_blank"
+                                                               class="btn btn-sm btn-outline-primary">
+
+                                                            <i class="bi bi-download"></i>
+
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-4">
+                                                    <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                                    No documents available
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Initial Response Tab -->
+        <div class="tab-pane fade" id="tab-initial">
+            <div class="section-card purple">
+
+                <!-- HEADER -->
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-envelope"></i> Initial Response
+                    </div>
+                </div>
+
+                <div class="section-body">
+
+                    <!-- Hidden -->
+                    <input type="hidden" id="ParentEntityType" value="Lead" />
+                    <input type="hidden" id="ParentEntityId" value="@Model.LeadId" />
+
+                    <!-- TO -->
+                    <div class="mb-2">
+                        <label>To:</label>
+                        <input type="text" id="toEmail" class="form-control"
+                               placeholder="Enter emails (comma separated)" />
+                    </div>
+
+                    <!-- CC/BCC TOGGLE -->
+                    <div class="mb-2">
+                        <small class="text-primary" style="cursor:pointer;"
+                               onclick="toggleCcBcc()">
+                            + Add CC / BCC
+                        </small>
+                    </div>
+
+                    <!-- CC -->
+                    <div class="mb-2 d-none" id="ccContainer">
+                        <label>CC:</label>
+                        <input type="text" id="ccEmail" class="form-control"
+                               placeholder="Enter CC emails (comma separated)" />
+                    </div>
+
+                    <!-- BCC -->
+                    <div class="mb-2 d-none" id="bccContainer">
+                        <label>BCC:</label>
+                        <input type="text" id="bccEmail" class="form-control"
+                               placeholder="Enter BCC emails (comma separated)" />
+                    </div>
+
+                    <!-- SUBJECT -->
+                    <div class="mb-2">
+                        <label>Subject:</label>
+                        <input type="text" id="subject" class="form-control"
+                               placeholder="Email subject" />
+                    </div>
+
+                    <!-- ATTACHMENTS -->
+                    <div class="mb-2">
+                        <label>Attachments:</label>
+                        <input type="file" id="attachments" class="form-control" multiple />
+                        <ul id="attachmentList" class="list-group mt-2"></ul>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="mb-2">
+                        <label>Body:</label>
+                        <textarea id="responseBody" class="form-control" rows="8"></textarea>
+                    </div>
+
+                    <!-- ACTION -->
+                    <div class="d-flex justify-content-end">
+                        <button id="btnSend" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Send
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 🔷 HISTORY -->
+            <div class="section-card mt-3">
+                <div class="section-header">
+                    <i class="bi bi-clock-history"></i> Response History
+                </div>
+
+                <div class="section-body">
+                    <table class="table table-sm table-striped" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>To</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="text-center">
+                            @if (Model.EmailHistory != null && Model.EmailHistory.Any())
+                            {
+                                foreach (var mail in Model.EmailHistory)
+                                {
+                                    <tr>
+                                        <!-- Date -->
+                                        <td>
+                                            @(mail.SentDate?.ToString("dd-MMM-yyyy HH:mm") ?? "-")
+                                        </td>
+
+                                        <!-- To Emails -->
+                                        <td>
+                                            <span title="@mail.ToEmails">
+                                                @(string.IsNullOrWhiteSpace(mail.ToEmails)
+                                                    ? "-"
+                                                    : mail.ToEmails)
+                                            </span>
+
+                                            @* Optional CC indicator *@
+                                            @if (!string.IsNullOrWhiteSpace(mail.CcEmails))
+                                            {
+                                                <span class="badge bg-light text-dark ms-1" title="Has CC">
+                                                    CC
+                                                </span>
+                                            }
+                                        </td>
+
+                                        <!-- Subject -->
+                                        <td>
+                                            <span title="@mail.Subject">
+                                                @(string.IsNullOrWhiteSpace(mail.Subject)
+                                                    ? "(No Subject)"
+                                                    : (mail.Subject.Length > 50
+                                                        ? mail.Subject.Substring(0, 50) + "..."
+                                                        : mail.Subject))
+                                            </span>
+                                        </td>
+
+                                        <!-- Status -->
+                                        <td>
+                                            <span class="badge
+                                                @(mail.Status == "Sent" ? "bg-success" :
+                                                                                                                                                                                            mail.Status == "Failed" ? "bg-danger" :
+                                                                                                                                                                                            mail.Status == "Draft" ? "bg-warning text-dark" :
+                                                                                                                                                                                            "bg-secondary")">
+                                                @(mail.Status ?? "Unknown")
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">
+                                        <i class="bi bi-inbox"></i> No email history
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script>
+                            function toggleCcBcc() {
+                                document.getElementById('ccContainer')?.classList.toggle('d-none');
+                                document.getElementById('bccContainer')?.classList.toggle('d-none');
+                            }
+
+                            let selectedFiles = [];
+
+                            const input = document.getElementById('attachments');
+                            const list = document.getElementById('attachmentList');
+                            const sendBtn = document.getElementById('btnSend');
+
+                            // Handle file selection
+                            input?.addEventListener('change', function () {
+                                selectedFiles = selectedFiles.concat(Array.from(this.files));
+                                this.value = '';
+                                renderFileList();
+                            });
+
+                            function renderFileList() {
+                                if (!list) return;
+
+                                list.innerHTML = '';
+
+                                selectedFiles.forEach((file, index) => {
+                                    const li = document.createElement('li');
+                                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                                    li.innerHTML = `<span>${file.name} (${Math.round(file.size / 1024)} KB)</span>`;
+
+                                    const delBtn = document.createElement('button');
+                                    delBtn.className = 'btn btn-sm btn-danger';
+                                    delBtn.innerHTML = '<i class="bi bi-x"></i>';
+
+                                    delBtn.onclick = () => {
+                                        selectedFiles.splice(index, 1);
+                                        renderFileList();
+                                    };
+
+                                    li.appendChild(delBtn);
+                                    list.appendChild(li);
+                                });
+                            }
+
+                            // 🔹 Send Email
+                            sendBtn?.addEventListener('click', function () {
+
+                                // 🔥 Disable button immediately
+                                sendBtn.disabled = true;
+                                sendBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+
+                                const to = document.getElementById('toEmail')?.value;
+                                const cc = document.getElementById('ccEmail')?.value;
+                                const bcc = document.getElementById('bccEmail')?.value;
+                                const subject = document.getElementById('subject')?.value;
+
+                                let body = '';
+                                if (window.tinymce && tinymce.get('responseBody')) {
+                                    body = tinymce.get('responseBody').getContent();
+                                } else {
+                                    body = document.getElementById('responseBody')?.value || '';
+                                }
+
+                                if (!to) {
+                                    alert("To email is required");
+
+                                    // 🔁 Re-enable button
+                                    sendBtn.disabled = false;
+                                    sendBtn.innerHTML = '<i class="bi bi-send"></i> Send';
+
+                                    return;
+                                }
+
+                                let formData = new FormData();
+
+                                formData.append("To", to);
+                                formData.append("CC", cc || '');
+                                formData.append("BCC", bcc || '');
+                                formData.append("Subject", subject || '');
+                                formData.append("BodyHtml", body);
+                                formData.append("ParentEntityType", "Lead");
+                                formData.append("ParentEntityId", "@Model.LeadId");
+
+                                selectedFiles.forEach(file => {
+                                    formData.append("Attachments", file);
+                                });
+
+                                fetch('@Url.Action("SendEmail", "Lead", new { area = "SalesCRM" })', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+
+                                    if (data && data.success) {
+
+                                        alert("Email sent successfully");
+                                        location.reload(); // 🔥 Refresh page
+                                        // 🔹 Reset safely
+                                        const safeSet = (id) => {
+                                            const el = document.getElementById(id);
+                                            if (el) el.value = '';
+                                        };
+
+                                        safeSet('toEmail');
+                                        safeSet('ccEmail');
+                                        safeSet('bccEmail');
+                                        safeSet('subject');
+
+                                        if (window.tinymce && tinymce.get('responseBody')) {
+                                            tinymce.get('responseBody').setContent('');
+                                        }
+
+                                        selectedFiles = [];
+                                        renderFileList();
+
+                                    } else {
+                                        alert("Failed to send email");
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert("Error occurred");
+                                })
+                                .finally(() => {
+                                    // 🔁 ALWAYS re-enable button
+                                    sendBtn.disabled = false;
+                                    sendBtn.innerHTML = '<i class="bi bi-send"></i> Send';
+                                });
+                            });
+            </script>
+        </div>
+
+
+        <!-- Lead Details Tab -->
+        <div class="tab-pane fade" id="tab-lead">
+            <partial name="_LeadDetails" model="@lead" />
+        </div>
+
+        <!-- Business Enquiry Tab -->
+        <div class="tab-pane fade" id="tab-business">
+            <div class="section-card orange">
+                <div class="section-header"><i class="bi bi-briefcase"></i>&nbsp;  Business Enquiry</div>
+                <div class="section-body">
+                    <div>
+                        <strong>Client Selected Service:</strong>
+
+                        @if (lead.SelectedServices != null && lead.SelectedServices.Any())
+                        {
+                            <div class="mt-2 d-flex flex-wrap gap-2">
+                                @foreach (var s in lead.SelectedServices)
+                                {
+                                    <span class="badge rounded-pill bg-light text-dark border service-tag">
+                                        <i class="bi bi-check-circle me-1 text-primary"></i>
+                                        @s.ServiceName
+                                    </span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-muted mt-2">
+                                <i class="bi bi-info-circle me-1"></i> No Services Selected
+                            </div>
+                        }
+                    </div>
+                    <hr />
+                    <p><strong>Description:</strong>@lead.RequirementDetails</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div class="tab-pane fade" id="tab-documents">
+            <div class="section-card red mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-folder"></i>&nbsp; Documents
+                    </span>
+
+                </div>
+
+                <div class="section-body">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">File Name</th>
+                                    <th class="text-center">Uploaded On</th>
+                                    <th class="text-center" width="120">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.LeadDocuments != null && Model.LeadDocuments.Any())
+                                {
+                                    foreach (var doc in Model.LeadDocuments)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="@GetFileIcon(doc.FileName)"></i>
+                                                @doc.FileName
+                                            </td>
+
+                                            <td class="text-center">
+                                                @doc.UploadedOn.ToString("dd-MMM-yyyy")
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <a href="@doc.FilePath"
+                                                       download
+                                                       target="_blank"
+                                                       class="btn btn-sm btn-outline-primary">
+
+                                                    <i class="bi bi-download"></i>
+
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                            No documents available
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Lead Activity Tab -->
+        <div class="tab-pane fade" id="tab-activity">
+            <!-- ========================================= -->
+<!-- ADD LEAD ACTIVITY -->
+<!-- ========================================= -->
+
+<div class="section-card red mt-3">
+
+    <div class="section-header d-flex justify-content-between align-items-center">
+
+        <span>
+            <i class="bi bi-journal-plus"></i>&nbsp;
+            Add Lead Activity
+        </span>
+
+                    <button type="button"
+                            id="btnSaveLeadActivity"
+                            class="btn btn-outline-success btn-sm"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Save Activity">
+
+                        <i class="bi bi-save"></i>
+
+                    </button>
+
+    </div>
+
+    <div class="section-body">
+
+        <div class="row g-3">
+
+            <!-- TYPE -->
+            <div class="col-md-12">
+
+                <label class="form-label fw-semibold">
+                    Type
+                </label>
+
+                <select class="form-select"
+                        id="activityType">
+
+                    <option value="">
+                        Select Type
+                    </option>
+
+                    <option value="Call">
+                        Call
+                    </option>
+
+                    <option value="Email">
+                        Email
+                    </option>
+
+                    <option value="Meeting">
+                        Meeting
+                    </option>
+
+                    <option value="Follow Up">
+                        Follow Up
+                    </option>
+
+                    <option value="Note">
+                        Note
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="col-md-12">
+
+                <label class="form-label fw-semibold">
+                    Description
+                </label>
+
+                <textarea id="activityDescription"></textarea>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================= -->
+<!-- LEAD ACTIVITIES TABLE -->
+<!-- ========================================= -->
+
+<div class="section-card red mt-3">
+
+    <div class="section-header d-flex justify-content-between align-items-center">
+
+        <span>
+            <i class="bi bi-clock-history"></i>&nbsp;
+            Lead Activities
+        </span>
+
+    </div>
+
+    <div class="section-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th class="text-center">
+                            Type
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th class="text-center">
+                            Created On
+                        </th>
+
+                        <th class="text-center">
+                            Created By
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (Model.LeadActivities != null &&
+                    Model.LeadActivities.Any())
+                    {
+                        foreach (var doc in Model.LeadActivities)
+                        {
+                            <tr>
+
+                                <td class="text-center">
+                                    @doc.Type
+                                </td>
+
+                                <td>
+                                    @Html.Raw(doc.Description)
+                                </td>
+
+                                <td class="text-center">
+                                    @doc.CreatedOn
+                                    .ToString("dd-MMM-yyyy")
+                                </td>
+
+                                <td class="text-center">
+                                    @doc.CreatedBy
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+
+                            <td colspan="4"
+                                class="text-center text-muted py-4">
+
+                                <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+
+                                No Activities Found
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // =========================================
+    // SAVE BUTTON
+    // =========================================
+
+    $("#btnSaveLeadActivity").click(function () {
+
+        let type =
+            $("#activityType").val();
+
+        let description =
+            tinymce.get("activityDescription").getContent();
+
+        if (!type) {
+
+            toastr.warning("Please select activity type");
+            return;
+        }
+
+        if (!description ||
+            description.trim() === "") {
+
+            toastr.warning("Please enter description");
+            return;
+        }
+
+        console.log(type);
+        console.log(description);
+
+        // AJAX CALL HERE
+
+    });
+
+</script>
+        </div>
+
+        
+        <link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+              rel="stylesheet" />
+        <!-- Opportunities Tab -->
+        <div class="tab-pane fade" id="tab-opportunities">
+            <div class="section-card red mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-folder"></i>&nbsp; Opportunities
+                    </span>
+
+                    @* <button class="btn btn-sm btn-outline-danger ms-auto">
+                        <i class="bi bi-upload"></i>
+                    </button> *@
+
+                </div>
+                <form id="scopingForm">
+                    <div class="section-body">
+                        <div class="mb-3 d-flex flex-wrap align-items-end gap-2">
+                            <div style="min-width:600px;">
+
+                                <select id="serviceDropdown"
+                                        name="ServiceIds"
+                                        class="form-select form-select-sm"
+                                        multiple
+                                        required>
+
+                                    <!-- SELECT ALL OPTION -->
+                                    <option value="ALL">Select All</option>
+
+                                    @if (ViewBag.Services != null)
+                                    {
+                                        foreach (var s in ViewBag.Services)
+                                        {
+                                            <option value="@s.ServiceId">
+                                                @s.ServiceName
+                                            </option>
+                                        }
+                                    }
+
+                                </select>
+
+                            </div>
+                            <div style="display:flex;align-self:center;">
+                                <button type="submit"
+                                        id="btnScoping"
+                                        class="btn btn-sm btn-outline-primary w-100">
+                                    <i class="bi bi-send"></i> Request for scoping
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle">
+                                <thead class="text-center">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Service</th>
+                                        <th>Stage</th>
+                                        <th>Requested On</th>
+                                        <th>Scoper</th>
+                                        <th>Submited On</th>
+                                        <th>Delivery Manager</th>
+                                        <th>Approved On</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="text-center">
+
+                                    @if (Model.LeadOpportunities != null && Model.LeadOpportunities.Any())
+                                    {
+                                        foreach (var opp in Model.LeadOpportunities)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <a href="@Url.Action("OpportunityDetails", "Opportunity", new { area = "SalesCRM", id = opp.Id, serviceId = opp.ServiceId.ToString() })"
+                                                           class="text-decoration-none text-primary fw-semibold">
+                                                        @opp.Name
+                                                    </a>
+                                                </td>
+                                                <td>@opp.ServiceName</td>
+                                                <td>
+                                                    @opp.OpportunityStage
+                                                </td>
+                                                <td class="text-center">
+                                                    @opp.RequestedOn
+                                                </td>
+                                                <td class="text-center">
+                                                    @opp.Scoper
+                                                </td>
+                                                <td class="text-center">
+                                                    @opp.SubmittedOn
+                                                </td>
+                                                <td class="text-center">
+                                                    @opp.DeliveryManager
+                                                </td>
+                                                <td class="text-center">
+                                                    @opp.ApprovedOn
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                                No Data Available
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- NDA Tab -->
+        <div class="tab-pane fade" id="tab-nda">
+
+            <div class="section-card red mt-3">
+
+                <!-- HEADER -->
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-shield-lock"></i>&nbsp; NDA Details
+                    </span>
+
+                </div>
+
+                <div class="section-body">
+
+                    <!-- NDA FORM -->
+                    <div class="row g-3">
+
+                        <!-- ACCEPT NDA -->
+                        <div class="col-md-3">
+
+                            <div class="form-check mt-2">
+
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="AcceptNDAAgreement"
+                                       name="AcceptNDAAgreement" />
+
+                                <label class="form-check-label"
+                                       for="AcceptNDAAgreement">
+
+                                    Accept NDA Agreement
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ACCEPT SCANNED DOC -->
+                        <div class="col-md-3">
+
+                            <div class="form-check mt-2">
+
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="AcceptScannedDocuments"
+                                       name="AcceptScannedDocuments" />
+
+                                <label class="form-check-label"
+                                       for="AcceptScannedDocuments">
+
+                                    Accept Scanned Documents
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <!-- NDA EXECUTED -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Executed
+                            </label>
+
+                            <select class="form-select"
+                                    id="NDAExecuted"
+                                    name="NDAExecuted">
+
+                                <option value="">
+                                    Select
+                                </option>
+
+                                <option value="true">
+                                    Yes
+                                </option>
+
+                                <option value="false">
+                                    No
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <!-- EXECUTED DATE -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Executed Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   id="NDAExecutedDate"
+                                   name="NDAExecutedDate" />
+
+                        </div>
+
+                        <!-- START DATE -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Start Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   id="NDAStartDate"
+                                   name="NDAStartDate" />
+
+                        </div>
+
+                        <!-- END DATE -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA End Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   id="NDAEndDate"
+                                   name="NDAEndDate" />
+
+                        </div>
+
+                        <!-- RENEWAL DATE -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Renewal Date
+                            </label>
+
+                            <input type="date"
+                                   class="form-control"
+                                   id="NDARenewalDate"
+                                   name="NDARenewalDate" />
+
+                        </div>
+
+                        <!-- CUSTOMER NAME -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Customer Name
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="NDACustomerName"
+                                   name="NDACustomerName"
+                                   placeholder="Enter customer name" />
+
+                        </div>
+
+                        <!-- VERSION -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Version Number
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="NDAVersionNumber"
+                                   name="NDAVersionNumber"
+                                   value="1.0"
+                                   readonly />
+
+                        </div>
+
+                        <!-- NDA NUMBER -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Number
+                            </label>
+
+                            <input type="text"
+                                   class="form-control"
+                                   id="NDANumber"
+                                   name="NDANumber"
+                                   placeholder="Enter NDA number" />
+
+                        </div>
+
+                        <!-- FORMAT -->
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Format
+                            </label>
+
+                            <select class="form-select"
+                                    id="NDAFormat"
+                                    name="NDAFormat">
+
+                                <option value="">
+                                    Select Format
+                                </option>
+
+                                <option value="PDF">
+                                    PDF
+                                </option>
+
+                                <option value="DOCX">
+                                    DOCX
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">
+                                NDA Link
+                            </label>
+
+                            <div class="d-flex align-items-center gap-2">
+
+                                <!-- CLICKABLE LINK -->
+                                <a href="@Model.NDALink"
+                                       target="_blank"
+                                       id="ndaLinkAnchor"
+                                       class="text-primary text-decoration-none fw-semibold">
+                                    @Model.NDALink
+                                </a>
+                            </div>
+                        </div>
+                        <!-- SPECIAL CLAUSE ORG -->
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                NDA Special Clause (For Org)
+                            </label>
+
+                            <textarea class="form-control"
+                                      rows="3"
+                                      id="NDASpecialClauseOrg"
+                                      name="NDASpecialClauseOrg"
+                                      placeholder="Enter organization clause"></textarea>
+
+                        </div>
+
+                        <!-- SPECIAL CLAUSE INTERNAL -->
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                NDA Special Clause (For Internal)
+                            </label>
+
+                            <textarea class="form-control"
+                                      rows="3"
+                                      id="NDASpecialClauseInternal"
+                                      name="NDASpecialClauseInternal"
+                                      placeholder="Enter internal clause"></textarea>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ACTION BUTTONS -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+
+                        <button type="button"
+                                class="btn btn-outline-secondary">
+
+                            <i class="bi bi-x-circle"></i>
+                            Cancel
+
+                        </button>
+
+                        <button type="button"
+                                id="btnSaveNDA"
+                                class="btn btn-primary">
+
+                            <i class="bi bi-check-circle"></i>
+                            Save NDA
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- TinyMCE Free Build -->
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const serviceDropdown = document.getElementById('serviceDropdown');
+
+    if (serviceDropdown) {
+
+    const choices = new Choices(serviceDropdown, {
+    removeItemButton: true,
+    placeholder: true,
+    placeholderValue: 'Select Services',
+    searchEnabled: true,
+    shouldSort: false
+    });
+
+    // ✅ Handle Select All
+    serviceDropdown.addEventListener('change', function () {
+
+    const values = choices.getValue(true);
+
+    if (values.includes('ALL')) {
+
+    const allValues = Array.from(serviceDropdown.options)
+    .filter(x => x.value !== 'ALL')
+    .map(x => x.value);
+
+    choices.removeActiveItems();
+
+    choices.setChoiceByValue(allValues);
+    }
+    });
+    }
+    });
+</script>
+<script>
+    tinymce.init({
+    selector: '#responseBody',
+    height: 400,
+    menubar: true,
+
+    plugins: [
+    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+    'searchreplace', 'visualblocks', 'code', 'fullscreen',
+    'insertdatetime', 'media', 'table', 'emoticons', 'help', 'wordcount'
+    ],
+
+    toolbar:
+    'undo redo | styleselect | bold italic underline | ' +
+    'alignleft aligncenter alignright | bullist numlist | ' +
+    'link image | code fullscreen',
+
+    branding: false
+    });
+</script>
+<script>
+    tinymce.init({
+    selector: '#activityDescription',
+    height: 400,
+    menubar: true,
+
+    plugins: [
+    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+    'searchreplace', 'visualblocks', 'code', 'fullscreen',
+    'insertdatetime', 'media', 'table', 'emoticons', 'help', 'wordcount'
+    ],
+
+    toolbar:
+    'undo redo | styleselect | bold italic underline | ' +
+    'alignleft aligncenter alignright | bullist numlist | ' +
+    'link image | code fullscreen',
+
+    branding: false
+    });
+</script>
+<script>
+
+    document.getElementById("scopingForm")
+    .addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    try {
+
+    const btn =
+    document.getElementById("btnScoping");
+
+    btn.disabled = true;
+
+    btn.innerHTML =
+    '<i class="fa fa-spinner fa-spin"></i> Processing...';
+
+    const form = e.target;
+
+    const formData =
+    new FormData(form);
+
+    // ============================================
+    // ADD LEAD ID
+    // ============================================
+
+    formData.append(
+    "LeadId",
+    "@Model.LeadId"
+    );
+
+    // ============================================
+    // MULTI SELECT SERVICES
+    // ============================================
+
+    const selectedServices =
+    Array.from(
+    document.getElementById("serviceDropdown")
+    .selectedOptions
+    )
+    .map(x => x.value)
+    .filter(x => x !== "ALL");
+
+    // REMOVE OLD VALUES
+    formData.delete("ServiceIds");
+
+    // ADD MULTIPLE VALUES
+    selectedServices.forEach(x => {
+
+    formData.append("ServiceIds", x);
+
+    });
+
+    // ============================================
+    // API CALL
+    // ============================================
+
+    const response =
+    await fetch(
+    '@Url.Action("CreateOpportunity", "Lead", new { area = "SalesCRM" })',
+    {
+    method: 'POST',
+    body: formData
+    });
+
+    const data =
+    await response.json();
+
+    // ============================================
+    // SUCCESS
+    // ============================================
+
+    if (data.success) {
+
+    alert("Scoping requested successfully");
+
+    form.reset();
+
+    location.reload();
+    }
+    else {
+
+    alert(
+    data.message ||
+    "Failed to create opportunity"
+    );
+    }
+
+    // ============================================
+    // RESET BUTTON
+    // ============================================
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+    '<i class="fa fa-paper-plane"></i> Submit';
+
+    }
+    catch (err) {
+
+    console.error(err);
+
+    alert("Error occurred");
+
+    const btn =
+    document.getElementById("btnScoping");
+
+    btn.disabled = false;
+
+    btn.innerHTML =
+    '<i class="fa fa-paper-plane"></i> Submit';
+    }
+
+    });
+
+</script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const uploadBtn = document.getElementById("btnUploadDocument");
+    const fileInput = document.getElementById("documentFileInput");
+
+    // 🔥 Safety check
+    if (!uploadBtn || !fileInput)
+    return;
+
+    // 🔥 Upload button click
+    uploadBtn.addEventListener("click", function () {
+
+    fileInput.value = "";
+    fileInput.click();
+
+    });
+
+    // 🔥 File selected
+    fileInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file)
+    return;
+
+    const leadId = uploadBtn.getAttribute("data-leadid");
+
+    console.log("LeadId:", leadId);
+
+    if (!leadId) {
+
+    alert("Lead Id not found");
+    return;
+    }
+
+    // 🔥 Confirmation
+    const isConfirmed = confirm("Are you sure you want to upload this document?");
+
+    if (!isConfirmed)
+    return;
+
+    let formData = new FormData();
+
+    formData.append("leadId", leadId);
+    formData.append("file", file);
+
+    // 🔥 Correct POST URL
+    fetch('@Url.Action("UploadLeadDocument", "Lead")', {
+
+    method: 'POST',
+    body: formData
+
+    })
+    .then(async response => {
+
+    if (!response.ok) {
+
+    const errorText = await response.text();
+
+    console.error("Server Error:", errorText);
+
+    throw new Error(errorText);
+    }
+
+    return response.json();
+
+    })
+    .then(data => {
+
+    alert("Document uploaded successfully");
+
+    location.reload();
+
+    })
+    .catch(error => {
+
+    console.error("Upload Error:", error);
+
+    alert("Upload failed");
+
+    });
+
+    });
+
+    });
+
+</script>
+
+

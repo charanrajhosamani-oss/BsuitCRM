@@ -1,0 +1,729 @@
+﻿@model BSuit.SalesCRM.VM.Lead.ServicePricingVM
+
+@{
+    ViewData["Title"] = "Configure Service Pricing";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<style>
+
+    .pricing-wrapper {
+        padding: 10px;
+    }
+
+    .pricing-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #0D2D5A;
+        margin-bottom: 2px;
+    }
+
+    .pricing-subtitle {
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .pricing-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .pricing-table th {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+
+    .pricing-table .form-select,
+    .pricing-table .form-control {
+        min-width: 140px;
+    }
+
+    .price-input-group {
+        min-width: 150px;
+    }
+
+        .price-input-group .input-group-text {
+            font-size: 12px;
+            background: #f8f9fa;
+        }
+
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+    .table td {
+        background: rgba(255,255,255,0.65);
+    }
+
+    .table tr:hover td {
+        background: rgba(13,45,90,0.03);
+    }
+
+</style>
+
+<div class="container-fluid mt-3 pricing-wrapper">
+
+    <!-- PAGE HEADER -->
+    <div class="pricing-toolbar">
+
+        <div>
+
+            <div class="pricing-title">
+                Configure Service Pricing
+            </div>
+
+            <div class="pricing-subtitle">
+                Configure service and region-wise hourly pricing ranges
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button type="button"
+                    class="btn btn-outline-primary"
+                    id="btnAddRow">
+
+                <i class="bi bi-plus-circle"></i>
+                Add Pricing
+
+            </button>
+
+            <button type="button"
+                    class="btn btn-primary"
+                    id="btnSavePricing">
+
+                <i class="bi bi-check-circle"></i>
+                Save Configuration
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CARD -->
+    <div class="section-card blue">
+
+        <!-- HEADER -->
+        <div class="section-header">
+
+            <i class="bi bi-currency-dollar"></i>
+
+            <span>
+                Service Pricing Matrix
+            </span>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="section-body p-0">
+
+            <div class="table-container">
+
+                <table class="table table-bordered align-middle pricing-table mb-0"
+                       id="pricingTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th width="60">
+                                Sl.No
+                            </th>
+
+                            <th>
+                                Service
+                            </th>
+
+                            <th>
+                                Region
+                            </th>
+
+                            <th>
+                                Currency
+                            </th>
+
+                            <th>
+                                Min Hourly Rate
+                            </th>
+
+                            <th>
+                                Max Hourly Rate
+                            </th>
+
+                            <th width="100">
+                                Active
+                            </th>
+
+                            <th width="100">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.ServicePricingList != null &&
+                             Model.ServicePricingList.Any())
+                        {
+                            int count = 1;
+
+                            foreach (var item in Model.ServicePricingList)
+                            {
+                                <tr>
+
+                                    <!-- SERIAL -->
+                                    <td class="text-center">
+
+                                        @count
+
+                                        <input type="hidden"
+                                               class="service-pricing-id"
+                                               value="@item.ServicePricingId" />
+
+                                    </td>
+
+                                    <!-- SERVICE -->
+                                    <td>
+
+                                        <select class="form-select service-id">
+
+                                            <option value="">
+                                                Select Service
+                                            </option>
+
+                                            @foreach (var service in Model.ServiceList)
+                                            {
+                                                if (service.ServiceId == item.ServiceId)
+                                                {
+                                                    <option value="@service.ServiceId"
+                                                            selected>
+
+                                                        @service.ServiceName
+
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@service.ServiceId">
+
+                                                        @service.ServiceName
+
+                                                    </option>
+                                                }
+                                            }
+
+                                        </select>
+
+                                    </td>
+
+                                    <!-- REGION -->
+                                    <td>
+
+                                        <select class="form-select region-id">
+
+                                            <option value="">
+                                                Select Region
+                                            </option>
+
+                                            @foreach (var region in Model.Regions)
+                                            {
+                                                if (region.RegionId == item.RegionId)
+                                                {
+                                                     <option value="@region.RegionId" selected>
+
+                                                    @region.RegionName
+
+                                                </option>                                                    
+                                                } else
+                                                {
+                                                    <option value="@region.RegionId">
+
+                                                        @region.RegionName
+
+                                                    </option>
+                                                    
+                                                }
+                                               
+                                            }
+
+                                        </select>
+
+                                    </td>
+
+                                    <!-- CURRENCY -->
+                                    <td>
+
+                                        <select class="form-select currency-id">
+
+                                            <option value="">
+                                                Select Currency
+                                            </option>
+
+                                            @foreach (var currency in Model.CurrencyList)
+                                            {
+                                                if (currency.CurrencyId == item.CurrencyId)
+                                                {
+                                                    <option value="@currency.CurrencyId"
+                                                            selected>
+
+                                                        @currency.CurrencyCode
+
+                                                    </option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@currency.CurrencyId">
+
+                                                        @currency.CurrencyCode
+
+                                                    </option>
+                                                }
+                                            }
+
+                                        </select>
+
+                                    </td>
+
+                                    <!-- LOW PRICE -->
+                                    <td>
+
+                                        <div class="input-group price-input-group flex-nowrap">
+
+                                            <span class="input-group-text">
+                                                ₹
+                                            </span>
+
+                                            <input type="number"
+                                                   class="form-control low-price"
+                                                   value="@item.LowPrice" />
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- HIGH PRICE -->
+                                    <td>
+
+                                        <div class="input-group price-input-group flex-nowrap">
+
+                                            <span class="input-group-text">
+                                                ₹
+                                            </span>
+
+                                            <input type="number"
+                                                   class="form-control high-price"
+                                                   value="@item.HighPrice" />
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- ACTIVE -->
+                                    <td class="text-center">
+
+                                        <div class="form-check form-switch d-flex justify-content-center">
+
+                                            <input class="form-check-input is-active"
+                                                   type="checkbox"
+                                            @(item.IsActive ? "checked" : "") />
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- ACTION -->
+                                    <td class="text-center">
+
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger btnDeleteRow">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            <tr class="empty-row">
+
+                                <td colspan="8">
+
+                                    <div class="empty-state">
+
+                                        <i class="bi bi-folder-x d-block"></i>
+
+                                        No pricing configuration available
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    // =========================================
+    // 🔥 ADD ROW
+    // =========================================
+
+    document.getElementById("btnAddRow")
+        .addEventListener("click", function () {
+
+            let tbody =
+                document.querySelector("#pricingTable tbody");
+
+            // 🔥 remove empty row
+            let emptyRow =
+                tbody.querySelector(".empty-row");
+
+            if (emptyRow) {
+                emptyRow.remove();
+            }
+
+            let rowCount =
+                tbody.querySelectorAll("tr").length + 1;
+
+            let row = `
+
+                <tr>
+
+                    <!-- SERIAL -->
+                    <td class="text-center">
+
+                        ${rowCount}
+
+                        <input type="hidden"
+                               class="service-pricing-id"
+                               value="" />
+
+                    </td>
+
+                    <!-- SERVICE -->
+                    <td>
+
+                        <select class="form-select service-id">
+
+                            <option value="">
+                                Select Service
+                            </option>
+
+                            @foreach (var service in Model.ServiceList)
+                            {
+                                    <text>
+
+                                            <option value="@service.ServiceId">
+
+                                                    @service.ServiceName
+
+                                            </option>
+
+                                    </text>
+                            }
+
+                        </select>
+
+                    </td>
+
+                    <!-- REGION -->
+                    <td>
+
+                        <select class="form-select region-id">
+
+                            <option value="">
+                                Select Region
+                            </option>
+
+                            @foreach (var region in Model.Regions)
+                            {
+                                    <text>
+
+                                            <option value="@region.RegionId">
+
+                                                    @region.RegionName
+
+                                            </option>
+
+                                    </text>
+                            }
+
+                        </select>
+
+                    </td>
+
+                    <!-- CURRENCY -->
+                    <td>
+
+                        <select class="form-select currency-id">
+
+                            <option value="">
+                                Select Currency
+                            </option>
+
+                            @foreach (var currency in Model.CurrencyList)
+                            {
+                                    <text>
+
+                                            <option value="@currency.CurrencyId">
+
+                                                    @currency.CurrencyCode
+
+                                            </option>
+
+                                    </text>
+                            }
+
+                        </select>
+
+                    </td>
+
+                    <!-- LOW PRICE -->
+                    <td>
+
+                        <div class="input-group price-input-group flex-nowrap">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input type="number"
+                                   class="form-control low-price"
+                                   value="0" />
+
+                        </div>
+
+                    </td>
+
+                    <!-- HIGH PRICE -->
+                    <td>
+
+                        <div class="input-group price-input-group flex-nowrap">
+
+                            <span class="input-group-text">
+                                ₹
+                            </span>
+
+                            <input type="number"
+                                   class="form-control high-price"
+                                   value="0" />
+
+                        </div>
+
+                    </td>
+
+                    <!-- ACTIVE -->
+                    <td class="text-center">
+
+                        <div class="form-check form-switch d-flex justify-content-center">
+
+                            <input class="form-check-input is-active"
+                                   type="checkbox"
+                                   checked />
+
+                        </div>
+
+                    </td>
+
+                    <!-- ACTION -->
+                    <td class="text-center">
+
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger btnDeleteRow">
+
+                            <i class="bi bi-trash"></i>
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            tbody.insertAdjacentHTML("beforeend", row);
+
+        });
+
+    // =========================================
+    // 🔥 DELETE ROW
+    // =========================================
+
+    document.addEventListener("click", function (e) {
+
+        if (e.target.closest(".btnDeleteRow")) {
+
+            if (!confirm("Are you sure you want to remove this row?"))
+                return;
+
+            e.target.closest("tr").remove();
+
+        }
+
+    });
+
+</script>
+
+<script>
+
+    // =========================================
+    // 🔥 SAVE CONFIGURATION
+    // =========================================
+
+    document.getElementById("btnSavePricing")
+        .addEventListener("click", function () {
+
+            let rows =
+                document.querySelectorAll("#pricingTable tbody tr");
+
+            let formData = new FormData();
+
+            let index = 0;
+
+            rows.forEach(row => {
+
+                // 🔥 Skip empty row
+                if (row.classList.contains("empty-row"))
+                    return;
+
+                // =====================================
+                // SERVICE PRICING ID
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].ServicePricingId`,
+                    row.querySelector(".service-pricing-id")?.value || "");
+
+                // =====================================
+                // SERVICE ID
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].ServiceId`,
+                    row.querySelector(".service-id")?.value || "");
+
+                // =====================================
+                // REGION ID
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].RegionId`,
+                    row.querySelector(".region-id")?.value || "");
+
+                // =====================================
+                // CURRENCY ID
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].CurrencyId`,
+                    row.querySelector(".currency-id")?.value || "");
+
+                // =====================================
+                // LOW PRICE
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].LowPrice`,
+                    row.querySelector(".low-price")?.value || 0);
+
+                // =====================================
+                // HIGH PRICE
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].HighPrice`,
+                    row.querySelector(".high-price")?.value || 0);
+
+                // =====================================
+                // ACTIVE
+                // =====================================
+
+                formData.append(
+                    `pricingList[${index}].IsActive`,
+                    row.querySelector(".is-active")?.checked);
+
+                index++;
+
+            });
+
+            if (index === 0) {
+
+                alert("Please add pricing records");
+                return;
+            }
+
+            fetch('@Url.Action("SaveServicePricing", "Lead")', {
+
+                method: 'POST',
+                body: formData
+
+            })
+            .then(async response => {
+
+                if (!response.ok) {
+
+                    let errorText =
+                        await response.text();
+
+                    throw new Error(errorText);
+                }
+
+                return response.json();
+
+            })
+            .then(data => {
+
+                alert(data.message);
+
+                location.reload();
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                alert("Failed to save pricing");
+
+            });
+
+        });
+
+</script>

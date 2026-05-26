@@ -1,0 +1,339 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.ApprovalOpportunityListVM
+
+@{
+    ViewData["Title"] = "Pending Approvals";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var selectedList = ViewBag.SelectedServices as string[] ?? new string[] { };
+
+    int totalPages =
+        (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+      rel="stylesheet" />
+
+<div class="container-fluid pt-3 crm-container">
+
+    <!-- HEADER -->
+    <div class="section-card purple mb-2">
+        <div class="section-header">
+            Pending Approvals
+        </div>
+    </div>
+
+    <!-- STAGE TABS -->
+    <div class="section-card mb-2">
+
+        <div class="section-body d-flex align-items-center">
+
+            <button type="button"
+                    class="btn btn-sm btn-light tab-scroll-btn me-2"
+                    onclick="scrollTabs(-200)">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+
+            <div id="tabsContainer"
+                 class="tabs-scroll-container d-flex flex-nowrap overflow-auto flex-grow-1 gap-2">
+
+                <button class="tab-btn @(string.IsNullOrEmpty(ViewBag.SelectedStage) ? "active" : "")"
+                        onclick="changeStage('')">
+                    All (@Model.TotalCount)
+                </button>
+
+                @foreach (var stage in ViewBag.Stages)
+                {
+                    var isActive = ViewBag.SelectedStage == stage.StageId.ToString();
+
+                    <button class="tab-btn @(isActive ? "active" : "")"
+                            onclick="changeStage('@stage.StageId')">
+
+                        @stage.StageName
+
+                        <span class="badge @(isActive ? "active-badge" : "")">
+                            @stage.Count
+                        </span>
+
+                    </button>
+                }
+
+            </div>
+
+            <button type="button"
+                    class="btn btn-sm btn-light tab-scroll-btn ms-2"
+                    onclick="scrollTabs(200)">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- FILTER -->
+    <div class="section-card">
+
+        <div class="section-body">
+
+            <form method="get">
+
+                <input type="hidden" name="stageId" value="@ViewBag.SelectedStage" />
+
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+
+                    <input type="text"
+                           name="searchText"
+                           class="form-control form-control-sm"
+                           placeholder="Search..."
+                           value="@ViewBag.SearchText"
+                           style="width:220px;" />
+
+                    <input type="text"
+                           name="startDate"
+                           class="form-control form-control-sm datepicker"
+                           placeholder="From Date"
+                           value="@ViewBag.StartDate"
+                           style="width:140px;" />
+
+                    <input type="text"
+                           name="endDate"
+                           class="form-control form-control-sm datepicker"
+                           placeholder="To Date"
+                           value="@ViewBag.EndDate"
+                           style="width:140px;" />
+
+                    <select id="serviceIds"
+                            name="serviceIds"
+                            multiple
+                            class="form-select form-select-sm service-multi">
+
+                        @foreach (var item in (List<SelectListItem>)ViewBag.Services)
+                        {
+                            <option value="@item.Value"
+                                    selected="@(selectedList.Contains(item.Value))">
+                                @item.Text
+                            </option>
+                        }
+
+                    </select>
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="fa fa-search"></i>
+                    </button>
+
+                    <a href="@Url.Action("ApprovalOpportunityList")"
+                           class="btn btn-outline-danger btn-sm">
+                        <i class="fa fa-refresh"></i>
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="section-card">
+
+        <div class="table-container">
+
+            <table class="table table-header align-middle mb-0">
+
+                <thead>
+                    <tr>
+                        <th style="width:60px;">#</th>
+                        <th>Opportunity</th>
+                        <th>Client</th>
+                        <th>Service</th>
+                        <th>Stage</th>
+                        <th>Scoper Status</th>
+                        <th>Scoper</th>
+                        <th>Sales Executive</th>
+                        <th>Approval Status</th>
+                        <th>Submitted On</th>
+                        <th>Estimated On</th>
+                    </tr>
+                </thead>
+
+                <tbody class="lead-table">
+
+                    @{
+                        int count = (Model.PageNumber - 1) * Model.PageSize + 1;
+                    }
+
+                    @foreach (var item in Model.Opportunities)
+                    {
+                        <tr>
+                            <td class="text-center">@count</td>
+
+                            <td>
+
+                                @if (item.ApprovalStatus == "Approved")
+                                {
+                                    <a href="@Url.Action("ApprovalOpportunityProposalDetails",
+                                                                                                                                                                                          new
+                                                                                                                                                                                          {
+                                                                                                                                                                                              id = item.OpportunityId,
+                                                                                                                                                                                              serviceId = item.OpportunityServiceId,
+                                                                                                                                                                                              approvalId = item.ApprovalId,
+                                                                                                                                                                                              workOrderId = item.WorkOrderId
+                                                                                                                                                                                          })"
+                                           class="fw-semibold text-primary text-decoration-none">
+                                        @item.OpportunityName
+                                    </a>
+
+                                }
+                                else
+                                {
+                                    
+                                
+                                <a href="@Url.Action("ApprovalOpportunityDetails",
+                                                                                                           new
+                                                                                                        {
+                                                                                                               id = item.OpportunityId,
+                                                                                                               serviceId = item.OpportunityServiceId,
+                                                                                                               approvalId = item.ApprovalId,
+                                                                                                               workOrderId = item.WorkOrderId,
+                                                                                                               ProposalId = item.ProposalId,
+
+                                                                                                           })"
+                                       class="fw-semibold text-primary text-decoration-none">
+                                    @item.OpportunityName
+                                </a>
+                                }
+                            </td>
+
+                            <td>@item.LeadName</td>
+                            <td>@item.ServiceName</td>
+                            <td>@item.StageName</td>
+
+                            <td>
+                                <span class="badge bg-warning">
+                                    @item.ScoperStatus
+                                </span>
+                            </td>
+
+                            <td>@item.Scoper</td>
+                            <td>@item.SlaesExecutive</td>
+
+                            <td>
+                                @if (item.ApprovalStatus == "Approved")
+                                {
+                                    <span class="badge bg-success">
+                                        Approved By @item.ApprovedByName
+                                    </span>
+                                }
+                                else if (item.ApprovalStatus == "Cancelled")
+                                {
+                                    <span class="badge bg-danger">
+                                        Rejected By @item.ApprovedByName
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Pending - @item.ApprovedRole
+                                    </span>
+                                }
+                            </td>
+
+                            <td>@item.SubmittedOn?.ToString("dd-MMM-yyyy")</td>
+                            <td>@item.EstimatedOn?.ToString("dd-MMM-yyyy")</td>
+                        </tr>
+
+                        count++;
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="section-card">
+
+        <div class="section-body d-flex justify-content-between align-items-center">
+
+            <div>Total: @Model.TotalCount</div>
+
+            <ul class="pagination pagination-sm mb-0">
+
+                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("ApprovalOpportunityList",
+                                                                                     new
+                                                                                    {
+                                                                                         pageNumber = Model.PageNumber - 1,
+                                                                                         stageId = ViewBag.SelectedStage,
+                                                                                         searchText = ViewBag.SearchText,
+                                                                                         startDate = ViewBag.StartDate,
+                                                                                         endDate = ViewBag.EndDate,
+                                                                                         serviceIds = selectedList
+                                                                                     })">Prev</a>
+                </li>
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("ApprovalOpportunityList",
+                                                                                                 new
+                                                                                                {
+                                                                                                     pageNumber = i,
+                                                                                                     stageId = ViewBag.SelectedStage,
+                                                                                                     searchText = ViewBag.SearchText,
+                                                                                                     startDate = ViewBag.StartDate,
+                                                                                                     endDate = ViewBag.EndDate,
+                                                                                                     serviceIds = selectedList
+                                                                                                 })">@i</a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.PageNumber == totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("ApprovalOpportunityList",
+                                                                                     new
+                                                                                    {
+                                                                                         pageNumber = Model.PageNumber + 1,
+                                                                                         stageId = ViewBag.SelectedStage,
+                                                                                         searchText = ViewBag.SearchText,
+                                                                                         startDate = ViewBag.StartDate,
+                                                                                         endDate = ViewBag.EndDate,
+                                                                                         serviceIds = selectedList
+                                                                                     })">Next</a>
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+<script>
+    function changeStage(stage) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("stageId", stage);
+    url.searchParams.set("pageNumber", 1);
+    window.location.href = url.toString();
+    }
+
+    function scrollTabs(val) {
+    document.getElementById("tabsContainer").scrollLeft += val;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const el = document.getElementById("serviceIds");
+    if (el) {
+    new Choices(el, {
+    removeItemButton: true,
+    searchEnabled: true,
+    shouldSort: false,
+    placeholder: true,
+    placeholderValue: "Select Services"
+    });
+    }
+    });
+</script>
+

@@ -1,0 +1,46 @@
+﻿STEP 6 — Module Access Middleware
+
+This middleware is acting as a gatekeeper for module-level access.
+It runs on every request and decides whether the current tenant is allowed to access a specific module.
+
+
+public class ModuleAccessMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public ModuleAccessMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task Invoke(HttpContext context, BSuitDbContext db)
+    {
+        var path = context.Request.Path.Value?.ToLower();
+
+        if (path.StartsWith("/crm"))
+        {
+            var TenantId = (int?)context.Items["TenantId"];
+
+            if (TenantId == null)
+                return;
+
+            var module = db.Modules.First(x => x.Code == "CRM");
+
+            var hasAccess = db.ClientModules.Any(x =>
+                x.TenantId == TenantId &&
+                x.ModuleId == module.ModuleId &&
+                x.IsActive);
+
+            if (!hasAccess)
+            {
+                context.Response.Redirect("/NoAccess");
+                return;
+            }
+        }
+
+        await _next(context);
+    }
+}
+
+
+app.UseMiddleware<ModuleAccessMiddleware>();

@@ -1,0 +1,63 @@
+﻿Below is a step-by-step, production-ready UI design + Razor implementation for:
+
+Permission Setup (Master)
+Role Setup (Identity based)
+Role ↔ Permission Mapping
+User Permission Override
+Column Permission Setup
+
+🔷 STEP 1: Permission Setup UI (Super Admin)
+🎯 Purpose:
+Define master permissions (auto-seeded but editable UI)
+
+🔷 CORE RULE (VERY IMPORTANT)
+All data must be filtered by TenantId
+Except Master Permissions (global)
+
+Super Admin
+   ↓
+Creates Master Permissions (Global)
+
+Tenant Admin
+   ↓
+Creates Roles (TenantId)
+   ↓
+Assigns Permissions (TenantId scoped)
+   ↓
+Assigns Users (TenantId scoped)
+   ↓
+Optional Overrides (User + Column)
+
+
+Navigation Structure (ERP Admin Panel)
+Admin
+ ├── Permissions (Master)
+ ├── Roles
+ │     └── Role Permissions
+ ├── Users
+ │     └── User Permissions
+ │     └── User Column Permissions
+ └── Column Permissions (Role-based)
+
+ ______________________________________________________________
+
+ 🔷 STEP 0: BASE ASSUMPTIONS (Aligned to your entities)
+
+We already have:
+PermissionMaster (Global)
+RolePermission (Tenant-scoped via Role)
+TenantMaster
+ApplicationRole (with TenantId)
+ApplicationUser (with TenantId)
+
+
+
+
+
+
+Employee
+ ├── View
+ ├── Create.Single
+ ├── Create.Bulk
+ ├── Update.Basic
+ ├── Update.Salary

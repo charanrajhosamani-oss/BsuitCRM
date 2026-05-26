@@ -1,0 +1,209 @@
+﻿@model BSuit.SalesCRM.VM._Opportunity_.OpportunityVM
+
+@{
+    ViewData["Title"] = "Opportunity Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var service = Model.SingleService;
+}
+
+<style>
+    .page-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        margin-bottom: 18px;
+        border-left: 4px solid #0d6efd;
+    }
+
+    .card-basic { border-left-color: #20c997; }
+    .card-config { border-left-color: #0d6efd; }
+    .card-scope { border-left-color: #fd7e14; }
+    .card-module { border-left-color: #6f42c1; }
+
+    .section-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .section-title span {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .basic-dot { background: #20c997; }
+    .config-dot { background: #0d6efd; }
+    .scope-dot { background: #fd7e14; }
+    .module-dot { background: #6f42c1; }
+
+    .form-control[readonly] {
+        background: #f8f9fa;
+        border: 1px solid #e5e7eb;
+    }
+
+    .view-box {
+        background: #f8f9fa;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 10px;
+        min-height: 80px;
+    }
+</style>
+
+<div class="container-fluid pt-3">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Opportunity Details</h4>
+
+        <div>         
+            <a href="@Url.Action("OpportunityScoperView", "Opportunity")"
+               class="btn btn-outline-secondary btn-sm">
+                ← Back
+            </a>
+        </div>
+    </div>
+
+    <!-- ================= BASIC ================= -->
+    <div class="page-card card-basic">
+        <div class="section-title">
+            <span class="basic-dot"></span> Basic Info
+        </div>
+        @if (ViewBag.LeadDetails != null)
+    {
+        var lead = ViewBag.LeadDetails;
+
+<div class="page-card card-lead">
+    <div class="section-title">
+        <span class="lead-dot"></span> Lead Details
+    </div>
+
+    <div class="row info-box">
+        <div class="col-md-6">
+            <div><b>First Name:</b> @lead.FirstName</div>
+            <div><b>Last Name:</b> @lead.LastName</div>
+            <div><b>Email:</b> @lead.Email</div>
+            <div><b>Phone:</b> @lead.Phone</div>
+        </div>
+
+        <div class="col-md-6">
+            <div><b>Company:</b> @lead.CompanyName</div>
+            <div><b>Industry:</b> @lead.Industry</div>
+            <div><b>City:</b> @lead.City</div>
+            <div><b>Country:</b> @lead.Country</div>
+        </div>
+
+        <div class="col-12 mt-2">
+            <b>Opportunity:</b> @Model.OpportunityName
+        </div>
+
+        <!-- ✅ FIXED STYLE -->
+        <div class="col-12 mt-2">
+            <b>Engagement Model:</b> @service?.EngagementModelName
+        </div>
+         <div class="col-12 mt-2">
+            <b>Project Industry:</b> @service?.IndustryName
+        </div>
+    </div>
+</div>    }
+    </div>
+
+    @if (service != null)
+    {
+        <!-- ================= CONFIG ================= -->
+        <div class="page-card card-config">
+            <div class="section-title">
+                <span class="config-dot"></span> Configuration
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <label>Stage</label>
+                    <input class="form-control" value="@service.StageName" readonly />
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SCOPE ================= -->
+        <div class="page-card card-scope">
+            <div class="section-title">
+                <span class="scope-dot"></span> Scope & Requirements
+            </div>
+
+            <div class="mb-2">
+                <label>Scope Of Work</label>
+                <div class="view-box">@Html.Raw(service.ScopeofWork)</div>
+            </div>
+
+            <div class="mb-2">
+                <label>Final Deliverable</label>
+                <div class="view-box">@Html.Raw(service.FinalDeliverableUsage)</div>
+            </div>
+
+            <div class="mb-2">
+                <label>Expectation</label>
+                <div class="view-box">@Html.Raw(service.ExpectationSetting)</div>
+            </div>
+
+            <div class="mb-2">
+                <label>Customer Responsibilities</label>
+                <div class="view-box">@Html.Raw(service.CustomerResponsibilities)</div>
+            </div>
+        </div>
+
+        <!-- ================= MODULE ================= -->
+        <div class="page-card card-module">
+            <div class="section-title">
+                <span class="module-dot"></span> Module Breakdown
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Module</th>
+                            <th>Est Hrs</th>
+                            <th>QC Hrs</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (service.Details != null && service.Details.Any())
+                        {
+                            int i = 1;
+                            foreach (var m in service.Details)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td>@m.ModuleName</td>
+                                    <td>@m.EstimatedHours</td>
+                                    <td>@m.QCHours</td>
+                                    <td>@((m.EstimatedHours ?? 0) + (m.QCHours ?? 0))</td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    No modules found
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+</div>

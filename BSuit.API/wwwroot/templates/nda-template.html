@@ -1,0 +1,328 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>NDA Agreement</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f5f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 35px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #0D2D5A;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 10px;
+            color: #0D2D5A;
+        }
+
+        .content {
+            line-height: 1.8;
+            font-size: 14px;
+            text-align: justify;
+        }
+
+        .agreement-box {
+            background: #f8f9fc;
+            border: 1px solid #e2e6ea;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            background: #0d6efd;
+            color: #ffffff;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .btn-submit:hover {
+                background: #0b5ed7;
+            }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- TITLE -->
+        <div class="title">
+            NDA Agreement
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            Hello <strong id="customerName"></strong>,
+
+            <br /><br />
+
+            This agreement is generated for the below customer details:
+
+            <br /><br />
+
+            City :
+            <span id="city"></span>
+
+            <br />
+
+            State :
+            <span id="state"></span>
+
+            <br />
+
+            Country :
+            <span id="country"></span>
+
+            <br />
+
+            Lead Name :
+            <span id="leadName"></span>
+
+            <br />
+
+            Requested By :
+            <span id="requestedByName"></span>
+
+            <br />
+
+            Requested On :
+            <span id="requestedDate"></span>
+
+        </div>
+
+        <!-- TERMS -->
+        <div class="section-title">
+            Terms and Conditions
+        </div>
+
+        <div class="content"
+             id="agreementContent">
+
+        </div>
+
+        <!-- AGREEMENT -->
+        <div class="agreement-box">
+
+            <form id="agreementForm">
+
+                <!-- CHECKBOX -->
+                <div style="margin-bottom:15px;">
+
+                    <input type="checkbox"
+                           id="chkAgree" />
+
+                    <label for="chkAgree">
+                        I confirm that I have read and agree to the NDA.
+                    </label>
+
+                </div>
+
+                <!-- CHECKBOX -->
+                <div style="margin-bottom:20px;">
+
+                    <input type="checkbox"
+                           id="chkScannedDoc" />
+
+                    <label for="chkScannedDoc">
+                        I prefer scanned signed documents.
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+                <button type="button"
+                        class="btn-submit"
+                        id="btnSubmit">
+
+                    Submit Agreement
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // ============================================
+        // READ URL PARAMETERS
+        // ============================================
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        console.log("Query String : ", window.location.search);
+
+        // ============================================
+        // GET VALUES
+        // ============================================
+
+        const leadId =
+            params.get("leadId") || "";
+
+        const requestedBy =
+            params.get("requestedBy") || "";
+
+        const customerName =
+            decodeURIComponent(params.get("customerName") || "");
+
+        const city =
+            decodeURIComponent(params.get("city") || "");
+
+        const state =
+            decodeURIComponent(params.get("state") || "");
+
+        const country =
+            decodeURIComponent(params.get("country") || "");
+
+        const leadName =
+            decodeURIComponent(params.get("leadName") || "");
+
+        const requestedByName =
+            decodeURIComponent(params.get("requestedByName") || "");
+
+        const requestedDate =
+            decodeURIComponent(params.get("requestedDate") || "");
+
+        const agreementContent =
+            decodeURIComponent(params.get("agreementContent") || "");
+
+        // ============================================
+        // BIND VALUES
+        // ============================================
+
+        document.getElementById("customerName").innerText =
+            customerName;
+
+        document.getElementById("city").innerText =
+            city;
+
+        document.getElementById("state").innerText =
+            state;
+
+        document.getElementById("country").innerText =
+            country;
+
+        document.getElementById("leadName").innerText =
+            leadName;
+
+        document.getElementById("requestedByName").innerText =
+            requestedByName;
+
+        document.getElementById("requestedDate").innerText =
+            requestedDate;
+
+        document.getElementById("agreementContent").innerText =
+            agreementContent;
+
+        // ============================================
+        // SUBMIT NDA
+        // ============================================
+
+        document.getElementById("btnSubmit")
+            .addEventListener("click", function () {
+
+                const agree =
+                    document.getElementById("chkAgree").checked;
+
+                if (!agree) {
+
+                    alert("Please accept agreement");
+                    return;
+                }
+
+                const model = {
+
+                    leadId: leadId,
+
+                    requestedBy: requestedBy,
+
+                    acceptedAgreement: agree,
+
+                    acceptScannedDocuments:
+                        document.getElementById("chkScannedDoc").checked
+                };
+
+                console.log(model);
+
+                fetch('/SalesCRM/Lead/SubmitNDAAgreement', {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify(model)
+
+                })
+                    .then(async response => {
+
+                        if (!response.ok) {
+
+                            const text =
+                                await response.text();
+
+                            throw new Error(text);
+                        }
+
+                        return response.json();
+
+                    })
+                    .then(data => {
+
+                        alert(data.message || "NDA submitted successfully");
+
+                    })
+                    .catch(error => {
+
+                        console.error(error);
+
+                        alert("Failed to submit NDA");
+
+                    });
+
+            });
+
+    </script>
+
+</body>
+
+</html>

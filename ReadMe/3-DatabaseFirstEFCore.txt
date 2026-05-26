@@ -1,0 +1,8 @@
+﻿⚙️ STEP 3 — Setup EF Core (Database First)
+
+Install in API:
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+
+3.1 Scaffold DB
+Scaffold-DbContext "Server=.;Database=BSuitERP;Trusted_Connection=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context BSuitDbContext

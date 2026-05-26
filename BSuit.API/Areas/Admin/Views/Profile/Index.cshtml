@@ -1,0 +1,181 @@
+﻿@model BSuit.API.Areas.Admin.Models.ProfileVM
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>My Profile Management</h3>
+
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Hidden Tooltip Content -->
+<div id="paraHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="mb-2 text-primary">Profile Management Help</h6>
+
+        <p class="text-white mb-2">
+            This page allows users to manage their personal account settings.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Update email address</li>
+            <li>Update phone number</li>
+            <li>Change password securely</li>
+            <li>Enable Two-Factor Authentication</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alert -->
+@if (TempData["Success"] != null)
+{
+    <div id="alertContainer" class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div id="alertContainer" class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<!-- PROFILE FORM -->
+<div class="card p-3 mb-4">
+    <h5 class="@(!Model.Active ? "table-secondary text-muted" : "")">
+        Update Profile
+    </h5>
+   
+    <form method="post" asp-action="Index">
+        @Html.AntiForgeryToken()
+
+        <!-- Hidden Id for POST -->
+        <input type="hidden" name="Id" value="@Model.Id" />
+
+        <div class="mb-3">
+            <label>Id</label>
+            <input type="text"
+                   value="@Model.Id"
+                   class="form-control"
+                   readonly />
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input type="email"
+                   name="Email"
+                   value="@Model.Email"
+                   class="form-control"
+                   placeholder="Email" />
+        </div>
+
+        <div class="mb-3">
+            <label>Phone Number</label>
+            <input type="text"
+                   name="PhoneNumber"
+                   value="@Model.PhoneNumber"
+                   class="form-control"
+                   placeholder="Phone Number" />
+        </div>
+
+        
+
+        <button type="submit" class="btn btn-primary">
+            Update Profile
+        </button>
+    </form>
+</div>
+
+<!-- CHANGE PASSWORD -->
+<div class="card p-3 mb-4">
+    <h5>Change Password: @Model.ChangePasswordVM.UserName</h5>
+
+    <form method="post"
+          action="@Url.Action("ChangePassword", "Profile", new { area = "Admin" })">
+        @Html.AntiForgeryToken()      
+
+        <input type="password"
+               name="CurrentPassword"
+               value="@Model.ChangePasswordVM.CurrentPassword"
+               placeholder="Current Password"
+               class="form-control mb-2" />
+
+        <input type="password"
+               name="NewPassword"
+               value="@Model.ChangePasswordVM.NewPassword"
+               placeholder="New Password"
+               class="form-control mb-2" />
+
+        <input type="password"
+               name="ConfirmPassword"
+               value="@Model.ChangePasswordVM.ConfirmPassword"
+               placeholder="Confirm Password"
+               class="form-control mb-2" />
+
+        <button class="btn btn-warning" type="submit">
+            Change Password
+        </button>
+    </form>
+</div>
+
+<!-- Security -->
+<div class="card p-3 mb-4">
+    <h5>Security Settings</h5>
+
+    @if (Model.IsTwoFactorEnabled)
+    {
+       @*  <span class="badge bg-success">2FA Enabled</span> *@
+
+        <a href="/Identity/Account/Manage/Disable2fa"
+           class="btn btn-danger">
+            Disable 2FA
+        </a>
+
+    }
+    else
+    {
+        <p class="text-muted">
+            Protect your account by enabling Two-Factor Authentication (2FA).
+        </p>
+
+        <a href="/Identity/Account/Manage/TwoFactorAuthentication"
+           class="btn btn-success">
+            Enable Two-Factor Authentication
+        </a>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Auto hide alert
+        const alertBox = document.getElementById("alertContainer");
+
+        if (alertBox) {
+            setTimeout(function () {
+                alertBox.style.transition = "opacity 0.5s ease";
+                alertBox.style.opacity = "0";
+
+                setTimeout(function () {
+                    alertBox.remove();
+                }, 500);
+            }, 3000);
+        }
+
+        // Tooltip
+        const helpContent =
+            document.getElementById("paraHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+    });
+</script>

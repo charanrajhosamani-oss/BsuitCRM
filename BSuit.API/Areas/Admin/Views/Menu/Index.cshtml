@@ -1,0 +1,355 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model MenuVM
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Menu Management</h3>
+
+    <!-- Help Icon -->
+    <span id="helpIcon" class="help-icon">
+        ?
+    </span>
+</div>
+<!-- Hidden Help Content -->
+<div id="paraHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="mb-2 text-primary">Menu Management Help</h6>
+
+        <ul class="mb-0 ps-3">
+            <li>Create new menus</li>
+            <li>Edit existing menus</li>
+            <li>Delete unwanted menus</li>
+            <li>Activate/Deactivate menus</li>
+            <li>Assign menus to roles</li>
+            <li>Manage parent-child hierarchy</li>
+            <li>Search menus easily</li>
+        </ul>
+    </div>
+</div>
+<div class="row align-items-center mb-3">
+    <!-- Search Section -->
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input name="Search"
+                   value="@Model.Search"
+                   class="form-control me-2"
+                   placeholder="Search menu..." />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+            <button type="button"
+                    onclick="location.reload();"
+                    class="btn btn-secondary me-2 ms-2">
+                Refresh
+            </button>
+        </form>
+    </div>
+
+    <!-- Add Menu Button -->
+    <div class="col-md-4 text-end">
+        <button onclick="showCreate()"
+                class="btn btn-success">
+            Add Menu
+        </button>
+    </div>
+</div>
+
+<!-- ALERT CONTAINER -->
+<div id="alertContainerT" class="mt-2">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                <a asp-route-SortColumn="Name"
+                   asp-route-SortDirection="@(Model.SortColumn == "Name" && Model.SortDirection == "asc" ? "desc" : "asc")"
+                   asp-route-Search="@Model.Search">
+                    Name
+                </a>
+            </th>
+
+            <th>
+                <a asp-route-SortColumn="Url"
+                   asp-route-SortDirection="@(Model.SortDirection == "asc" ? "desc" : "asc")"
+                   asp-route-Search="@Model.Search">
+                    URL
+                </a>
+            </th>
+            <th>
+                <a asp-route-SortColumn="SortOrder"
+                   asp-route-SortDirection="@(Model.SortDirection == "asc" ? "desc" : "asc")"
+                   asp-route-Search="@Model.Search">
+                    Sort
+                </a>
+            </th>
+
+            <th width="300">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var m in Model.Items)
+        {
+            <tr class="@(m.IsActive ? "" : "table-secondary text-muted")">
+                <td><i class="@m.Icon"></i>&nbsp;@(m.ParentId == 0 ? "-" : Model.Items.FirstOrDefault(x => x.Id == m.ParentId)?.Name)&nbsp&nbsp;@m.Name</td>
+                <td>@m.Url</td>
+
+                <td>@m.SortOrder</td>
+
+                <td>
+                    <button onclick="edit(@m.Id,'@m.Name','@m.Url','@m.Icon',@m.ParentId,@m.SortOrder)"
+                            class="btn btn-warning btn-sm">
+                        Edit
+                    </button>
+                    <button onclick="assign(@m.Id)" class="btn btn-primary btn-sm"
+                            title="Redirects to Role Mapping page for assigning permissions to this menu">
+                        Assign
+                    </button>
+                    <form action="/Admin/Menu/Toggle"
+                          method="post"
+                          style="display:inline">
+                        <input type="hidden" name="id" value="@m.Id" />
+                        <button class="btn btn-info btn-sm">
+                            @(m.IsActive ? "Deactivate" : "Activate")
+                        </button>
+                    </form>
+
+                    <button onclick="del(@m.Id)" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- PAGINATION -->
+@{
+    var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<!-- Pagination -->
+<div class="mt-3 d-flex flex-wrap gap-2">
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        <form method="get" class="d-inline">
+            <input type="hidden" name="PageNumber" value="@i" />
+            <input type="hidden" name="Search" value="@Model.Search" />
+            <input type="hidden" name="SortColumn" value="@Model.SortColumn" />
+            <input type="hidden" name="SortDirection" value="@Model.SortDirection" />
+
+            <button type="submit"
+                    class="btn btn-sm @(i == Model.PageNumber ? "btn-primary" : "btn-light")">
+                @i
+            </button>
+        </form>
+    }
+</div>
+
+
+
+<!-- ALERT CONTAINER -->
+<div id="alertContainerB" class="mt-2">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+</div>
+
+<!-- BOOTSTRAP MODAL -->
+<div class="modal fade" id="menuModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">Menu Management</h5>
+                <button type="button" class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post" id="form">
+                    <input type="hidden" name="Id" id="Id" />
+
+                    <div class="mb-2">
+                        <label class="form-label">Menu Name</label>
+                        <input name="Name" id="Name"
+                               placeholder="Menu Name"
+                               class="form-control"
+                               required />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">URL</label>
+                        <input name="Url" id="Url"
+                               placeholder="/Admin/Dashboard"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Icon</label>
+                        <input name="Icon" id="Icon"
+                               placeholder="fa fa-home"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Parent Menu</label>
+                        <select name="ParentId" id="ParentId" class="form-control">
+                            <option value="0">-- No Parent --</option>
+                            @foreach (var p in Model.Items.Where(x => x.ParentId == 0))
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Sort Order</label>
+                        <input name="SortOrder"
+                               id="SortOrder"
+                               class="form-control" />
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit"
+                        form="form"
+                        class="btn btn-success">
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    let menuModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        menuModal = new bootstrap.Modal(document.getElementById('menuModal'));
+    });
+
+    function showCreate() {
+        document.getElementById("form").reset();
+
+        document.getElementById("Id").value = "";
+        document.getElementById("modalTitle").innerText = "Add Menu";
+
+        document.getElementById("form").action = "/Admin/Menu/Create";
+
+        menuModal.show();
+    }
+
+    function edit(id, name, url, icon, parent, sort) {
+        document.getElementById("Id").value = id;
+        document.getElementById("Name").value = name;
+        document.getElementById("Url").value = url;
+        document.getElementById("Icon").value = icon;
+        document.getElementById("ParentId").value = parent;
+        document.getElementById("SortOrder").value = sort;
+
+        document.getElementById("modalTitle").innerText = "Edit Menu";
+        document.getElementById("form").action = "/Admin/Menu/Edit";
+
+        menuModal.show();
+    }
+
+    function del(id) {
+        if (confirm("Delete menu permanently?")) {
+
+            let f = document.createElement("form");
+            f.method = "post";
+            f.action = "/Admin/Menu/Delete";
+
+            let i = document.createElement("input");
+            i.type = "hidden";
+            i.name = "id";
+            i.value = id;
+
+            f.appendChild(i);
+            document.body.appendChild(f);
+            f.submit();
+        }
+    }
+
+    function assign(id) {
+        window.location.href = '/Admin/Menu/RoleMapping?MenuId=' + id;
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertBoxT = document.getElementById("alertContainerT");
+        const alertBoxB = document.getElementById("alertContainerB");
+
+        if (alertBoxT && alertBoxT.innerHTML.trim() !== "") {
+            setTimeout(function () {
+
+                // Fade out effect
+                alertBoxT.style.transition = "opacity 0.5s ease";
+                alertBoxT.style.opacity = "0";
+
+                alertBoxB.style.transition = "opacity 0.5s ease";
+                alertBoxB.style.opacity = "0";
+
+                setTimeout(function () {
+                    alertBoxT.style.display = "none";
+                    alertBoxB.style.display = "none";
+
+                    // Remove content from DOM
+                    alertBoxT.innerHTML = "";
+                    alertBoxB.innerHTML = "";
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    var helpContent = document.getElementById("paraHelpContent").innerHTML;
+
+    new bootstrap.Tooltip(document.getElementById("helpIcon"), {
+        title: helpContent,
+        html: true,
+        placement: "left"
+    });
+
+});
+</script>

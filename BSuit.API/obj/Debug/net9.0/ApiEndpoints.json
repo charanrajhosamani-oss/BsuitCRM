@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "BSuit.API.Controllers.LeadApiController",
+    "Method": "CreateLead",
+    "RelativePath": "api/LeadApi/CreateLead",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "BSuit.API.Models.LeadRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

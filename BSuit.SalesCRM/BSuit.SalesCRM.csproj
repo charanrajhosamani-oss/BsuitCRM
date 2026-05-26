@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BSuit.Contracts\BSuit.Contracts.csproj" />
+    <ProjectReference Include="..\BSuit.Core\BSuit.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\OFL.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-ThinItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Thin.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-SemiBoldItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-SemiBold.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Regular.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-MediumItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Medium.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-LightItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Light.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Italic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-ExtraLightItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-ExtraLight.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-ExtraBoldItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-ExtraBold.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-BoldItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Bold.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-BlackItalic.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\rajeshkumar.p\.nuget\packages\questpdf\2026.2.3\buildTransitive\..\LatoFont\Lato-Black.ttf" />
+  </ItemGroup>
+
+</Project>

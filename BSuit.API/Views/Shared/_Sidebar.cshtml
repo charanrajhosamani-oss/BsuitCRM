@@ -1,0 +1,78 @@
+﻿<div id="sidebar" class="sidebar collapsed">
+    <div class="logo">
+        <img src="~/images/logo-icon.png" />
+        <span><img src="~/images/logo-text.png" /></span>
+    </div>
+
+    <div class="left-nav">
+
+        <!-- Dashboard -->
+        <div class="menu-item" onclick="toggleMenu(this)">
+            <div class="menu">
+                <i class="bi bi-speedometer2 menu-icon"></i>
+                <span class="menu-name">Lead</span>
+            </div>
+            <i class="bi bi-chevron-right arrow"></i>
+        </div>
+        <div class="submenu">
+            <a href="@Url.Action("Index", "Lead", new { area = "SalesCRM" })">
+                Lead List
+            </a>
+        
+        </div>
+
+        <!-- Employee -->
+        <div class="menu-item" onclick="toggleMenu(this)">
+            <div class="menu">
+                <i class="bi bi-person menu-icon"></i>
+                <span class="menu-name">Opportunity</span>
+            </div>
+            <i class="bi bi-chevron-right arrow"></i>
+        </div>
+        <div class="submenu">
+            <a href="@Url.Action("OpportunityScoperView", "Opportunity", new { area = "SalesCRM" })">
+                Opportunity List
+            </a>
+           
+        </div>
+
+        <!-- Referral -->
+        <div class="menu-item" onclick="toggleMenu(this)">
+            <div class="menu">
+                <i class="bi bi-people menu-icon"></i>
+                <span class="menu-name">Account</span>
+            </div>
+            <i class="bi bi-chevron-right arrow"></i>
+        </div>
+        <div class="submenu">
+          
+            <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })">
+                Account List
+            </a>
+          
+        </div>
+
+        <!-- Sales -->
+        <div class="menu-item" onclick="toggleMenu(this)">
+            <div class="menu">
+                <i class="bi bi-globe menu-icon"></i>
+                <span class="menu-name">Project</span>
+            </div>
+            <i class="bi bi-chevron-right arrow"></i>
+        </div>
+        <div class="submenu">
+            <a asp-area="SalesCRM"
+               asp-controller="Project"
+               asp-action="Index">
+                Project
+            </a>
+          
+
+            <a href="@Url.Action("ProjectTaskUtilization", "Project", new { area = "SalesCRM" })">
+                Project Time Log
+            </a>
+            <a href="#">Project Task List</a>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,68 @@
+﻿STEP — Create Solution & Projects
+----------------------------------
+
+Clean Architecture
+Repository Pattern
+Identity Integration
+Multi-Tenancy (DB per tenant or shared)
+DTO-based API
+Bootstrap UI inside API project
+
+SVN Repository
+http://MOCKSRV.brickworkindia.local:81/svn/BrickworkCRM
+
+
+1.1 Create Solution: BSuit
+1.2 Create Projects: 
+
+UI / API (Main App)
+BSuit.API (ASP.NET Core Web App - MVC)
+
+Core Layer
+BSuit.Core (Class Library)
+
+Contracts Layer
+BSuit.Contracts (Class Library)
+
+Modules
+Modules/BSuit.SalesCRM (Class Library)
+Modules/BSuit.HR (Class Library)
+
+1.3 Add Project References
+Inside BSuit.API:
+BSuit.Core
+BSuit.Contracts
+Modules/BSuit.SalesCRM
+Modules/BSuit.HR
+
+
+
+
+
+
+
+BSuit.API:
+Main application
+UI / Razor
+API endpoints
+Middleware
+Authentication
+
+
+BSuit.Contracts:
+Interfaces for module communication
+
+
+BSuit.Core:
+Base entities
+Tenant logic
+Shared utilities
+Base services
+
+
+
+BSuit.Identity:
+ASP.NET Identity
+Users
+Roles
+Authentication

@@ -1,0 +1,381 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model IEnumerable<PermissionMasterVM>
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+    var grid = ViewBag.Grid as PermissionMasterVM;
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Permission Master Management</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Content -->
+<div id="permissionHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Permission Management Help</h6>
+
+        <p class="text-white mb-2">
+            Manage system permissions for modules, controllers, and actions.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Create permissions</li>
+            <li>Map module actions</li>
+            <li>Edit display names</li>
+            <li>Activate/Deactivate permissions</li>
+            <li>Delete unused permissions</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+</div>
+
+<!-- Search + Actions -->
+<div class="row align-items-center mb-3">
+
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input name="Search"
+                   value="@grid?.Search"
+                   class="form-control me-2"
+                   placeholder="Search permissions..." />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-4 text-end">
+        <button type="button"
+                onclick="location.reload();"
+                class="btn btn-secondary me-2">
+            Refresh
+        </button>
+
+        <button type="button"
+                onclick="openCreate()"
+                class="btn btn-success">
+            Add Permission
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Module</th>
+            <th>Name</th>
+            <th>Action</th>
+            <th>Display Name (code)</th>           
+            <th width="300">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.IsActive ? "" : "table-secondary text-muted")">
+
+                <td>@item.ModuleName</td>
+                <td>@item.Name</td>
+                <td>@item.ActionName</td>
+                <td>@item.DisplayName</td>             
+
+                <td>
+                    <button type="button" class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")"
+                            onclick="toggleStatus(@item.Id)">
+                        @(item.IsActive ? "Deactivate" : "Activate")
+                    </button>
+
+                    <button class="btn btn-sm btn-primary"
+                            onclick="edit('@item.Id',
+                                              '@item.ModuleId',
+                                              '@item.Name',
+                                              '@item.DisplayName')">
+                        Edit
+                    </button>
+
+                    <button class="btn btn-sm btn-danger"
+                            onclick="deletePermission('@item.Id', this)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@{
+    int totalPages = (int)Math.Ceiling((double)grid.TotalCount / grid.PageSize);
+}
+
+<div class="mt-3 d-flex flex-wrap gap-2">
+    @for (int i = 1; i <= totalPages; i++)
+    {
+        <a href="?PageNumber=@i&Search=@grid.Search"
+           class="btn btn-sm @(i == grid.PageNumber ? "btn-primary" : "btn-light")">
+            @i
+        </a>
+    }
+</div>
+
+<div class="modal fade" id="permissionModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">
+                    Permission
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post"
+                      action="/Admin/PermissionMaster/Save"
+                      id="permissionForm">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="Id" id="Id" />
+
+                    <div class="mb-2">
+                        <label>Module</label>
+                        <select name="ModuleId"
+                                id="ModuleId"
+                                class="form-select"
+                                onchange="syncDisplayName()"
+                                required>
+                            <option value="">-- Select Module --</option>
+
+                            @foreach (var m in grid.Modules)
+                            {
+                                <option value="@m.Id">@m.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Enter Controller</label>
+                        <input type="text"
+                               id="manualName"
+                               class="form-control"
+                               placeholder="Enter manually"
+                               oninput="syncManualName()" />
+                    </div>
+
+                    <div class="text-center my-2 fw-bold text-primary">
+                        OR
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Select Controller</label>
+                        <select id="controllerName"
+                                class="form-select"
+                                onchange="syncControllerName()">
+
+                            <option value="">-- Select Controller --</option>
+
+                            @foreach (var controller in ViewBag.Controllers as List<string>)
+                            {
+                                <option value="@controller">@controller</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Final value posted -->
+                    <input type="hidden" name="Name" id="finalName" />
+
+                    <div class="mb-2">
+                        <label>Action</label>
+                        <select name="Action"
+                                id="Action"
+                                class="form-select"
+                                onchange="syncDisplayName()">
+
+                            @foreach (var a in grid.Actions)
+                            {
+                                <option value="@a.Value">@a.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Display Name</label>
+                        <input name="DisplayName"
+                               id="DisplayName"
+                               class="form-control" />
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit"
+                        form="permissionForm"
+                        class="btn btn-success">
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let permissionModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        permissionModal = new bootstrap.Modal(
+            document.getElementById("permissionModal")
+        );
+
+        // Tooltip
+        let helpContent =
+            document.getElementById("permissionHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto-hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+            }, 3000);
+        }
+    });
+
+    function openCreate() {
+        document.getElementById("permissionForm").reset();
+        document.getElementById("Id").value = "";
+
+        document.getElementById("modalTitle").innerText =
+            "Add Permission";
+
+        permissionModal.show();
+    }
+
+    function edit(id, moduleId, name, display) {
+        document.getElementById("Id").value = id;
+        document.getElementById("ModuleId").value = moduleId;
+        document.getElementById("manualName").value = name;
+        document.getElementById("controllerName").value = "";
+        document.getElementById("finalName").value = name;
+        document.getElementById("DisplayName").value = display;
+
+        document.getElementById("modalTitle").innerText =
+            "Edit Permission";
+
+        permissionModal.show();
+    }
+
+        function syncManualName() {
+        const manualValue =
+            document.getElementById("manualName").value;
+
+        if (manualValue.trim() !== "") {
+            document.getElementById("controllerName").value = manualValue;
+            document.getElementById("finalName").value = manualValue;
+        }
+
+        syncDisplayName();
+    }
+
+    function syncControllerName() {
+        const dropdownValue =
+            document.getElementById("controllerName").value;
+
+        if (dropdownValue.trim() !== "") {
+            document.getElementById("manualName").value = dropdownValue;
+            document.getElementById("finalName").value = dropdownValue;
+        }
+
+        syncDisplayName();
+    }
+
+    function syncDisplayName() {
+        const module = document.getElementById("ModuleId");
+        const name = document.getElementById("finalName").value;
+        const action = document.getElementById("Action");
+        const display = document.getElementById("DisplayName");
+
+        const moduleText =
+            module.options[module.selectedIndex]?.text || "";
+
+        const actionText =
+            action.options[action.selectedIndex]?.text || "";
+
+        let formattedController = name
+            .replace(/\./g, "")
+            .replace(/\s+/g, "")
+            .trim();
+
+        let formattedModule = moduleText
+            .replace(/\s+/g, "")
+            .trim();
+
+        display.value =
+            `${formattedModule}.${formattedController}.${actionText}`;
+    }
+
+    function toggleStatus(id) {
+        fetch('/Admin/PermissionMaster/ToggleStatus?id=' + id, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(res => {
+            location.reload();
+        });
+    }
+
+    function deletePermission(id) {
+        if (!confirm("Delete this permission?")) return;
+
+        fetch('/Admin/PermissionMaster/Delete?id=' + id, {
+            method: 'POST'
+        })
+        .then(() => {
+            location.reload();
+        });
+    }
+</script>

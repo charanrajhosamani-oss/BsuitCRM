@@ -1,0 +1,66 @@
+﻿Use both:
+
+✔ Identity - Identity tables (Who are you?)
+    Users
+    Roles
+    Authentication
+
+✔ Custom Tables - Permissions (What can you do?)
+    Permissions
+    RolePermissionMapping
+
+PermissionMaster + RolePermissionMapping system is a central authorization engine.
+
+API ACCESS
+[AuthorizePermission("CUSTOMER.CREATE")]
+
+
+UI VISIBILITY
+@if (User.HasPermission("CUSTOMER.CREATE"))
+{
+    <button>Create Customer</button>
+}
+
+
+BUSINESS LOGIC CONTROL
+if (!_permissionService.HasPermission("CUSTOMER.DELETE"))
+{
+    throw new UnauthorizedAccessException();
+}
+
+
+MODULE ACCESS
+Sales CRM → allowed
+HR → not allowed
+
+
+
+WORKFLOW CONTROL
+Permission	            Action
+INVOICE.APPROVE	        Approve invoice
+INVOICE.REJECT	        Reject invoice
+
+
+
+
+
+
+
+
+Identity gives you these core tables:
+
+Users
+Roles
+UserRoles
+RoleClaims
+UserClaims
+
+ROLE-BASED AUTHORIZATION (PRIMARY FEATURE)
+[Authorize(Roles = "ADMIN")]
+
+CLAIM-BASED AUTHORIZATION
+[Authorize(Policy = "CanCreateCustomer")]
+
+
+
+

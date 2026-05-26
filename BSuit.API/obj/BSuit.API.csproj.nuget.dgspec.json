@@ -1,0 +1,729 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.API\\BSuit.API.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.API\\BSuit.API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.API\\BSuit.API.csproj",
+        "projectName": "BSuit.API",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.API\\BSuit.API.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.API\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\BSuit.HR.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\BSuit.HR.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\BSuit.SalesCRM.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\BSuit.SalesCRM.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.Cookies": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.12, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[9.0.12, )"
+            },
+            "Stripe.net": {
+              "target": "Package",
+              "version": "[51.1.0, )"
+            },
+            "TimeZoneConverter": {
+              "target": "Package",
+              "version": "[7.2.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj",
+        "projectName": "BSuit.Contracts",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj",
+        "projectName": "BSuit.Core",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Identity.Core": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\BSuit.HR.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\BSuit.HR.csproj",
+        "projectName": "BSuit.HR",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\BSuit.HR.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.HR\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.DataProtection": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj",
+        "projectName": "BSuit.Identity",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\BSuit.Identity.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Identity\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authorization": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Identity": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj",
+        "projectName": "BSuit.Infrastructure",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\BSuit.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.11.4, )"
+            },
+            "Chang.OpenXml": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.105.0, )"
+            },
+            "DinkToPdf": {
+              "target": "Package",
+              "version": "[1.0.8, )"
+            },
+            "HtmlToOpenXml.dll": {
+              "target": "Package",
+              "version": "[3.3.1, )"
+            },
+            "Microsoft.AspNetCore.Http": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Http.Abstractions": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Http.Features": {
+              "target": "Package",
+              "version": "[2.3.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Core": {
+              "target": "Package",
+              "version": "[2.3.9, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Extensions.DependencyInjection.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.14, )"
+            },
+            "Microsoft.Graph": {
+              "target": "Package",
+              "version": "[5.103.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.2.3, )"
+            },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2025.1.0, )"
+            },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[3.1.12, )"
+            },
+            "SixLabors.ImageSharp.Drawing": {
+              "target": "Package",
+              "version": "[2.1.7, )"
+            },
+            "WkHtmlToPdf": {
+              "target": "Package",
+              "version": "[1.0.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\BSuit.SalesCRM.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\BSuit.SalesCRM.csproj",
+        "projectName": "BSuit.SalesCRM",
+        "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\BSuit.SalesCRM.csproj",
+        "packagesPath": "C:\\Users\\charanraj.nagashetty\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.SalesCRM\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\charanraj.nagashetty\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Contracts\\BSuit.Contracts.csproj"
+              },
+              "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj": {
+                "projectPath": "C:\\Users\\charanraj.nagashetty\\source\\repos\\BsuitCRM\\BSuit.Core\\BSuit.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.314/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

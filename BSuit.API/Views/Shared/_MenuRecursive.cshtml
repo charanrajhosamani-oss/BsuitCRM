@@ -1,0 +1,35 @@
+﻿@model List<MenuItemVM>
+
+<ul class="nav flex-column ms-2">
+
+    @foreach (var item in Model)
+    {
+        var hasChildren = item.Children != null && item.Children.Any();
+        var isOpen = item.HasActiveChild ? "show" : "";
+        var activeClass = item.IsActive ? "active" : "";
+
+        <li class="nav-item">
+
+            @if (hasChildren)
+            {
+                <a class="nav-link @activeClass"
+                   data-bs-toggle="collapse"
+                   href="#menu_@item.Id">
+                    <i class="@item.Icon"></i> @item.Name
+                </a>
+
+                <div class="collapse @isOpen" id="menu_@item.Id">
+                    @await Html.PartialAsync("_MenuRecursive", item.Children)
+                </div>
+            }
+            else
+            {
+                <a class="nav-link @activeClass" href="@item.Url">
+                    <i class="@item.Icon"></i> @item.Name
+                </a>
+            }
+
+        </li>
+    }
+
+</ul>

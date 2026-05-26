@@ -1,0 +1,340 @@
+﻿@using System.Text.Json
+
+@using BSuit.API.Areas.SalesCRM.Models
+@model AccountDashboardVM
+@{
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+
+    var leadSourceLabels =
+        JsonSerializer.Serialize(
+            Model.LeadSources.Select(x => x.Label));
+
+    var leadSourceValues =
+        JsonSerializer.Serialize(
+            Model.LeadSources.Select(x => x.Value));
+
+    var monthlyLabels =
+        JsonSerializer.Serialize(
+            Model.MonthlyTrend.Select(x => x.Label));
+
+    var monthlyValues =
+        JsonSerializer.Serialize(
+            Model.MonthlyTrend.Select(x => x.Value));
+
+    var ownerLabels =
+        JsonSerializer.Serialize(
+            Model.LeadsByOwner.Select(x => x.Label));
+
+    var ownerValues =
+        JsonSerializer.Serialize(
+            Model.LeadsByOwner.Select(x => x.Value));
+
+    var customerTypeLabels =
+        JsonSerializer.Serialize(
+            Model.CustomerTypes.Select(x => x.Label));
+
+    var customerTypeValues =
+        JsonSerializer.Serialize(
+            Model.CustomerTypes.Select(x => x.Value));
+
+    var countryLabels =
+        JsonSerializer.Serialize(
+            Model.CountryWiseLeads.Select(x => x.Label));
+
+    var countryValues =
+        JsonSerializer.Serialize(
+            Model.CountryWiseLeads.Select(x => x.Value));
+
+    var conversionLabels =
+        JsonSerializer.Serialize(
+            Model.ConversionRates.Select(x => x.Label));
+
+    var conversionValues =
+        JsonSerializer.Serialize(
+            Model.ConversionRates.Select(x => x.Value));
+}
+
+<!-- Chart Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<div class="container-fluid mt-4">
+
+    <!-- ROW 1 -->
+    <div class="row">
+        <!-- Monthly Lead Trend -->
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Monthly Lead Trend
+                </div>
+                <div class="card-body">
+                    <div id="monthlyTrendChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Leads by Source -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Leads by Source
+                </div>
+                <div class="card-body">
+                    <div id="leadSourceChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Leads by Customer Type
+                </div>
+                <div class="card-body">
+                    <div id="customerTypeChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ROW 3 -->
+    @* <div class="row">
+
+        <!-- Country Wise -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Country-wise Leads
+                </div>
+                <div class="card-body">
+                    <div id="countryChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversion Rate -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    Salesperson Conversion Rate
+                </div>
+                <div class="card-body">
+                    <div id="conversionChart"></div>
+                </div>
+            </div>
+        </div>
+
+    </div> *@
+
+</div>
+
+<script>
+
+    // =====================================
+    // DYNAMIC DATA FROM MODEL
+    // =====================================
+
+    const leadSourceLabels = @Html.Raw(leadSourceLabels);
+    const leadSourceValues = @Html.Raw(leadSourceValues);
+
+    const monthlyLabels = @Html.Raw(monthlyLabels);
+    const monthlyValues = @Html.Raw(monthlyValues);
+
+    const ownerLabels = @Html.Raw(ownerLabels);
+    const ownerValues = @Html.Raw(ownerValues);
+
+    const customerTypeLabels = @Html.Raw(customerTypeLabels);
+    const customerTypeValues = @Html.Raw(customerTypeValues);
+
+    const countryLabels = @Html.Raw(countryLabels);
+    const countryValues = @Html.Raw(countryValues);
+
+    const conversionLabels = @Html.Raw(conversionLabels);
+    const conversionValues = @Html.Raw(conversionValues);
+
+    // ==============================
+    // 1. LEADS BY SOURCE
+    // ==============================
+
+    var leadSourceOptions = {
+
+    series: leadSourceValues,
+
+    chart: {
+    type: 'pie',
+    height: 320
+    },
+
+    labels: leadSourceLabels
+    };
+
+    var leadSourceChart = new ApexCharts(
+    document.querySelector("#leadSourceChart"),
+    leadSourceOptions
+    );
+
+    leadSourceChart.render();
+
+    // ==============================
+    // 2. MONTHLY LEAD TREND
+    // ==============================
+
+    var monthlyTrendOptions = {
+
+    series: [{
+    name: 'Leads',
+    data: monthlyValues
+    }],
+
+    chart: {
+    type: 'line',
+    height: 320
+    },
+
+    stroke: {
+    curve: 'smooth'
+    },
+
+    xaxis: {
+    categories: monthlyLabels
+    }
+    };
+
+    var monthlyTrendChart = new ApexCharts(
+    document.querySelector("#monthlyTrendChart"),
+    monthlyTrendOptions
+    );
+
+    monthlyTrendChart.render();
+
+    // ==============================
+    // 3. LEADS BY OWNER
+    // ==============================
+
+    var ownerOptions = {
+
+    series: [{
+    data: ownerValues
+    }],
+
+    chart: {
+    type: 'bar',
+    height: 320
+    },
+
+    plotOptions: {
+    bar: {
+    horizontal: true
+    }
+    },
+
+    xaxis: {
+    categories: ownerLabels
+    }
+    };
+
+    var ownerChart = new ApexCharts(
+    document.querySelector("#ownerChart"),
+    ownerOptions
+    );
+
+    ownerChart.render();
+
+    // ==============================
+    // 4. CUSTOMER TYPE
+    // ==============================
+
+    var customerTypeOptions = {
+
+    series: customerTypeValues,
+
+    chart: {
+    type: 'pie',
+    height: 320
+    },
+
+    labels: customerTypeLabels
+    };
+
+    var customerTypeChart = new ApexCharts(
+    document.querySelector("#customerTypeChart"),
+    customerTypeOptions
+    );
+
+    customerTypeChart.render();
+
+    // ==============================
+    // 5. COUNTRY-WISE LEADS
+    // ==============================
+
+    var countryOptions = {
+
+    series: countryValues,
+
+    chart: {
+    type: 'pie',
+    height: 320
+    },
+
+    labels: countryLabels,
+
+    legend: {
+    position: 'bottom'
+    },
+
+    dataLabels: {
+    enabled: true
+    },
+
+    responsive: [{
+    breakpoint: 480,
+    options: {
+    chart: {
+    width: 300
+    },
+    legend: {
+    position: 'bottom'
+    }
+    }
+    }]
+    };
+
+    var countryChart = new ApexCharts(
+    document.querySelector("#countryChart"),
+    countryOptions
+    );
+
+    countryChart.render();
+
+    // ==============================
+    // 6. CONVERSION RATE
+    // ==============================
+
+    var conversionOptions = {
+
+    series: [{
+    name: 'Conversion %',
+    data: conversionValues
+    }],
+
+    chart: {
+    type: 'radar',
+    height: 320
+    },
+
+    xaxis: {
+    categories: conversionLabels
+    }
+    };
+
+    var conversionChart = new ApexCharts(
+    document.querySelector("#conversionChart"),
+    conversionOptions
+    );
+
+    conversionChart.render();
+
+</script>

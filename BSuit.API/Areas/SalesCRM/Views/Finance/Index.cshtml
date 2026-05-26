@@ -1,0 +1,178 @@
+﻿@using BSuit.SalesCRM.Models
+@model FinanceVM
+
+@{
+    ViewData["Title"] = "Finance Approval";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Finance Payment Approval</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Opportunity Name</th>
+                            <th>Payment Milestone</th>
+                            <th>Invoice Amount</th>
+                            <th>Hours</th>
+                            <th>Hourly Rate</th>
+                            <th>Due Date</th>
+                            <th>Payment Type</th>
+                            <th>BD Remarks</th>
+                            <th>Payment Link</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.payments != null && Model.payments.Any())
+                        {
+                            foreach (var item in Model.payments)
+                            {
+                                <tr>
+
+                                    <td>
+                                        <a asp-action="Details"
+                                           asp-route-paymentId="@item.PaymentId"
+                                           class="text-decoration-none fw-semibold">
+
+                                            @item.OpportunityName
+
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        <a asp-action="Details"
+                                           asp-route-paymentId="@item.PaymentId"
+                                           class="text-decoration-none">
+
+                                            @item.PaymentMilestone
+
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        ₹ @item.InvoiceAmount.ToString("N2")
+                                    </td>
+
+                                    <td>@item.Hours</td>
+
+                                    <td>
+                                        ₹ @item.HourlyRate.ToString("N2")
+                                    </td>
+
+                                    <td>
+                                        @(item.PaymentDueDate?.ToString("dd-MMM-yyyy"))
+                                    </td>
+
+                                    <td>@item.PaymentType</td>
+
+                                    <td>@item.BDRemarks</td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.PaymentLink))
+                                        {
+                                            <a href="@item.PaymentLink"
+                                               target="_blank"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-link"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center text-muted">
+                                    No payment records found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        // Approve Payment
+        $(document).on("click", ".btnApprove", function () {
+
+            let workOrderId = $(this).data("id");
+
+            if (confirm("Are you sure you want to approve this payment?")) {
+
+                $.ajax({
+                    url: '/Finance/ApprovePayment',
+                    type: 'POST',
+                    data: {
+                        workOrderId: workOrderId
+                    },
+                    success: function (response) {
+
+                        alert("Payment approved successfully.");
+
+                        location.reload();
+                    },
+                    error: function () {
+
+                        alert("Something went wrong.");
+                    }
+                });
+            }
+        });
+
+
+        // Reject Payment
+        $(document).on("click", ".btnReject", function () {
+
+            let workOrderId = $(this).data("id");
+
+            if (confirm("Are you sure you want to reject this payment?")) {
+
+                $.ajax({
+                    url: '/Finance/RejectPayment',
+                    type: 'POST',
+                    data: {
+                        workOrderId: workOrderId
+                    },
+                    success: function (response) {
+
+                        alert("Payment rejected successfully.");
+
+                        location.reload();
+                    },
+                    error: function () {
+
+                        alert("Something went wrong.");
+                    }
+                });
+            }
+        });
+
+    </script>
+}

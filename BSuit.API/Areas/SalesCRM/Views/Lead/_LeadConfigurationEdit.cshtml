@@ -1,0 +1,196 @@
+﻿@using BSuit.SalesCRM.VM.Lead
+@model LeadConfigurationVM
+    <!-- 🔷 CREATE SECTION -->
+        <div id="createConfigurationSection">
+
+            <form asp-action="SaveConfiguration"
+                  asp-controller="Lead"
+                  method="post">
+
+                <div class="card border-0 shadow-sm mb-3">
+
+                    <div class="card-header bg-white border-bottom">
+
+                        <h6 class="mb-0 fw-semibold">
+
+                            <i class="fa fa-plus-circle text-primary me-2"></i>
+                            Create Lead Configuration
+
+                        </h6>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="row g-3">
+
+                            <!-- SERVICES -->
+                            <div class="col-md-12">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-briefcase text-primary me-1"></i>
+                                    Services
+
+                                </label>
+
+                                <select id="services"
+                                        name="SelectedServices"
+                                        multiple
+                                        class="form-select">
+
+                                    <option value="ALL">
+                                        Select All
+                                    </option>
+
+                                    @foreach (var s in Model.Services)
+                                    {
+                                        <option value="@s.Value">
+                                            @s.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- REGIONS -->
+                            <div class="col-md-12">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-globe text-success me-1"></i>
+                                    Regions
+
+                                </label>
+
+                                <select id="regions"
+                                        name="SelectedRegions"
+                                        multiple
+                                        class="form-select">
+
+                                    <option value="ALL">
+                                        Select All
+                                    </option>
+
+                                    @foreach (var r in Model.Regions)
+                                    {
+                                        <option value="@r.Value">
+                                            @r.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- PRIMARY EXECUTIVE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-user text-primary me-1"></i>
+                                    Primary Sales Executive
+
+                                </label>
+
+                                <select name="PrimarySalesExecutive"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select --
+                                    </option>
+
+                                    @foreach (var e in Model.SalesExecutives)
+                                    {
+                                        <option value="@e.Value">
+                                            @e.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- SECONDARY EXECUTIVE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-user-plus text-secondary me-1"></i>
+                                    Secondary Sales Executive
+
+                                </label>
+
+                                <select name="SecondarySalesExecutive"
+                                        class="form-select">
+
+                                    <option value="">
+                                        -- Select --
+                                    </option>
+
+                                    @foreach (var e in Model.SalesExecutives)
+                                    {
+                                        <option value="@e.Value">
+                                            @e.Text
+                                        </option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <!-- EFFECTIVE DATE -->
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-semibold">
+
+                                    <i class="fa fa-calendar text-danger me-1"></i>
+                                    Effective From
+
+                                </label>
+
+                                <input type="text"
+                                       name="EffectiveFrom"
+                                       class="form-control datepicker"
+                                       placeholder="Select Date" />
+
+                            </div>
+
+                            <!-- BUTTONS -->
+                            <div class="col-md-6 d-flex align-items-end justify-content-end">
+
+                                <div class="d-flex gap-2">
+
+                                    <!-- CANCEL -->
+                                    <button type="button"
+                                            class="btn btn-outline-secondary"
+                                            onclick="hideCreateRule()">
+
+                                        <i class="fa fa-times me-1"></i>
+                                        Cancel
+
+                                    </button>
+
+                                    <!-- SAVE -->
+                                    <button type="submit"
+                                            class="btn btn-primary">
+
+                                        <i class="fa fa-save me-1"></i>
+                                        Save
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>

@@ -1,0 +1,677 @@
+﻿@using BSuit.SalesCRM.VM.Lead
+@model LeadEditVM
+
+@{
+    ViewData["Title"] = "Edit Lead";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+
+        <!-- LEFT -->
+        <div>
+            <a href="@Url.Action("Index", "Lead", new { area = "SalesCRM" })"
+                   class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+        </div>
+
+        <!-- CENTER -->
+        <div class="text-center flex-grow-1">
+            <h5 class="mb-0">
+                @(Model.LeadId != Guid.Empty ? "Edit Lead" : "Add Lead")
+            </h5>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="d-flex gap-2">
+
+            <button type="submit"
+                    form="leadForm"
+                    class="btn btn-sm btn-primary">
+
+                <i class="fa-solid fa-floppy-disk me-1"></i>
+                Save
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- VALIDATION -->
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger mb-3">
+    </div>
+
+    <!-- FORM -->
+    <form asp-action="Edit"
+          method="post"
+          id="leadForm">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="LeadId" />
+
+        <input type="hidden"
+               asp-for="TeanantId" />
+
+        <!-- BASIC INFO -->
+        <div class="card section-card mb-3">
+
+            <div class="section-header">
+                👤 Basic Info
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            First Name *
+                        </label>
+
+                        <input asp-for="FirstName"
+                               class="form-control" />
+
+                        <span asp-validation-for="FirstName"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Last Name *
+                        </label>
+
+                        <input asp-for="LastName"
+                               class="form-control" />
+
+                        <span asp-validation-for="LastName"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Gender
+                        </label>
+
+                        <select asp-for="Gender"
+                                asp-items="Model.GenderList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Gender --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Job Title
+                        </label>
+
+                        <select asp-for="JobTitle"
+                                asp-items="Model.JobTitleList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Job Title --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- CONTACT -->
+        <div class="card section-card green mb-3">
+
+            <div class="section-header">
+                📞 Contact Info
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Email *
+                        </label>
+
+                        <input asp-for="Email"
+                               class="form-control" />
+
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Phone *
+                        </label>
+
+                        <input asp-for="Phone"
+                               class="form-control" />
+
+                        <span asp-validation-for="Phone"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-4" style="display:none;">
+
+                        <label class="form-label">
+                            Enquiry Id
+                        </label>
+
+                        <input asp-for="EnquiryId"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Personal Email 1
+                        </label>
+
+                        <input asp-for="PersonalEmail1"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Personal Email 2
+                        </label>
+
+                        <input asp-for="PersonalEmail2"
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- LOCATION -->
+        <div class="card section-card orange mb-3">
+
+            <div class="section-header">
+                📍 Location
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            City
+                        </label>
+
+                        <input asp-for="City"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Zip Code
+                        </label>
+
+                        <input asp-for="ZipCode"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Country *
+                        </label>
+
+                        <select asp-for="Country"
+                                asp-items="Model.CountryMaster"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Country --
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="Country"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Address
+                        </label>
+
+                        <textarea asp-for="Address"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- COMPANY -->
+        <div class="card section-card purple mb-3">
+
+            <div class="section-header">
+                🏢 Company Info
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Company Name
+                        </label>
+
+                        <input asp-for="CompanyName"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Website
+                        </label>
+
+                        <input asp-for="Website"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Industry
+                        </label>
+
+                        <select asp-for="Industry"
+                                asp-items="Model.IndustryList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Industry --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Company Size
+                        </label>
+
+                        <select asp-for="CompanySize"
+                                asp-items="Model.CompanySizeList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Company Size --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Company Revenue
+                        </label>
+
+                        <input asp-for="CompanyRevenue"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Company Ranking
+                        </label>
+
+                        <input asp-for="CompanyRanking"
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- LEAD INFO -->
+        <div class="card section-card red mb-3">
+
+            <div class="section-header">
+                📊 Lead Info
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Lead Type *
+                        </label>
+
+                        <select asp-for="LeadType"
+                                asp-items="Model.LeadTypeList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Lead Type --
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="LeadType"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Lead Source
+                        </label>
+
+                        <select asp-for="LeadSource"
+                                asp-items="Model.LeadSourceList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Lead Source --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Lead Stage *
+                        </label>
+
+                        <select asp-for="LeadStage"
+                                asp-items="Model.LeadStageList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Lead Stage --
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="LeadStage"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Lead Priority *
+                        </label>
+
+                        <select asp-for="LeadPriority"
+                                asp-items="Model.LeadPriorityList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Priority --
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="LeadPriority"
+                              class="text-danger"></span>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Rating
+                        </label>
+
+                        <select asp-for="Rating"
+                                asp-items="Model.RatingList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Rating --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Sales Executive
+                        </label>
+
+                        <select asp-for="SalesExecutive"
+                                asp-items="Model.SalesExecutiveList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Sales Executive --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ADDITIONAL INFO -->
+        <div class="card section-card mb-3">
+
+            <div class="section-header">
+                📝 Additional Info
+            </div>
+
+            <div class="section-body">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Linkedin URL
+                        </label>
+
+                        <input asp-for="LinkedinURL"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Skype ID
+                        </label>
+
+                        <input asp-for="SkpeId"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Twitter URL
+                        </label>
+
+                        <input asp-for="TwitterURL"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Facebook URL
+                        </label>
+
+                        <input asp-for="FacebookURL"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Customer Type
+                        </label>
+
+                        <select asp-for="CustomerType"
+                                asp-items="Model.CustomerTypeList"
+                                class="form-select">
+
+                            <option value="">
+                                -- Select Customer Type --
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            Preferred Communication
+                        </label>
+
+                        <input asp-for="PreferredModeofCommunication"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Requirement Details
+                        </label>
+
+                        <textarea asp-for="RequirementDetails"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Customer Background
+                        </label>
+
+                        <textarea asp-for="CustomerBackground"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            BD Comments
+                        </label>
+
+                        <textarea asp-for="BDComments"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="form-check mt-4">
+
+                            <input asp-for="IsActive"
+                                   class="form-check-input" />
+
+                            <label asp-for="IsActive"
+                                   class="form-check-label">
+                                Is Active
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

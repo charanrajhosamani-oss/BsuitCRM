@@ -1,0 +1,1596 @@
+﻿@using BSuit.API.Areas.SalesCRM.Models
+@model AccountVM
+
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+    ViewBag.Title = "Account Form";
+}
+@functions {
+    public string GetFileIcon(string fileName)
+    {
+        var ext = System.IO.Path.GetExtension(fileName)?.ToLower();
+
+        return ext switch
+        {
+            ".pdf" => "bi bi-file-earmark-pdf text-danger",
+            ".xls" or ".xlsx" => "bi bi-file-earmark-excel text-success",
+            ".doc" or ".docx" => "bi bi-file-earmark-word text-primary",
+            ".zip" => "bi bi-file-earmark-zip text-warning",
+            _ => "bi bi-file-earmark text-secondary"
+        };
+    }
+}
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<div class="crm-container">
+    <!-- Tabs -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs" id="crmTabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#tab-account" data-bs-toggle="tab">Account</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-initial" data-bs-toggle="tab">Email</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-lead" data-bs-toggle="tab" id="leadTab" data-leadid="@(Model.LeadId == Guid.Empty ? "" : Model.LeadId.ToString())">Lead Details</a>
+
+
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-requirement" data-bs-toggle="tab">Requirement</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-contact" data-bs-toggle="tab">Contact</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-document" data-bs-toggle="tab">Document</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-project" data-bs-toggle="tab">Project</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tab-referral" data-bs-toggle="tab">Referral</a>
+            </li>
+            <li class="nav-item">
+
+                <a class="nav-link" href="#tab-nda" data-bs-toggle="tab" id="ndaTab" data-accountId="@(Model.AccountId == Guid.Empty ? "" : Model.AccountId.ToString())">NDA</a>
+            </li>
+        </ul>
+
+        <!-- Back Button -->
+        <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })"
+           class="btn btn-sm btn-outline-secondary">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+    </div>
+    <div class="tab-content">
+
+        <!-- ✅ Account Summary -->
+
+        <div class="tab-pane fade show active" id="tab-account">
+
+
+            <div class="row">
+
+                <!-- Account Info -->
+                <div class="col-md-4">
+                    <div class="section-card green">
+                        <div class="section-header">
+                            <i class="bi bi-file-text"></i>Summary
+                            <a id="ancAccountId"
+                               data-accountid="@Model.AccountId" href="@Url.Action("EditAccount", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+
+                            <a href="@Url.Action("AccountDetails", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                               class="btn btn-sm text-white" style="background:#1b67c2">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+
+                        <div class="section-body">
+
+
+
+                            <div class="small-text">
+                                <b>Account Name:</b> @Model.AccountName <br>
+                                <b>Account Owner:</b> @Model.OwnerName <br>
+                                <b>Company Name:</b> @Model.CompanyName <br>
+                                <b>Customer ID:</b> @Model.CustomerId <br>
+                                <b>Customer Type:</b> @Model.CustomerTypeName <br>
+                                <b>Job Title:</b> @Model.JobTitleName <br>
+                                <b>Gender:</b> @Model.GenderName
+                            </div>
+
+                            <hr />
+
+                            <div class="section-title">Referral Details</div>
+                            <div class="small-text">
+                                <b>Client Name:</b> @Model.ReferredName <br>
+                                <b>Email:</b> <a href="mailto:@Model.ReferredEmail">@Model.ReferredEmail</a>
+                                <br>
+                                <b>Mobile:</b> @Model.ReferredPhone
+                            </div>
+
+                            <hr />
+
+                            <div class="section-title">Contact Information</div>
+                            <div class="small-text">
+                                @if (Model?.contactInfo?.Any() == true)
+                                {
+                                    foreach (var item in Model.contactInfo.Take(2))
+                                    {
+                                        <b>Name:</b>
+                                        @item.FullName
+                                        <br />
+                                        <b>Department:</b>
+                                        @item.Department
+                                        <br />
+                                        <b>Designation:</b>
+                                        @item.Designation
+                                        <br />
+
+                                        <b>Email:</b>
+                                        <a href="mailto:@item.Email">@item.Email</a>
+                                        <br />
+
+                                        <b>Mobile:</b>
+                                        @item.MobilePhone
+                                        <br />
+
+                                    }
+                                }
+                                else
+                                {
+                                    <span>No contact info available</span>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ✅ Requirements -->
+                <div class="col-md-4">
+                    <div class="section-card orange">
+                        <div class="section-header">
+                            <i class="bi bi-briefcase"></i>
+
+                            Requirements  <a href="@Url.Action("Details", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                                             class="btn btn2 btn-sm" style="font-size:10px;background-color:#1b67c2">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        <div class="section-body">
+                            @if (Model != null && Model.opportunities.Any())
+                            {
+                                int count = 1;
+
+                                foreach (var item in Model.opportunities.Take(3))
+                                {
+                                    <b>Opportunity ID:</b>
+                                    @count
+                                    <br />
+                                    <b>Service:</b>
+                                    @item.Service
+                                    <br />
+
+                                    <b>Opportunity:</b>
+                                    @item.OpportunityName
+                                    <br />
+
+
+
+                                    <b>Status:</b>
+
+                                    @item.OpportunityStatus
+                                    <br />
+                                    count++;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ✅ Project and Document -->
+                <div class="col-md-4">
+                    <!-- ✅ Project-->
+                    <div class="section-card blue">
+                        <div class="section-header">
+                            <i class="bi bi-kanban"></i> Project Details
+                            <a href="@Url.Action("Details", "Account", new { area = "SalesCRM", accountId = Model.AccountId })"
+                               class="btn btn2 btn-sm" style="font-size:10px;background-color:#1b67c2">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </div>
+                        <div class="section-body">
+                            @if (Model != null && Model.projectViews.Any())
+                            {
+                                int count = 1;
+
+                                foreach (var item in Model.projectViews.Take(3))
+                                {
+
+                                    <b>Project Name: </b>
+                                    @item.ProjectName
+                                    <br />
+                                    <b>Code:</b>
+                                    @item.ProjectCode
+                                    <br />
+                                    <b>Start Date:</b>
+                                    @item.StartDate
+                                    <br />
+                                    <b>End Date:</b>
+                                    @item.EndDate
+                                    count++;
+                                }
+
+                            }
+                        </div>
+                    </div>
+
+                    <!-- ✅ Document-->
+
+
+
+                    <div class="section-card blue">
+
+
+
+                        <div class="section-header d-flex justify-content-between align-items-center">
+
+                            <span>
+                                <i class="bi bi-folder"></i>&nbsp; Documents
+                            </span>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger ms-auto"
+                                    id="btnUploadDocument"
+                                    data-accountId="@Model.AccountId">
+
+                                <i class="bi bi-upload"></i>
+
+                            </button>
+
+                            <input type="file"
+                                   id="documentFileInput"
+                                   hidden />
+
+                        </div>
+
+
+                        <div class="section-body">
+
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">File Name</th>
+                                            <th class="text-center">Uploaded On</th>
+                                            <th class="text-center" width="120">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @if (Model.documentsVM != null && Model.documentsVM.Any())
+                                        {
+                                            foreach (var item in Model.documentsVM.Take(3))
+
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <i class="@GetFileIcon(item.FileName)"></i>
+                                                        @item.FileName
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        @item.UploadedOn.ToString("dd-MMM-yyyy")
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <a href="@item.FilePath"
+                                                           download
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary">
+
+                                                            <i class="bi bi-download"></i>
+
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-4">
+                                                    <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                                    No documents available
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+        <!-- Email Response Tab -->
+        <div class="tab-pane fade" id="tab-initial">
+            <div class="section-card purple">
+
+                <!-- HEADER -->
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-envelope"></i> Email
+                    </div>
+                </div>
+
+                <div class="section-body">
+
+                    <!-- Hidden -->
+                    <input type="hidden" id="ParentEntityType" value="Lead" />
+                    <input type="hidden" id="ParentEntityId" value="@Model.LeadId" />
+
+                    <!-- TO -->
+                    <div class="mb-2">
+                        <label>To:</label>
+                        <input type="text" id="toEmail" class="form-control"
+                               placeholder="Enter emails (comma separated)" />
+                    </div>
+
+                    <!-- CC/BCC TOGGLE -->
+                    <div class="mb-2">
+                        <small class="text-primary" style="cursor:pointer;"
+                               onclick="toggleCcBcc()">
+                            + Add CC / BCC
+                        </small>
+                    </div>
+
+                    <!-- CC -->
+                    <div class="mb-2 d-none" id="ccContainer">
+                        <label>CC:</label>
+                        <input type="text" id="ccEmail" class="form-control"
+                               placeholder="Enter CC emails (comma separated)" />
+                    </div>
+
+                    <!-- BCC -->
+                    <div class="mb-2 d-none" id="bccContainer">
+                        <label>BCC:</label>
+                        <input type="text" id="bccEmail" class="form-control"
+                               placeholder="Enter BCC emails (comma separated)" />
+                    </div>
+
+                    <!-- SUBJECT -->
+                    <div class="mb-2">
+                        <label>Subject:</label>
+                        <input type="text" id="subject" class="form-control"
+                               placeholder="Email subject" />
+                    </div>
+
+                    <!-- ATTACHMENTS -->
+                    <div class="mb-2">
+                        <label>Attachments:</label>
+                        <input type="file" id="attachments" class="form-control" multiple />
+                        <ul id="attachmentList" class="list-group mt-2"></ul>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="mb-2">
+                        <label>Body:</label>
+                        <textarea id="responseBody" class="form-control" rows="8"></textarea>
+                    </div>
+
+                    <!-- ACTION -->
+                    <div class="d-flex justify-content-end">
+                        <button id="btnSend" class="btn btn-primary">
+                            <i class="bi bi-send"></i> Send
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 🔷 HISTORY -->
+            <div class="section-card mt-3">
+                <div class="section-header">
+                    <i class="bi bi-clock-history"></i> Response History
+                </div>
+
+                <div class="section-body">
+                    <table class="table table-sm table-striped" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>To</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="text-center">
+                            @if (Model.EmailHistory != null && Model.EmailHistory.Any())
+                            {
+                                foreach (var mail in Model.EmailHistory)
+                                {
+                                    <tr>
+                                        <!-- Date -->
+                                        <td>
+                                            @(mail.SentDate?.ToString("dd-MMM-yyyy HH:mm") ?? "-")
+                                        </td>
+
+                                        <!-- To Emails -->
+                                        <td>
+                                            <span title="@mail.ToEmails">
+                                                @(string.IsNullOrWhiteSpace(mail.ToEmails)
+                                                                                        ? "-"
+                                                                                        : mail.ToEmails)
+                                    </span>
+
+                                            @* Optional CC indicator *@
+                                    @if (!string.IsNullOrWhiteSpace(mail.CcEmails))
+                                            {
+                                                <span class="badge bg-light text-dark ms-1" title="Has CC">
+                                                    CC
+                                                </span>
+                                            }
+                                </td>
+
+                                <!-- Subject -->
+                                <td>
+                                    <span title="@mail.Subject">
+                                        @(string.IsNullOrWhiteSpace(mail.Subject)
+                                                                                ? "(No Subject)"
+                                                                                : (mail.Subject.Length > 50
+                                                                                ? mail.Subject.Substring(0, 50) + "..."
+                                                                                : mail.Subject))
+                                                                                            </span>
+                                                                                        </td>
+
+                                <!-- Status -->
+                                <td>
+                                    <span class="badge
+                                            @(mail.Status == "Sent" ? "bg-success" :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            mail.Status == "Failed" ? "bg-danger" :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            mail.Status == "Draft" ? "bg-warning text-dark" :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            "bg-secondary")">
+                                        @(mail.Status ?? "Unknown")
+                                    </span>
+                                </td>
+                            </tr>
+                                                        }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-3">
+                                        <i class="bi bi-inbox"></i> No email history
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script>
+                function toggleCcBcc() {
+                    document.getElementById('ccContainer')?.classList.toggle('d-none');
+                    document.getElementById('bccContainer')?.classList.toggle('d-none');
+                }
+
+                let selectedFiles = [];
+
+                const input = document.getElementById('attachments');
+                const list = document.getElementById('attachmentList');
+                const sendBtn = document.getElementById('btnSend');
+
+                // Handle file selection
+                input?.addEventListener('change', function () {
+                    selectedFiles = selectedFiles.concat(Array.from(this.files));
+                    this.value = '';
+                    renderFileList();
+                });
+
+                function renderFileList() {
+                    if (!list) return;
+
+                    list.innerHTML = '';
+
+                    selectedFiles.forEach((file, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                        li.innerHTML = `<span>${file.name} (${Math.round(file.size / 1024)} KB)</span>`;
+
+                        const delBtn = document.createElement('button');
+                        delBtn.className = 'btn btn-sm btn-danger';
+                        delBtn.innerHTML = '<i class="bi bi-x"></i>';
+
+                        delBtn.onclick = () => {
+                            selectedFiles.splice(index, 1);
+                            renderFileList();
+                        };
+
+                        li.appendChild(delBtn);
+                        list.appendChild(li);
+                    });
+                }
+
+                // 🔹 Send Email
+                sendBtn?.addEventListener('click', function () {
+
+                    // 🔥 Disable button immediately
+                    sendBtn.disabled = true;
+                    sendBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+
+                    const to = document.getElementById('toEmail')?.value;
+                    const cc = document.getElementById('ccEmail')?.value;
+                    const bcc = document.getElementById('bccEmail')?.value;
+                    const subject = document.getElementById('subject')?.value;
+
+                    let body = '';
+                    if (window.tinymce && tinymce.get('responseBody')) {
+                        body = tinymce.get('responseBody').getContent();
+                    } else {
+                        body = document.getElementById('responseBody')?.value || '';
+                    }
+
+                    if (!to) {
+                        alert("To email is required");
+
+                        // 🔁 Re-enable button
+                        sendBtn.disabled = false;
+                        sendBtn.innerHTML = '<i class="bi bi-send"></i> Send';
+
+                        return;
+                    }
+
+                    let formData = new FormData();
+
+                    formData.append("To", to);
+                    formData.append("CC", cc || '');
+                    formData.append("BCC", bcc || '');
+                    formData.append("Subject", subject || '');
+                    formData.append("BodyHtml", body);
+                    formData.append("ParentEntityType", "ACCOUNT");
+                    formData.append("ParentEntityId", "@Model.AccountId");
+
+                    selectedFiles.forEach(file => {
+                        formData.append("Attachments", file);
+                    });
+
+                    fetch('@Url.Action("SendEmail", "Account", new { area = "SalesCRM" })', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data && data.success) {
+
+                            alert("Email sent successfully");
+                            location.reload(); // 🔥 Refresh page
+                            // 🔹 Reset safely
+                            const safeSet = (id) => {
+                                const el = document.getElementById(id);
+                                if (el) el.value = '';
+                            };
+
+                            safeSet('toEmail');
+                            safeSet('ccEmail');
+                            safeSet('bccEmail');
+                            safeSet('subject');
+
+                            if (window.tinymce && tinymce.get('responseBody')) {
+                                tinymce.get('responseBody').setContent('');
+                            }
+
+                            selectedFiles = [];
+                            renderFileList();
+
+                        } else {
+                            alert("Failed to send email");
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert("Error occurred");
+                    })
+                    .finally(() => {
+                        // 🔁 ALWAYS re-enable button
+                        sendBtn.disabled = false;
+                        sendBtn.innerHTML = '<i class="bi bi-send"></i> Send';
+                    });
+                });
+            </script>
+        </div>
+
+
+        <!-- Lead Details Tab -->
+        <div class="tab-pane fade" id="tab-lead">
+            <div id="leadDetailsContainer"></div>
+        </div>
+
+
+        <!-- ✅ requirement -->
+
+        <div class="tab-pane fade" id="tab-requirement">
+
+
+            <div class="section-card red mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-folder"></i>&nbsp; Opportunities
+                    </span>
+                </div>
+                <div class="section-body">
+
+                    <div class="mb-3 d-flex flex-wrap align-items-end gap-2">
+
+                        <!-- Service Dropdown -->
+                        <div style="min-width:250px;">
+                            <select asp-for="ServiceId" id="serviceId" class="form-select">
+                                <option value="">-- Select Service --</option>
+                                @foreach (var itm in Model.ServicesInfo ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ServiceId" id="serviceId-error" class="text-danger"></span>
+                        </div>
+
+                        <!-- Opportunity Name -->
+                        <div style="min-width:250px;">
+                            <input type="text"
+                                   name="OpportunityName"
+                                   id="opportunityName"
+                                   class="form-control form-control-sm"
+                                   placeholder="Enter opportunity name" />
+                            <span asp-validation-for="OpportunityName" id="opportunityName-error" class="text-danger"></span>
+                        </div>
+
+                        <!-- Button -->
+                        <div style="display:flex;align-self:center;">
+                            <button type="button"
+                                    id="btnScoping"
+                                    class="btn btn-sm btn-outline-primary w-100">
+                                <i class="bi bi-send"></i> Request for scoping
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Servise</th>
+                                    <th class="text-center">Name</th>
+                                    <th class="text-center">Stage</th>
+                                    <th class="text-center">Requested On</th>
+                                    <th class="text-center">Scoper</th>
+                                    <th class="text-center">Submited On</th>
+                                    <th class="text-center">Delivery Manager</th>
+                                    <th class="text-center">Approved On</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="opportunityTableBody" class="text-center">
+
+                                @if (Model.opportunities != null && Model.opportunities.Any())
+                                {
+                                    foreach (var opp in Model.opportunities)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @opp.Service
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("ViewAccount", "Account", new { area = "SalesCRM", id = opp.OpportunityId, serviceId = opp.ServiceId.ToString() })"
+                                                   class="text-decoration-none text-primary fw-semibold">
+                                                    @opp.OpportunityName
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @opp.OpportunityStatus
+                                            </td>
+                                            <td class="text-center">
+                                                @opp.RequestedOn
+                                            </td>
+                                            <td class="text-center">
+                                                @opp.Scoper
+                                            </td>
+                                            <td class="text-center">
+                                                @opp.ApprovedOn
+                                            </td>
+                                            <td class="text-center">
+                                                @opp.DeliveryManager
+                                            </td>
+                                            <td class="text-center">
+                                                @opp.SubmittedOn
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted py-4">
+                                            <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                            No Data Available
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </div>
+
+        <!-- ✅ contact Grid -->
+        <div class="tab-pane fade" id="tab-contact">
+
+
+
+            <div class="section-card orange mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <span>
+                        @*  <i class="bi bi-folder"></i> *@ 🏢👥 Contact Information
+                    </span>
+                </div>
+
+
+                <div class="section-body">
+                    <div class="row mt-2">
+                        <table border="1" id="contactTable" class="table table1 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Full Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Status</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model != null && Model.contactInfo.Any())
+                                {
+                                    int count = 1;
+                                    foreach (var item in Model.contactInfo)
+                                    {
+                                        <tr>
+                                            <td>@count</td>
+                                            <td>@item.FullName</td>
+                                            <td>@item.Department</td>
+                                            <td>@item.Designation</td>
+                                            <td>
+                                                <a href="#" class="icon-btn">@item.Email </a>
+                                            </td>
+                                            <td>@item.MobilePhone</td>
+                                            <td> @Html.Raw(item.StatusId) </td>
+                                        </tr>
+                                        count++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">
+                                            No records found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+        <!-- ✅ document Grid -->
+        <div class="tab-pane fade" id="tab-document">
+            <div class="section-card red mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+
+                    <span>
+                        <i class="bi bi-folder"></i>&nbsp; Documents
+                    </span>
+
+
+
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger ms-auto"
+                            id="btnUploadDocument1"
+                            data-accountId="@Model.AccountId">
+                        <i class="bi bi-upload"></i>
+
+
+                    </button>
+                    <input type="file"
+                           id="documentFileInput1"
+                           hidden />
+                </div>
+
+                <div class="section-body">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">File Name</th>
+                                    <th class="text-center">Uploaded On</th>
+                                    <th class="text-center">Uploaded By</th>
+                                    <th class="text-center" width="120">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.documentsVM != null && Model.documentsVM.Any())
+                                {
+                                    foreach (var doc in Model.documentsVM)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <i class="@GetFileIcon(doc.FileName)"></i>
+                                                @doc.FileName
+                                            </td>
+
+                                            <td class="text-center">
+                                                @doc.UploadedOn.ToString("dd-MMM-yyyy")
+                                            </td>
+
+
+
+                                            <td class="text-center">
+                                                @doc.FullName
+                                            </td>
+
+                                            <td class="text-center">
+
+
+
+                                                <a href="@doc.FilePath"
+                                                   download
+                                                   target="_blank"
+                                                   class="btn btn-sm btn-outline-primary">
+
+                                                    <i class="bi bi-download"></i>
+
+                                                </a>
+                                            </td>
+
+
+
+
+
+
+
+
+
+
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">
+                                            <i class="bi bi-folder-x fs-4 d-block mb-1"></i>
+                                            No documents available
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ✅ project Grid -->
+        <div class="tab-pane fade" id="tab-project">
+
+
+
+
+            <div class="section-card green mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-kanban"></i>  Project Details
+                    </span>
+                </div>
+
+
+                <div class="section-body">
+                    <div class="row mt-2">
+
+
+                        <table border="1" id="projectTable" class="table table1 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Project</th>
+                                    <th>ProjectCode</th>
+                                    <th>Description</th>
+                                    <th>StartDate</th>
+                                    <th>End Date</th>
+                                    <th>Project Hours</th>
+                                    <th>Transfer Hours</th>
+                                    <th>Balance Hours</th>
+                                    <th>Notes</th>
+
+
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+
+
+
+                                @if (Model != null && Model.projectViews.Any())
+                                {
+                                    int count = 1;
+                                    foreach (var item in Model.projectViews)
+                                    {
+                                        <tr>
+                                            <td>@count</td>
+                                            <td>@item.ProjectName</td>
+                                            <td>
+                                                <a href="#" class="icon-btn">@item.ProjectCode </a>
+                                            </td>
+                                            <td>@item.Description</td>
+                                            <td>@item.StartDate</td>
+                                            <td>@item.EndDate</td>
+                                            <td>@item.ProjectHours</td>
+                                            <td>@item.TransferHours</td>
+                                            <td>@item.BalanceHours</td>
+                                            <td>@item.Notes</td>
+
+                                        </tr>
+                                        count++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted">
+                                            No records found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+
+        <!-- ✅ referral Grid -->
+
+        <div class="tab-pane fade" id="tab-referral">
+
+
+            <div class="section-card red mt-3">
+
+                <div class="section-header d-flex justify-content-between align-items-center">
+                    <span>
+                        🏢👥 Referal Information
+                    </span>
+                </div>
+
+
+                <div class="section-body">
+                    <div class="row mt-2">
+
+
+                        <div class="section-body">
+                            <div class="row mt-2">
+                                <table border="1" id="referralInfoTable" class="table table1 align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Referral Name</th>
+                                            <th>Email</th>
+                                            <th>Mobile</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @if (Model != null && Model.referralInfo.Any())
+                                        {
+                                            int count = 1;
+                                            foreach (var item in Model.referralInfo)
+                                            {
+                                                <tr>
+                                                    <td>@count</td>
+                                                    <td>@item.ReferredName</td>
+                                                    <td>
+                                                        <a href="#" class="icon-btn">@item.ReferredEmail </a>
+                                                    </td>
+                                                    <td>@item.ReferredPhone</td>
+
+                                                </tr>
+                                                count++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="8" class="text-center text-muted">
+                                                    No records found
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+
+        <!-- NDA Details Tab -->
+        <div class="tab-pane fade" id="tab-nda">
+            <div id="leadNDADetailsContainer"> Hi</div>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<!-- TinyMCE Free Build -->
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+<script>
+    const defaultSignature = `
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <hr>
+    <p style="font-size:13px;">
+    Regards,<br>
+    <strong>Dhirendra M</strong><br>
+    Executive Admin Services
+    </p>
+    `;
+
+    tinymce.init({
+    selector: '#responseBody',
+    height: 400,
+    menubar: true,
+
+    plugins: [
+    'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+    'searchreplace', 'visualblocks', 'code', 'fullscreen',
+    'insertdatetime', 'media', 'table', 'emoticons', 'help', 'wordcount'
+    ],
+
+    toolbar:
+    'undo redo | styleselect | bold italic underline | ' +
+    'alignleft aligncenter alignright | bullist numlist | ' +
+    'link image | code fullscreen',
+
+    branding: false,
+
+    setup: function (editor) {
+
+    // ✅ Set signature only once
+    editor.on('init', function () {
+    if (!editor.getContent({ format: 'text' }).trim()) {
+    editor.setContent(defaultSignature);
+    }
+    });
+
+    }
+    });
+</script>
+<script>
+
+    // LOAD OPPORTUNITY TABLE
+
+    function loadOpportunityList() {
+
+    let accountId = $("#ancAccountId").data("accountid");
+
+    $.ajax({
+    url: '@Url.Action("GetOpportunityList", "Account", new { area = "SalesCRM" })',
+    type: 'GET',
+    data: { accountId: accountId },
+
+    success: function (response) {
+
+    let rows = "";
+
+    if (response.length > 0) {
+
+    $.each(response, function (i, opp) {
+
+    rows += `
+    <tr>
+    <td>${opp.service || ''}</td>
+
+    <td>
+    <a href="/SalesCRM/Account/ViewAccount?id=${opp.opportunityId}&serviceId=${opp.serviceId}"
+    class="text-decoration-none text-primary fw-semibold">
+    ${opp.opportunityName || ''}
+    </a>
+    </td>
+
+    <td>${opp.opportunityStatus || ''}</td>
+
+    <td>${formatDate(opp.requestedOn)}</td>
+
+    <td>${opp.scoper || ''}</td>
+
+    <td>${formatDate(opp.submittedOn)}</td>
+
+    <td>${opp.deliveryManager || ''}</td>
+
+    <td>${formatDate(opp.approvedOn)}</td>
+    </tr>
+    `;
+    });
+
+    } else {
+
+    rows = `
+    <tr>
+    <td colspan="8" class="text-center">
+    No Data Available
+    </td>
+    </tr>
+    `;
+    }
+
+    $("#opportunityTableBody").html(rows);
+    },
+
+    error: function () {
+    alert("Failed to load data");
+    }
+    });
+    }
+
+    function formatDate(date) {
+
+    if (!date)
+    return '';
+
+    let d = new Date(date);
+
+    return d.toLocaleDateString('en-GB');
+    }
+
+
+    // DATE FORMAT FUNCTION
+    function formatDate(dateString) {
+
+    if (!dateString)
+    return '';
+
+    let date = new Date(dateString);
+
+    return date.toLocaleDateString('en-GB');
+    }
+
+
+    $("#btnScoping").click(function (e) {
+
+    e.preventDefault();
+
+    let isValid = true;
+    let errorMessages = [];
+
+    $("#serviceId-error").text("");
+    $("#opportunityName-error").text("");
+
+    let serviceId = $("#serviceId").val();
+    let opportunityName = ($("#opportunityName").val() || "").trim();
+    let accountId = $("#ancAccountId").data("accountid");
+
+    if (!serviceId) {
+    $("#serviceId-error").text("Service is required.");
+    errorMessages.push("Service is required.");
+    isValid = false;
+    }
+
+    if (!opportunityName) {
+    $("#opportunityName-error").text("Opportunity Name is required.");
+    errorMessages.push("Opportunity Name is required.");
+    isValid = false;
+    }
+
+    if (!accountId) {
+    errorMessages.push("Account is missing.");
+    isValid = false;
+    }
+
+    if (!isValid) {
+
+    Swal.fire({
+    icon: 'error',
+    title: 'Please fix the following:',
+    html: "<ul style='text-align:left;'><li>" + errorMessages.join("</li><li>") + "</li></ul>"
+    });
+
+    return;
+    }
+
+    let formData = new FormData();
+
+    formData.append("ServiceId", serviceId);
+    formData.append("OpportunityName", opportunityName);
+    formData.append("ancAccountId", accountId);
+
+    $.ajax({
+
+    url: '@Url.Action("CreateOpportunity", "Account")',
+    type: 'POST',
+    data: formData,
+    processData: false,
+    contentType: false,
+
+    success: function (response) {
+
+    if (response.success) {
+
+    Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: response.message
+    });
+
+    $("#opportunityName").val('');
+    $("#serviceId").prop("selectedIndex", 0);
+
+    // RELOAD TABLE
+    loadOpportunityList();
+
+    } else {
+
+    Swal.fire("Error", response.message || "Something went wrong", "error");
+    }
+    },
+
+    error: function () {
+
+    Swal.fire("Error", "Save failed. Please try again.", "error");
+    }
+    });
+    });
+
+</script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const uploadBtn = document.getElementById("btnUploadDocument");
+    const fileInput = document.getElementById("documentFileInput");
+
+    // 🔥 Safety check
+    if (!uploadBtn || !fileInput)
+    return;
+
+    // 🔥 Upload button click
+    uploadBtn.addEventListener("click", function () {
+
+    fileInput.value = "";
+    fileInput.click();
+
+    });
+
+    // 🔥 File selected
+    fileInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file)
+    return;
+
+    const accountId = uploadBtn.getAttribute("data-accountId");
+
+    console.log("accountId:", accountId);
+
+    if (!accountId) {
+
+    alert("AccountId Id not found");
+    return;
+    }
+
+    // 🔥 Confirmation
+    const isConfirmed = confirm("Are you sure you want to upload this document?");
+
+    if (!isConfirmed)
+    return;
+
+    let formData = new FormData();
+
+    formData.append("accountId", accountId);
+    formData.append("file", file);
+
+    // 🔥 Correct POST URL
+    fetch('@Url.Action("UploadLeadDocument", "Account")', {
+
+    method: 'POST',
+    body: formData
+
+    })
+    .then(async response => {
+
+    if (!response.ok) {
+
+    const errorText = await response.text();
+
+    console.error("Server Error:", errorText);
+
+    throw new Error(errorText);
+    }
+
+    return response.json();
+
+    })
+    .then(data => {
+
+    alert("Document uploaded successfully");
+
+    location.reload();
+
+    })
+    .catch(error => {
+
+    console.error("Upload Error:", error);
+
+    alert("Upload failed");
+
+    });
+
+    });
+
+    });
+
+</script>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+    const uploadBtn = document.getElementById("btnUploadDocument1");
+    const fileInput = document.getElementById("documentFileInput1");
+
+    // 🔥 Safety check
+    if (!uploadBtn || !fileInput)
+    return;
+
+    // 🔥 Upload button click
+    uploadBtn.addEventListener("click", function () {
+
+    fileInput.value = "";
+    fileInput.click();
+
+    });
+
+    // 🔥 File selected
+    fileInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file)
+    return;
+
+    const accountId = uploadBtn.getAttribute("data-accountId");
+
+    console.log("accountId:", accountId);
+
+    if (!accountId) {
+
+    alert("AccountId Id not found");
+    return;
+    }
+
+    // 🔥 Confirmation
+    const isConfirmed = confirm("Are you sure you want to upload this document?");
+
+    if (!isConfirmed)
+    return;
+
+    let formData = new FormData();
+
+    formData.append("accountId", accountId);
+    formData.append("file", file);
+
+    // 🔥 Correct POST URL
+    fetch('@Url.Action("UploadLeadDocument", "Account")', {
+
+    method: 'POST',
+    body: formData
+
+    })
+    .then(async response => {
+
+    if (!response.ok) {
+
+    const errorText = await response.text();
+
+    console.error("Server Error:", errorText);
+
+    throw new Error(errorText);
+    }
+
+    return response.json();
+
+    })
+    .then(data => {
+
+    alert("Document uploaded successfully");
+
+    location.reload();
+
+    })
+    .catch(error => {
+
+    console.error("Upload Error:", error);
+
+    alert("Upload failed");
+
+    });
+
+    });
+
+    });
+
+</script>
+
+<!-- Lead -->
+
+<script>
+
+    $("#leadTab").click(function () {
+
+    let leadid = $(this).data("leadid");
+
+    console.log(leadid);
+
+
+    $.ajax({
+    url: '@Url.Action("LoadLeadDetails", "Account", new { area = "SalesCRM" })',
+    type: 'GET',
+    data: { accountId: leadid },
+
+    success: function (result) {
+
+    $("#leadDetailsContainer").html(result);
+
+    },
+
+    error: function (xhr) {
+
+    console.log(xhr.responseText);
+
+    alert("Failed to load Lead Details");
+
+    }
+    });
+
+    });
+
+</script>
+
+<!-- NDA -->
+
+<script>
+
+    $("#ndaTab").click(function () {
+
+    let accountId = $(this).data("accountId");
+
+    console.log(accountId);
+
+
+    $.ajax({
+    url: '@Url.Action("LoadNDADetails", "Account", new { area = "SalesCRM" })',
+    type: 'GET',
+    data: { accountId: accountId },
+
+    success: function (result) {
+
+    $("#leadNDADetailsContainer").html(result);
+
+    },
+
+    error: function (xhr) {
+
+    console.log(xhr.responseText);
+
+    alert("Failed to load Lead Details");
+
+    }
+    });
+
+    });
+
+</script>

@@ -1,0 +1,176 @@
+﻿@using BSuit.SalesCRM.VM.Lead
+@model LeadInfo
+
+@{
+    ViewData["Title"] = "Lead Details";
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<div class="container-fluid">
+
+    <!-- 🔷 HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+
+        <!-- LEFT -->
+        <div>
+            <a href="@Url.Action("Index", "Lead", new { area = "SalesCRM" })"
+               class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+        </div>
+
+        <!-- CENTER -->
+        <div class="text-center flex-grow-1">
+            <h5 class="mb-0">Lead Details</h5>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+            <a href="@Url.Action("Edit", "Lead", new { id = Model.LeadId })"
+               class="btn btn-sm btn-primary">
+                <i class="fa fa-pen"></i>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- 🔷 BASIC -->
+    <div class="card section-card">
+        <div class="section-header">👤 Basic Info</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">First Name</div><div class="info-value">@Model.FirstName</div></div>
+                    <div class="info-row"><div class="info-label">Last Name</div><div class="info-value">@Model.LastName</div></div>
+                    <div class="info-row"><div class="info-label">Gender</div><div class="info-value">@Model.Gender</div></div>
+                    <div class="info-row"><div class="info-label">Email</div><div class="info-value">@Model.Email</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Phone</div><div class="info-value">@Model.Phone</div></div>
+                    <div class="info-row"><div class="info-label">Personal Email 1</div><div class="info-value">@Model.PersonalEmail1</div></div>
+                    <div class="info-row"><div class="info-label">Personal Email 2</div><div class="info-value">@Model.PersonalEmail2</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 LOCATION -->
+    <div class="card section-card orange">
+        <div class="section-header">📍 Location</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">City</div><div class="info-value">@Model.City</div></div>
+                    <div class="info-row"><div class="info-label">Zip Code</div><div class="info-value">@Model.ZipCode</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Country</div><div class="info-value">@Model.Country</div></div>
+                    <div class="info-row"><div class="info-label">Address</div><div class="info-value">@Model.Address</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 COMPANY -->
+    <div class="card section-card purple">
+        <div class="section-header">🏢 Company</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Company Name</div><div class="info-value">@Model.CompanyName</div></div>
+                    <div class="info-row"><div class="info-label">Website</div><div class="info-value">@Model.Website</div></div>
+                    <div class="info-row"><div class="info-label">Industry</div><div class="info-value">@Model.Industry</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Company Size</div><div class="info-value">@Model.CompanySize</div></div>
+                    <div class="info-row"><div class="info-label">Revenue</div><div class="info-value">@Model.CompanyRevenue</div></div>
+                    <div class="info-row"><div class="info-label">Ranking</div><div class="info-value">@Model.CompanyRanking</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 LEAD INFO -->
+    <div class="card section-card red">
+        <div class="section-header">📊 Lead Info</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Lead Type</div><div class="info-value">@Model.LeadType</div></div>
+                    <div class="info-row"><div class="info-label">Lead Source</div><div class="info-value">@Model.LeadSource</div></div>
+                    <div class="info-row"><div class="info-label">Lead Stage</div><div class="info-value">@Model.LeadStage</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Priority</div><div class="info-value">@Model.LeadPriority</div></div>
+                    <div class="info-row"><div class="info-label">Rating</div><div class="info-value">@Model.Rating</div></div>
+                    <div class="info-row"><div class="info-label">Sales Executive</div><div class="info-value">@Model.SalesExecutive</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 ADDITIONAL -->
+    <div class="card section-card green">
+        <div class="section-header">📝 Additional Info</div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Requirement</div><div class="info-value">@Model.RequirementDetails</div></div>
+                    <div class="info-row"><div class="info-label">Background</div><div class="info-value">@Model.CustomerBackground</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-row"><div class="info-label">Skype</div><div class="info-value">@Model.SkpeId</div></div>
+                    <div class="info-row"><div class="info-label">Twitter</div><div class="info-value">@Model.TwitterURL</div></div>
+                    <div class="info-row"><div class="info-label">Facebook</div><div class="info-value">@Model.FacebookURL</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔷 SERVICES -->
+    <div class="card section-card">
+        <div class="section-header">🛠 Services</div>
+        <div class="section-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Service</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SelectedServices != null && Model.SelectedServices.Any())
+                        {
+                            int i = 1;
+                            foreach (var s in Model.SelectedServices)
+                            {
+                                <tr>
+                                    <td>@i</td>
+                                    <td>@s.ServiceName</td>
+                                    <td>
+                                        <a href="@Url.Action("RequestForScoping","Lead", new { area="SalesCRM", leadId=s.LeadId, serviceid=s.ServiceId })"
+                                           class="btn btn-sm btn-primary">
+                                            Request
+                                        </a>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No services</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

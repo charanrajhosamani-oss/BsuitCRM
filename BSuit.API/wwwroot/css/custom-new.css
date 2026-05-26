@@ -1,0 +1,516 @@
+﻿/* =========================
+   General
+========================= */
+body {
+    font-size: 13px;
+    background-color: #f5f7fb;
+}
+
+.service-tag {
+    font-size: 12px;
+    padding: 6px 10px;
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+    .service-tag:hover {
+        background-color: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+    }
+
+.crm-container {
+    margin: auto;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+/* =========================
+   Section Cards
+========================= */
+.section-card {
+    border: 1px solid #e0e0e0;
+    border-left: 4px solid #007bff;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+}
+
+    .section-card:hover {
+        z-index: 10;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 14px rgba(0,0,0,0.14);
+    }
+
+    /* =========================
+   Colored Cards
+========================= */
+    .section-card.green {
+        border-left-color: #28a745;
+        background-color: rgba(40, 167, 69, 0.06);
+    }
+
+    .section-card.orange {
+        border-left-color: #fd7e14;
+        background-color: rgba(253, 126, 20, 0.06);
+    }
+
+    .section-card.purple {
+        border-left-color: #6f42c1;
+        background-color: rgba(111, 66, 193, 0.06);
+    }
+
+    .section-card.red {
+        border-left-color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.06);
+    }
+
+/* =========================
+   Section Header & Body
+========================= */
+.section-header {
+    font-weight: 600;
+    padding: 10px 15px;
+    background: rgba(255,255,255,0.55);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(2px);
+}
+
+.section-body {
+    background: transparent;
+    padding: 15px;
+    border-radius: 0 0 6px 6px;
+}
+
+/* =========================
+   Info Row Layout
+========================= */
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+   /* padding: 8px 10px;*/
+    border-radius: 6px;
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.info-label {
+    width: 40%;
+    font-weight: 600;
+    color: #555;
+}
+
+.info-value {
+    width: 60%;
+    color: #000;
+    word-break: break-word;
+}
+
+/* =========================
+   Documents List
+========================= */
+.list-group {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.list-group-item {
+    background: rgba(255,255,255,0.50);
+    border: 1px solid rgba(0,0,0,0.05);
+    font-size: 12px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 6px !important;
+    transition: all 0.2s ease;
+}
+
+    .list-group-item:hover {
+        background: rgba(255,255,255,0.85);
+        transform: translateX(2px);
+    }
+
+/* =========================
+   Forms
+========================= */
+.form-control,
+.form-select {
+    font-size: 12px;
+    min-height: 34px;
+    border-radius: 6px;
+}
+
+textarea.form-control {
+    height: auto;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+/* =========================
+   Buttons
+========================= */
+.btn {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* =========================
+   Headings
+========================= */
+h5 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* =========================
+   Tables
+========================= */
+.table {
+    font-size: 12.5px;
+    margin-bottom: 0;
+}
+
+    .table th {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+        background: #f8f9fc;
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 6px 8px;
+        vertical-align: middle;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+.table-active {
+    background-color: #e7f1ff !important;
+}
+
+/* =========================
+   Bootstrap Cards
+========================= */
+.card {
+    border-radius: 8px;
+    /*border: 1px solid #e5e5e5;*/
+    overflow: visible;
+}
+
+.card-body {
+    padding: 12px !important;
+}
+
+/* =========================
+   Avatar Circle
+========================= */
+.avatar-circle {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #333;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+/* =========================
+   Scrollable Table
+========================= */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #fff;
+}
+
+.table-header {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+    margin-bottom: 0;
+}
+
+.table-body-scroll {
+    max-height: calc(100vh - 320px);
+    overflow-y: auto;
+    overflow-x: auto;
+    background: #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.lead-table {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+    margin-bottom: 0;
+}
+
+    .table-header th,
+    .lead-table th,
+    .lead-table td {
+        white-space: nowrap;
+    }
+
+.table-header th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #f8f9fc;
+}
+
+/* Scrollbar */
+.table-container::-webkit-scrollbar,
+.table-body-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb,
+.table-body-scroll::-webkit-scrollbar-thumb {
+    background: #c7ccd4;
+    border-radius: 10px;
+}
+
+.table-container::-webkit-scrollbar-track,
+.table-body-scroll::-webkit-scrollbar-track {
+    background: #f1f3f6;
+}
+
+/* =========================
+   Custom Stage Tabs
+========================= */
+
+.tabs-scroll-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+    .tabs-scroll-container::-webkit-scrollbar {
+        display: none;
+    }
+
+.tab-scroll-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    background: #fff;
+}
+
+.tab-btn {
+    border: 1px solid #d9dfe7;
+    border-bottom: 4px solid transparent;
+    background-color: #fff;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #333;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border-radius: 8px 8px 0 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    flex-shrink: 0;
+}
+
+    .tab-btn:hover {
+        background-color: rgba(13, 45, 90, 0.04);
+        border-color: #c7d3e3;
+        color: #0D2D5A;
+    }
+
+    .tab-btn.active {
+        border-color: #0D2D5A;
+        border-bottom: 4px solid #0D2D5A;
+        color: #0D2D5A;
+        font-weight: 600;
+        background-color: rgba(13, 45, 90, 0.03);
+    }
+
+    /* =========================
+   TAB COUNT BADGE
+========================= */
+
+    .tab-btn .badge {
+        background: transparent !important;
+        color: #666 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-left: 2px !important;
+        font-size: 11px;
+        font-weight: 600;
+        min-width: auto;
+    }
+
+    .tab-btn.active .badge {
+        color: #0D2D5A !important;
+    }
+
+.active-badge {
+    background: transparent !important;
+    color: #0D2D5A !important;
+}
+
+/* =========================
+   Bootstrap Nav Tabs
+========================= */
+
+#crmTabs {
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+    #crmTabs .nav-link {
+        color: #333;
+        border: none;
+        border-bottom: 3px solid transparent;
+        border-radius: 0;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 8px 14px;
+        transition: all 0.2s ease;
+        background: transparent;
+    }
+
+        #crmTabs .nav-link:hover {
+            color: #0D2D5A;
+            background-color: rgba(13, 45, 90, 0.04);
+        }
+
+        #crmTabs .nav-link.active {
+            color: #0D2D5A;
+            background-color: transparent;
+            border-bottom: 3px solid #0D2D5A;
+            font-weight: 600;
+        }
+
+/* =========================
+   Dropdown Fix
+========================= */
+
+.dropdown-menu {
+    z-index: 99999 !important;
+    position: absolute !important;
+}
+
+/* =========================
+   Pagination
+========================= */
+
+.pagination .page-link {
+    color: #0D2D5A;
+    border-radius: 6px;
+    margin: 0 2px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0D2D5A;
+    border-color: #0D2D5A;
+    color: #fff;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .info-label,
+    .info-value {
+        width: 100%;
+    }
+
+    .section-body {
+        padding: 10px;
+    }
+
+    .tab-btn {
+        padding: 6px 10px;
+    }
+}
+
+/* =========================
+   Sub Cards (Inside Section Body)
+========================= */
+
+.sub-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    position: relative;
+}
+
+    .sub-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+        z-index: 5;
+    }
+
+/* Sub card title */
+.sub-card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #0D2D5A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 6px;
+}
+
+/* Slightly compact rows inside sub cards */
+.sub-card .info-row {
+    background: #f9fafc;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+/* Optional color accents for sub cards */
+.sub-card.green {
+    border-left: 3px solid #28a745;
+}
+
+.sub-card.orange {
+    border-left: 3px solid #fd7e14;
+}
+
+.sub-card.purple {
+    border-left: 3px solid #6f42c1;
+}
+
+.sub-card.red {
+    border-left: 3px solid #dc3545;
+}

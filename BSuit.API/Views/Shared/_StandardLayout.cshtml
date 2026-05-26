@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Brickwork India</title>
+
+    <!-- Bootstrap (ONLY ONE) -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Your CSS (AFTER icons) -->
+    <link href="~/css/custom.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    <!-- Global Loader -->
+    <div id="globalLoader" style="display:none;">
+        <div class="loader-overlay">
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+
+    <div class="app-page">
+
+        <!-- Sidebar -->
+        <partial name="_Sidebar" />
+
+        <!-- Main -->
+        <div id="main" class="main collapsed">
+
+            <!-- Header -->
+            <partial name="_Header" />
+
+            <!-- Page Content -->
+            <div class="container-fluid mt-3">
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <partial name="_Footer" />
+
+        </div>
+    </div>
+
+    <!-- Global Loader -->
+    <div id="globalLoader" style="display:none;">
+        <div class="loader-overlay">
+            <div class="loader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- ✅ jQuery (required for your AJAX + validation) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- ✅ Bootstrap JS (required for dropdown click) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ✅ jQuery Validation (if using form validation) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Toggle Sidebar -->
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('main').classList.toggle('collapsed');
+        }
+    </script>
+
+    <!-- Sidebar Menu -->
+    <script>
+        function toggleMenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+
+            document.querySelectorAll('.submenu').forEach(menu => {
+                if (menu !== submenu) menu.style.display = 'none';
+            });
+
+            document.querySelectorAll('.arrow').forEach(a => {
+                if (a !== arrow) a.classList.remove('rotate');
+            });
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            element.classList.add('active');
+
+            submenu.style.display =
+                submenu.style.display === 'block' ? 'none' : 'block';
+
+            arrow.classList.toggle('rotate');
+        }
+
+
+    </script>
+
+   @*  <script>
+        window.addEventListener("beforeunload", function () {
+            if (window.performance.navigation.type !== 1) {
+                navigator.sendBeacon('/Home/LogoutOnTabClose');
+            }
+        });
+    </script> *@
+
+    
+    <script>
+         // 1. Capture Browser TimeZone 
+        (function () {
+
+            const timezone =
+                Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            fetch('/Home/SetTimeZone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    timeZone: timezone
+                })
+            });
+
+        })();
+    </script>
+
+    <script>
+
+        function showLoader() {
+            document.getElementById("globalLoader")
+                .style.display = "block";
+        }
+
+        function hideLoader() {
+            document.getElementById("globalLoader")
+                .style.display = "none";
+        }
+
+        // -----------------------------
+        // jQuery AJAX
+        // -----------------------------
+        $(document).ajaxStart(function () {
+            showLoader();
+        });
+
+        $(document).ajaxStop(function () {
+            hideLoader();
+        });
+
+        // -----------------------------
+        // Form Submit
+        // -----------------------------
+        $(document).on("submit", "form", function () {
+
+            const form = $(this);
+
+            // avoid loader for GET search/filter forms if needed
+            if (form.attr("method")?.toLowerCase() !== "get") {
+                showLoader();
+            }
+        });
+
+      
+
+        // -----------------------------
+        // Back Button / Page Restore
+        // -----------------------------
+        window.addEventListener("pageshow", function () {
+            hideLoader();
+        });
+
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

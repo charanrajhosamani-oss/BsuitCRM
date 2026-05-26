@@ -1,0 +1,33 @@
+﻿@model List<AlertMessage>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var alert in Model)
+    {
+        var cssClass = alert.Type switch
+        {
+            "success" => "alert-success",
+            "error" => "alert-danger",
+            "warning" => "alert-warning",
+            "info" => "alert-info",
+            _ => "alert-secondary"
+        };
+
+        <div class="alert @cssClass alert-dismissible fade show d-flex align-items-center" role="alert">
+
+            <!-- Icon -->
+            <i class="bi me-2
+                        @(alert.Type == "success" ? "bi-check-circle" :
+                                 alert.Type == "error" ? "bi-x-circle" :
+                                 alert.Type == "warning" ? "bi-exclamation-triangle" :
+                                 "bi-info-circle")">
+    </i>
+
+            <!-- Message -->
+            <div>@alert.Message</div>
+
+            <!-- Close -->
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+    }
+}

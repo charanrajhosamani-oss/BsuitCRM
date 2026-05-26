@@ -1,0 +1,76 @@
+﻿STEP 8 — Contracts (Module Communication)
+Contracts are interfaces + DTOs that modules expose for other modules to consume.
+Note: No EF, no HR entities here — just DTOs.
+
+Call HR Methods here:
+Now we’ll implement cross-module access using the Contracts layer. 
+This lets SalesCRM call HR module methods without directly referencing the HR project.
+
+Step 1: Define the Contract in BSuits.Contracts
+
+namespace BSuit.Contracts.DTO.HR.Employee
+{
+    public class EmployeeDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+    }
+
+    // Contract interface
+    public interface IEmployeeService
+    {
+        Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync(Guid tenantId);
+        Task<EmployeeDto?> GetEmployeeByIdAsync(Guid tenantId, int employeeId);
+    }
+}
+
+
+Step 2: Implement Contract in HR Module
+
+using BSuit.Contracts.DTO.HR.Employee;
+using BSuit.HR.Entities;
+
+namespace BSuit.HR.Services.IEmployee
+{
+    public interface IEmployeeService
+    {
+        Task<IEnumerable<EmployeeDto>> GetAllAsync(Guid tenantId);
+        Task<EmployeeDto> CreateAsync(Employee employee);
+    }
+}
+
+
+Step 3: Register HR Service in API DI Container
+builder.Services.AddScoped<IEmployeeService, BSuits.HR.Services.EmployeeService>();
+OR 
+Register inside DependencyInjection
+
+Step 4: Consume Contract in SalesCRM Module
+using BSuits.Contracts;
+
+namespace BSuits.SalesCRM.Services
+{
+    public class EmployeeService
+    {
+        private readonly IEmployeeService _employeeService;
+
+        public EmployeeService(IEmployeeService employeeService)
+        {
+            _employeeService = employeeService;
+        }
+
+        public async Task LinkEmployeeToEmployee(Guid tenantId, int employeeId)
+        {
+            var employee = await _employeeService.GetEmployeeByIdAsync(tenantId, employeeId);
+
+            if (employee == null)
+                throw new Exception("Employee not found");
+
+            // Now SalesCRM can use employee info for business logic
+            Console.WriteLine($"Assigning Employee {employee.Name} to a Employee");
+        }
+    }
+}
+

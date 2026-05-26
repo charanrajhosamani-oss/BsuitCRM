@@ -1,0 +1,1100 @@
+﻿@using BSuit.API.Areas.SalesCRM.Models
+@model AccountVM
+
+@{
+    Layout = "~/Views/Shared/_StandardLayout.cshtml";
+    // Layout = "~/Views/Shared/_StandardLayout.cshtml";
+    ViewBag.Title = "Edit Account";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    /* Wrapper */
+    .pagination-wrapper {
+        position: relative;
+        z-index: 10;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 6px 10px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Pagination container spacing */
+    .custom-pagination {
+        gap: 6px;
+    }
+
+        /* Buttons */
+        .custom-pagination .page-link {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb; /* 👈 outline style */
+            background: #ffffff;
+            color: #6c757d;
+            font-size: 15px;
+            transition: all 0.25s ease;
+        }
+
+            /* Icon style (lighter feel) */
+            .custom-pagination .page-link i {
+                font-size: 16px;
+                transition: transform 0.2s ease;
+            }
+
+            /* Hover effect */
+            .custom-pagination .page-link:hover {
+                z-index: 5;
+                background: #0d6efd;
+                border-color: #0d6efd;
+                color: #ffffff;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
+            }
+
+                /* Slight icon animation */
+                .custom-pagination .page-link:hover i {
+                    transform: scale(1.1);
+                }
+
+            /* Click effect */
+            .custom-pagination .page-link:active {
+                transform: scale(0.92);
+                box-shadow: none;
+            }
+
+        /* Disabled */
+        .custom-pagination .page-item.disabled .page-link {
+            background: #f1f3f5;
+            border-color: #e9ecef;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Focus remove (clean UI) */
+        .custom-pagination .page-link:focus {
+            box-shadow: none;
+        }
+
+        /* Optional: smooth spacing for icons */
+        .custom-pagination .page-link i {
+            pointer-events: none;
+        }
+</style>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+@functions {
+    private string GetStageColor(string stage)
+    {
+        var colors = new[]
+        {
+            "#F4F8FF", // blue
+            "#F3FBF5", // green
+            "#FFF8F1", // orange
+            "#FAF5FF", // purple
+            "#F2FBFC", // cyan
+            "#FFF4F7", // pink
+            "#F7FAF0", // lime
+            "#FFFDF5", // yellow
+            "#F6F4FF", // lavender
+            "#F2FAF8", // mint
+            "#FFF6F3", // peach
+            "#F5F7FF", // indigo
+            "#FDECEC", // soft red
+            "#EEF9FF", // sky
+            "#F1FAF1", // soft green
+            "#FFF1ED"  // soft peach
+        };
+
+        if (string.IsNullOrWhiteSpace(stage))
+            return "#F5F7FF";
+
+        // 🔥 Stable hash for consistent colors
+        int hash = 0;
+
+        foreach (char c in stage.ToLower())
+        {
+            hash += c;
+        }
+
+        int index = hash % colors.Length;
+
+        return colors[index];
+    }
+
+    private string GetColor(string firstName, string lastName)
+    {
+        var colors = new[]
+        {
+            "#FBE4E4", // soft red
+            "#FCE7F1", // soft pink
+            "#F4E8FC", // soft violet
+            "#EEE9FC", // soft purple
+            "#E7ECFF", // soft indigo
+            "#E5F4FF", // soft blue
+            "#E4F7FF", // soft sky
+            "#E5FCFB", // soft cyan
+            "#E7F8F5", // soft teal
+            "#EBF8EB", // soft green
+            "#F2F8E5", // soft lime
+            "#FFFBE5", // soft yellow
+            "#FFF4DD", // soft amber
+            "#FFF0E0", // soft orange
+            "#FFECE5", // soft peach
+            "#EEF2FF"  // pale indigo
+        };
+
+        int hash = (firstName + lastName).GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+
+    private string GetTabColor(string key)
+    {
+        var colors = new[]
+        {
+            "#EAF2FF", // light blue
+            "#EAF8EE", // light green
+            "#FFF2E8", // light orange
+            "#F5ECFF", // light purple
+            "#E8F8FA", // light cyan
+            "#FFEAF1", // light pink
+            "#F2F7E8", // light lime
+            "#FFF9EA", // light yellow
+            "#EFEAFF", // lavender
+            "#EAF7F4", // mint
+            "#FFF0EB", // peach
+            "#EEF2FF"  // pale indigo
+        };
+
+        int hash = key.GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+
+}
+
+
+
+<style>
+
+    .required {
+    color: red
+    }</style>
+    <div class="container-fluid">
+        <div id="errorSummary" class="alert alert-danger" style="display:none;"></div>
+
+
+        <!-- 🔷 HEADER -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+
+            <!-- LEFT -->
+            <div>
+               
+                <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })"
+                       class="btn btn-sm btn-outline-secondary ms-3">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+            </div>
+
+            <!-- CENTER -->
+            <div class="text-center flex-grow-1">
+                <h5 class="mb-0">Edit Account Information</h5>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="d-flex gap-2">
+                <a href="@Url.Action("AccountList", "Account", new { area = "SalesCRM" })"
+                       class="btn btn-sm btn-secondary">
+                    Cancel
+                </a>
+
+                <button class="btn btn-sm btn-primary" type="button" id="btnSave">Save</button>
+
+
+               
+            </div>
+
+        </div>
+
+        <form id="accountForm">
+            <div class="card section-card">
+                <!-- 🔷 👤 Account Information -->
+                <div class="section-header">👤 Account Information</div>
+                <div class="section-body">
+                    <input type="hidden" name="AccountId" id="AccountId" asp-for="AccountId" />
+
+
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Account Name<span class="required">*</span></label>
+                            <input asp-for="AccountName" class="form-control" />
+                            <span asp-validation-for="AccountName" id="AccountName-error" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Client Name<span class="required">*</span></label>
+                            <input asp-for="CompanyName" class="form-control" />
+                            <span asp-validation-for="CompanyName" id="CompanyName-error" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label"><span class="required">*</span>Customer Type</label>
+                            <select asp-for="CustomerTypeID" id="CustomerTypeID" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.CustomerTypes ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CustomerTypeID" id="CustomerTypeID-error" class="text-danger"></span>
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+
+
+                            <label class="form-label">Account Source<span class="required">*</span></label>
+                            <select asp-for="AccountSourceId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.AccountSource ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="AccountSourceId" id="AccountSourceId-error" class="text-danger"></span>
+
+
+                        </div>
+
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Owner<span class="required">*</span></label>
+                            <input type="text" id="ownerName" name="ownerName" asp-for="OwnerName" class="form-control" placeholder="Search Owner..." />
+                            <input type="hidden" id="ownerId" name="ownerId" asp-for="OwnerId" />
+                            <span asp-validation-for="OwnerName" id="OwnerName-error" class="text-danger"></span>
+
+
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">
+                                Gender <span class="required">*</span>
+                            </label>
+                            <select asp-for="GenderId" id="GenderId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.Genders ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="GenderId" id="GenderId-error" class="text-danger"></span>
+
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Job Title<span class="required">*</span></label>
+                            <select asp-for="JobTitleId" id="JobTitleId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.JobTitles ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="JobTitleId" id="JobTitleId-error" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">CustomerId</label>
+
+                            <input asp-for="CustomerId" class="form-control" style="background-color: #e9ecef; padding: 5px 10px;" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="section-header"></div> -->
+            <div class="card section-card green">
+                <div class="section-header">🔷 Account Type</div>
+                <div class="section-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Customer Category<span class="required">*</span></label>
+                            <select asp-for="CustomerCategoryId" id="CustomerCategoryId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.CustomerCategories ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CustomerCategoryId" id="CustomerCategoryId-error" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Account Categorization <span class="required">*</span></label>
+                            <select asp-for="AccountCategorizationId" id="AccountCategorizationId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.AccountCategory ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="AccountCategorizationId" id="AccountCategorizationId-error" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+
+
+
+                            <label class="form-label">High Potential<span class="required">*</span></label>
+                            <select asp-for="HighPotentialStatus" id="HighPotentialStatus" class="form-select">
+                                <option value="">-- Select --</option>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+
+                            </select>
+                            <span asp-validation-for="HighPotentialStatus" id="HighPotentialStatus-error" class="text-danger"></span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📞 Contact -->
+            <div class="card section-card purple">
+                <div class="section-header">📞 Contact</div>
+                <div class="section-body">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label"><span class="required">*</span>Business Email</label>
+                            <input asp-for="BusinessEmail" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label><span class="required">*</span>Business Phone</label>
+                            <input asp-for="BusinessPhone" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Personal Email</label>
+                            <input asp-for="PersonalEmail" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <label class="form-label">Personal Phone</label>
+                            <input asp-for="PersonalPhone" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Website</label>
+                            <input asp-for="Website" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            <!-- 🔷 Social Media Link -->
+
+            <div class="card section-card green">
+                <div class="section-header">🔷 Social Media Link</div>
+
+                <div class="section-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-3">
+                            <label class="form-label">LinkedIn URL</label>
+                            <input asp-for="LinkedInURL" type="url" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Twitter URL</label>
+                            <input asp-for="TwitterURL" type="url" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Facebook URL</label>
+                            <input asp-for="FacebookURL" type="url" class="form-control" />
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Skype ID</label>
+                            <input asp-for="SkypeID" class="form-control" />
+                        </div>
+
+                    </div>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Instant Messenger ID</label>
+                            <input asp-for="InstantMessengerId" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📍🔷 LOCATION -->
+            <div class="card section-card orange">
+                <div class="section-header">📍Billing & Shipping Address</div>
+                <div class="section-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label"><span class="required">*</span>Address</label>
+                            <textarea asp-for="Address" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-3">
+                            <label>City</label>
+                            <input asp-for="City" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">State</label>
+                            <input asp-for="State" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Country<span class="required">*</span></label>
+                            <select asp-for="CountryId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var country in Model.Countries ?? new List<SelectListItem>())
+                                {
+                                    <option value="@country.Value">@country.Text</option>
+                                }
+                            </select>
+                          
+                        </div>
+                        <div class="col-md-3">
+                            <label>Zip Code</label>
+                            <input asp-for="ZipCode" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+
+                        <div class="col-md-3">
+                            <label class="form-label">Continent<span class="required">*</span></label>
+                            <select asp-for="RegionId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.Regions ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+
+                            <span asp-validation-for="RegionId" id="RegionId-error" class="text-danger"></span>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--  🏭 Industry -->
+            <div class="card section-card gray">
+                <div class="section-header">🏭 Account Industry</div>
+                <div class="section-body">
+                    <div class="row mt-2">
+                        <div class="col-md-3">
+                            <label class="form-label">Company Industry<span class="required">*</span> </label>
+                            <select asp-for="IndustryId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.Industries ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="IndustryId" id="IndustryId-error" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Company Size<span class="required">*</span></label>
+                            <select asp-for="CompanySizeId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.CompanySizes ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CompanySizeId" id="CompanySizeId-error" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Company Revenue</label>
+                            <input asp-for="CompanyRevenue" class="form-control" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Company Ranking</label>
+                            <input asp-for="CompanyRanking" class="form-control" />
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🔷 Background -->
+            <div class="card section-card green">
+                <div class="section-header">🔷 Background</div>
+                <div class="section-body">
+
+                    <div class="row mt-2">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Customer Background</label>
+                            <textarea asp-for="CustomerBackground" class="form-control"></textarea>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label"><span class="required">*</span>How did you hear about Brickwork</label>
+                            <select asp-for="LeadSourceId" class="form-select">
+                                <option value="">-- Select --</option>
+                                @foreach (var itm in Model.LeadSources ?? new List<SelectListItem>())
+                                {
+                                    <option value="@itm.Value">@itm.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="LeadSourceId" id="LeadSourceId-error" class="text-danger"></span>
+                        </div>
+
+                        
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            
+            <!-- 👥 Referral Information -->
+            <div class="card section-card shadow">
+                <div class="section-header">👥 Referral Information <button type="button" onclick="addRowReferral()" class="btn btn-outline-primary btn-sm"><i class="fa fa-plus"></i></button></div>
+                
+                <div class="section-body">
+                    <div class="row mt-2">
+                        <table border="1" id="referralTable" class="table table1 align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Referred Name</th>
+                                    <th>Referred Email</th>
+                                    <th>Referred Phone</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model != null && Model.referralInfo.Any())
+                                {
+                                    for (int i = 0; i < Model.referralInfo.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input asp-for="referralInfo[i].ReferredName" class="form-control firstName" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="referralInfo[i].ReferredEmail" class="form-control lastName" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="referralInfo[i].ReferredPhone" class="form-control lastName" />
+                                            </td>
+                                            <td>
+                                                <select asp-for="referralInfo[i].StatusId" class="form-select">
+                                                    <option value="1">Active</option>
+                                                    <option value="0">Inactive</option>
+                                                </select>
+                                            </td>
+                                            <td>
+
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm remove-btn" data-service="@i">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+
+                        </table>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🏢👥 Contact Information -->
+            <div class="card section-card orange">
+                <div class="section-header">
+                    🏢👥 Contact Information
+                    <!-- CREATE Contact -->
+                    <button type="button" onclick="addRow()" class="btn btn-outline-primary btn-sm">  <i class="fa fa-plus" title="Create Contact"></i></button>
+                </div>
+               
+                <div class="section-body">
+                    <div class="row mt-2">
+                        <table border="1" id="contactTable" class="table table1 align-middle">
+
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Email</th>
+                                    <th>Mobile</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model != null && Model.contactInfo.Any())
+                                {
+                                    for (int i = 0; i < Model.contactInfo.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input asp-for="contactInfo[i].FullName" class="form-control firstName" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="contactInfo[i].Department" class="form-control lastName" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="contactInfo[i].Designation" class="form-control lastName" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="contactInfo[i].Email" class="form-control email" />
+                                            </td>
+                                            <td>
+                                                <input asp-for="contactInfo[i].MobilePhone" class="form-control mobile" />
+                                            </td>
+                                            <td>
+                                                <select asp-for="contactInfo[i].StatusId" class="form-select">
+                                                    <option value="1">Active</option>
+                                                    <option value="0">Inactive</option>
+                                                </select>
+                                            </td>
+                                            <td>
+
+
+                                                
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm delete-btn" data-service="@i">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+
+                        </table>
+
+
+
+                    </div>
+                </div>
+            </div>
+           
+        </form>
+    </div>
+    <!-- REQUIRED SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+
+
+    @* Refral  *@
+    
+    <script>
+        function addRowReferral() {
+        let table = document
+        .getElementById("referralTable")
+        .getElementsByTagName('tbody')[0];
+
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `
+        <td><input name="ReferredName[]" class="form-control" /></td>
+        <td><input name="ReferredEmail[]" class="form-control" /></td>
+       
+        <td><input name="ReferredPhone[]" class="form-control" /></td>
+        <td>
+        <select name="StatusId[]" class="form-select">
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+        </select>
+        </td>
+        <td>
+        <button type="button"
+        class="btn btn-danger btn-sm remove-btn">
+        <i class="fa fa-trash"></i>
+        </button>
+
+
+
+        </td>
+        `;
+        }
+    </script>
+
+    <script>
+        $(document).on("click", ".remove-btn", function () {
+
+        if (!confirm("Are you sure you want to delete this record?")) {
+        return;
+        }
+
+        let row = $(this).closest("tr");
+
+        // Get values correctly
+        let referredName = row.find('input[name*="ReferredName"]').val();
+        let referredEmail = row.find('input[name*="ReferredEmail"]').val();
+        let referredPhone = row.find('input[name*="ReferredPhone"]').val();
+
+        referredName = (referredName || "").trim();
+        referredEmail = (referredEmail || "").trim();
+        referredPhone = (referredPhone || "").trim();
+
+        // If phone empty -> remove row only
+        if (referredPhone === "") {
+        row.remove();
+        return;
+        }
+
+        $.ajax({
+        url: '@Url.Action("DeleteReferral", "Account", new { area = "SalesCRM" })',
+        type: 'POST',
+        data: { mobile: referredPhone },
+
+        success: function (res) {
+
+        if (res.success) {
+        row.remove();
+        }
+        else {
+        alert(res.message);
+        }
+        },
+
+        error: function () {
+        alert("Error occurred");
+        }
+        });
+
+        });
+    </script>
+
+
+
+
+    <script>
+        $("#btnSave").click(function (e) {
+
+        e.preventDefault();
+        let isValid = true;
+        let errorMessages = [];
+
+        // Clear old errors
+        $(".error").text("");
+
+        // Helper function
+        function validateField(selector, errorSelector, message) {
+        let value = $(selector).val();
+
+        if (value == null || value.toString().trim() === "") {
+        $(errorSelector).text(message);
+        errorMessages.push(message);
+        isValid = false;
+        }
+        }
+
+        // Validations
+        validateField("#AccountName", "#AccountName-error", "Account Name is required");
+
+        validateField("#CompanyName", "#CompanyName-error", "Company Name is required");
+
+        validateField("#ownerName", "#OwnerName-error", "Owner Name is required");
+
+        validateField("#CustomerTypeID", "#CustomerTypeID-error", "Customer Type is required");
+
+        validateField("#JobTitleId", "#JobTitleId-error", "Job Title is required");
+
+        validateField("#GenderId", "#GenderId-error", "Gender is required");
+
+        validateField("#AccountSourceId", "#AccountSourceId-error", "Account Source is required");
+
+        validateField("#CustomerCategoryId", "#CustomerCategoryId-error", "Customer Category is required");
+
+        validateField("#AccountCategorizationId", "#AccountCategorizationId-error", "Account Categorization is required");
+
+        validateField("#HighPotentialStatus", "#HighPotentialStatus-error", "High Potential Status is required");
+
+        validateField("#CountryId", "#CountryId-error", "Country is required");
+
+        validateField("#RegionId", "#RegionId-error", "Continent is required");
+
+        validateField("#IndustryId", "#IndustryId-error", "Industry is required");
+
+        validateField("#CompanySizeId", "#CompanySizeId-error", "Company Size is required");
+
+        validateField("#LeadSourceId", "#LeadSourceId-error", "Lead Source is required");
+
+        // Show popup summary
+        if (!isValid) {
+
+        let list = "<ul style='text-align:left;'>";
+
+        errorMessages.forEach(msg => {
+        list += `<li>${msg}</li>`;
+        });
+
+        list += "</ul>";
+
+        Swal.fire({
+        icon: 'error',
+        title: 'Please fix the following:',
+        html: list
+        });
+
+        return;
+        }
+
+
+        var form = document.getElementById("accountForm");
+        var formData = new FormData(form);
+
+        $.ajax({
+        url: '@Url.Action("UpdateAccount", "Account", new { area = "SalesCRM" })',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function (response) {
+        if (response.success)
+        {
+
+        alert(response.message || "Update successfully");
+
+        window.location.href = '@Url.Action("AccountList", "Account", new { area = "SalesCRM" })';
+        } else {
+        alert(response.message || "Error occurred");
+        }
+        },
+
+        error: function () {
+        alert("Server error occurred");
+        }
+        });
+
+        });
+    </script>
+
+    <script>
+        document.getElementById("addRowBtn").addEventListener("click", function () {
+
+        const tableBody = document.querySelector("#contactTable tbody");
+
+        // Get current row count (this becomes the next index)
+        const index = tableBody.rows.length;
+
+        const newRow = `
+        <tr>
+        <td>
+        <input name="contactInfo[${index}].FirstName" class="form-control firstName" />
+        </td>
+        <td>
+        <input name="contactInfo[${index}].LastName" class="form-control lastName" />
+        </td>
+        <td>
+        <input name="contactInfo[${index}].Email" class="form-control email" />
+        </td>
+        <td>
+        <input name="contactInfo[${index}].MobilePhone" class="form-control mobile" />
+        </td>
+        <td>
+        <select name="contactInfo[${index}].StatusId" class="form-select">
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+        </select>
+        </td>
+        <td>
+        <button type="button" class="btn btn-danger btn-sm delete-btn">Delete</button>
+        </td>
+        </tr>
+        `;
+
+        tableBody.insertAdjacentHTML("beforeend", newRow);
+        });
+
+        // // Delete row
+        // document.addEventListener("click", function (e) {
+        //     if (e.target.classList.contains("delete-btn")) {
+        //         e.target.closest("tr").remove();
+        //     }
+        // });
+    </script>
+
+    <script>
+        function addRow() {
+        let table = document
+        .getElementById("contactTable")
+        .getElementsByTagName('tbody')[0];
+
+        let newRow = table.insertRow();
+
+        newRow.innerHTML = `
+        <td><input name="FullName[]" class="form-control" /></td>
+        <td><input name="Department[]" class="form-control" /></td>
+        <td><input name="Designation[]" class="form-control" /></td>
+        <td><input name="Email[]" class="form-control" /></td>
+        <td><input name="MobilePhone[]" class="form-control mobile" /></td>
+        <td>
+        <select name="Status[]" class="form-select">
+        <option value="1">Active</option>
+        <option value="0">Inactive</option>
+        </select>
+        </td>
+        <td>
+
+
+       
+
+
+        <button type="button"
+        class="btn btn-danger btn-sm delete-btn">
+        <i class="fa fa-trash"></i>
+        </button>
+
+
+
+        </td>
+        `;
+        }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- jQuery UI -->
+
+    <link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    <script>
+        var getOwnersUrl = '@Url.Action("GetOwners", "Account", new { area = "SalesCRM" })';
+
+        console.log("API URL:", getOwnersUrl); // Debug
+
+
+
+        $("#ownerName").autocomplete({
+        source: function (request, response) {
+        $.ajax({
+        url: getOwnersUrl,
+        type: 'GET',
+        dataType: 'json',
+        data: { term: request.term },
+        success: function (data) {
+        response(data);
+        },
+        error: function (xhr)
+        {
+        console.log("Error:", xhr.responseText);
+        }
+        });
+        },
+        minLength: 2,
+        select: function (event, ui) {
+        $("#ownerName").val(ui.item.value);
+        $("#ownerId").val(ui.item.id);
+        return false;
+        }
+        });
+
+
+    </script>
+
+    <script>
+        $(document).on("click", ".delete-btn", function () {
+
+        if (!confirm("Are you sure you want to delete this record?")) {
+        return;
+        }
+
+        let row = $(this).closest("tr");
+
+        // SAFE VALUE FETCH (works for input OR td)
+        let mobile = row.find(".mobile").val();
+        if (mobile === undefined) {
+        mobile = row.find(".mobile").text();
+        }
+
+        let fullName = row.find(".fullName").val();
+        if (fullName === undefined) {
+        fullName = row.find(".fullName").text();
+        }
+
+        let departmentName = row.find(".Department").val();
+        if (departmentName === undefined) {
+        departmentName = row.find(".Department").text();
+        }
+
+        let designationName = row.find(".designation").val();
+        if (designationName === undefined) {
+        designationName = row.find(".designation").text();
+        }
+
+        
+
+        // normalize
+        mobile = (mobile || "").trim();
+        fullName = (fullName || "").trim();
+        departmentName = (departmentName || "").trim();
+        designationName = (designationName || "").trim();
+
+        // ✅ If mobile is empty → delete row directly
+        if (mobile === "") {
+        row.remove();
+        return;
+        }
+
+        $.ajax({
+        url: '@Url.Action("DeleteContact", "Account", new { area = "SalesCRM" })',
+        type: 'POST',
+        data: { mobile: mobile },
+        success: function (res) {
+        if (res.success) {
+        row.remove();
+        } else {
+        alert(res.message);
+        }
+        },
+        error: function () {
+        alert("Error occurred");
+        }
+        });
+
+        });
+    </script>

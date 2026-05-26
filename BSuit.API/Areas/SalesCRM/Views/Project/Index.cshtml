@@ -1,0 +1,655 @@
+﻿@using BSuit.SalesCRM.Models
+@model List<ProjectVM>
+
+@{
+    Layout = "/Views/Shared/_StandardLayout.cshtml";
+}
+
+<link href="~/css/custom-new.css" rel="stylesheet" />
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    @functions {
+     private string GetStageColor(string stage)
+    {
+        var colors = new[]
+        {
+            "#F4F8FF", // blue
+            "#F3FBF5", // green
+            "#FFF8F1", // orange
+            "#FAF5FF", // purple
+            "#F2FBFC", // cyan
+            "#FFF4F7", // pink
+            "#F7FAF0", // lime
+            "#FFFDF5", // yellow
+            "#F6F4FF", // lavender
+            "#F2FAF8", // mint
+            "#FFF6F3", // peach
+            "#F5F7FF", // indigo
+            "#FDECEC", // soft red
+            "#EEF9FF", // sky
+            "#F1FAF1", // soft green
+            "#FFF1ED"  // soft peach
+        };
+
+        if (string.IsNullOrWhiteSpace(stage))
+            return "#F5F7FF";
+
+        // 🔥 Stable hash for consistent colors
+        int hash = 0;
+
+        foreach (char c in stage.ToLower())
+        {
+            hash += c;
+        }
+
+        int index = hash % colors.Length;
+
+        return colors[index];
+    }
+
+    private string GetColor(string text)
+        {
+            var colors = new[]
+            {
+                "#FBE4E4",
+                "#FCE7F1",
+                "#F4E8FC",
+                "#EEE9FC",
+                "#E7ECFF",
+                "#E5F4FF",
+                "#E4F7FF",
+                "#E5FCFB",
+                "#E7F8F5",
+                "#EBF8EB",
+                "#F2F8E5",
+                "#FFFBE5",
+                "#FFF4DD",
+                "#FFF0E0",
+                "#FFECE5",
+                "#EEF2FF"
+            };
+
+            if (string.IsNullOrWhiteSpace(text))
+                return "#EEF2FF";
+
+            int hash = text.GetHashCode();
+            int index = Math.Abs(hash) % colors.Length;
+
+            return colors[index];
+        }
+
+    private string GetTabColor(string key)
+    {
+        var colors = new[]
+        {
+            "#EAF2FF", // light blue
+            "#EAF8EE", // light green
+            "#FFF2E8", // light orange
+            "#F5ECFF", // light purple
+            "#E8F8FA", // light cyan
+            "#FFEAF1", // light pink
+            "#F2F7E8", // light lime
+            "#FFF9EA", // light yellow
+            "#EFEAFF", // lavender
+            "#EAF7F4", // mint
+            "#FFF0EB", // peach
+            "#EEF2FF"  // pale indigo
+        };
+
+        int hash = key.GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+
+}
+
+    /* Wrapper */
+    .pagination-wrapper {
+        position: relative;
+        z-index: 10;
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 6px 10px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Pagination container spacing */
+    .custom-pagination {
+        gap: 6px;
+    }
+
+    /* Buttons */
+    .custom-pagination .page-link {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        color: #6c757d;
+        font-size: 15px;
+        transition: all 0.25s ease;
+    }
+
+    .custom-pagination .page-link i {
+        font-size: 16px;
+        transition: transform 0.2s ease;
+    }
+
+    .custom-pagination .page-link:hover {
+        z-index: 5;
+        background: #0d6efd;
+        border-color: #0d6efd;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
+    }
+
+    .custom-pagination .page-link:hover i {
+        transform: scale(1.1);
+    }
+
+    .custom-pagination .page-link:focus {
+        box-shadow: none;
+    }
+
+    .project-table thead th {
+        background: #f8fafc;
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 1px solid #e5e7eb;
+        white-space: nowrap;
+    }
+
+    .project-table tbody td {
+        vertical-align: middle;
+        font-size: 13px;
+        color: #4b5563;
+        white-space: nowrap;
+    }
+
+    .project-table tbody tr:hover {
+        background: #f9fbff;
+    }
+
+    .toolbar-card {
+        border-radius: 14px;
+    }
+
+    .project-link {
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .project-link:hover {
+        text-decoration: underline;
+    }
+
+    .badge-priority {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .avatar-circle {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        color: #374151;
+        text-transform: uppercase;
+        flex-shrink: 0;
+    }
+
+    .lead-table th,
+.lead-table td {
+    padding: 10px 12px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.lead-table {
+    table-layout: auto;
+}
+
+.table-body-scroll {
+    overflow-x: auto;
+}
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+    </div>
+}
+
+<!-- FILTER TOOLBAR -->
+<div class="card mb-2 shadow-sm border-0 toolbar-card">
+
+    <div class="card-body py-2 px-3">
+
+        <form method="get">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <!-- LEFT -->
+                <div class="d-flex align-items-center flex-wrap gap-2">
+
+                    <!-- SEARCH -->
+                    <input type="text"
+                           name="searchText"
+                           class="form-control form-control-sm"
+                           placeholder="Search Project..."
+                           value="@ViewBag.SearchText"
+                           style="width:220px;" />
+
+                    <!-- START DATE -->
+                    <input type="text"
+                           name="startDate"
+                           class="form-control form-control-sm datepicker"
+                           placeholder="Start Date"
+                           value="@ViewBag.StartDate"
+                           style="width:140px;" />
+
+                    <!-- END DATE -->
+                    <input type="text"
+                           name="endDate"
+                           class="form-control form-control-sm datepicker"
+                           placeholder="End Date"
+                           value="@ViewBag.EndDate"
+                           style="width:140px;" />
+
+                    <!-- SEARCH BUTTON -->
+                    <button type="submit"
+                            class="btn btn-outline-primary btn-sm">
+
+                        <i class="fa fa-search"></i>
+
+                    </button>
+
+                    <!-- RESET -->
+                    <a href="@Url.Action("Index","Project",new { area="SalesCRM" })"
+                       class="btn btn-outline-danger btn-sm">
+
+                        <i class="fa fa-refresh"></i>
+
+                    </a>
+
+                </div>
+
+                <!-- RIGHT -->
+                <div class="d-flex align-items-center gap-2">
+
+                    <!-- ADD PROJECT -->
+                    <a href="@Url.Action("Create","Project",new { area="SalesCRM" })"
+                       class="btn btn-outline-primary btn-sm">
+
+                        <i class="fa fa-plus"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- TABLE -->
+<div class="card shadow-sm border-0">
+
+    <div class="card-body p-0">
+
+        <div class="table-container">
+
+            <!-- TABLE SCROLL -->
+            <div class="table-body-scroll">
+
+                <table class="table table-bordered align-middle mb-0 lead-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <!-- SERIAL -->
+                        <th style="width:50px;">
+                            Sl.No
+                        </th>
+
+                        <!-- PROJECT -->
+                        <th style="width:190px;">
+                            Project
+                        </th>
+
+                        <!-- PROJECT CODE -->
+                        <th style="width:100px;">
+                            Project Code
+                        </th>
+
+                        <!-- CUSTOMER -->
+                        <th style="width:150px;">
+                            Customer
+                        </th>
+
+                        <!-- START DATE -->
+                        <th style="width:90px;">
+                            Start Date
+                        </th>
+
+                        <!-- END DATE -->
+                        <th style="width:90px;">
+                            End Date
+                        </th>
+
+                        <!-- PRIORITY -->
+                        <th style="width:90px;">
+                            Priority
+                        </th>
+
+                        <!-- HOURS -->
+                        <th style="width:90px;">
+                            Project Hours
+                        </th>
+
+                        <!-- BALANCE -->
+                        <th style="width:90px;">
+                            Balance Hours
+                        </th>
+
+                        <!-- ACTION -->
+                        <th style="width:90px;"
+                            class="text-center">
+
+                            Action
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                    <tbody>
+
+                        @{
+                            int count = (ViewBag.PageNumber - 1) * ViewBag.PageSize + 1;
+                        }
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+
+                                   
+
+                                    <!-- SERIAL -->
+                                    <td class="text-center"
+                                        style="width:60px; min-width:60px; max-width:60px;">
+
+                                        @count
+
+                                    </td>
+
+                                    <!-- PROJECT -->
+                                    <td style="min-width:190px;">
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <!-- AVATAR -->
+                                            <div class="avatar-circle"
+                                                 style="background-color:@GetColor(item.ProjectName)">
+
+                                                @(string.IsNullOrWhiteSpace(item.ProjectName)
+                                                    ? "P"
+                                                    : item.ProjectName.Substring(0,1).ToUpper())
+
+                                            </div>
+
+                                            <!-- PROJECT LINK -->
+                                            <a asp-area="SalesCRM"
+                                               asp-controller="Project"
+                                               asp-action="ProjectDetails"
+                                               asp-route-id="@item.ProjectId"
+                                               class="text-decoration-none text-primary fw-semibold">
+
+                                                @item.ProjectName
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                    <!-- PROJECT CODE -->
+                                    <td style="min-width:100px;">
+                                        @item.ProjectCode
+                                    </td>
+
+                                    <!-- CUSTOMER -->
+                                    <td style="min-width:100px;">
+                                        @item.CustomerID
+                                    </td>
+
+                                    <!-- START DATE -->
+                                    <td class="text-center"
+                                        style="min-width:90px;">
+
+                                        @(item.StartDate?.ToString("dd-MMM-yyyy"))
+
+                                    </td>
+
+                                    <!-- END DATE -->
+                                    <td class="text-center"
+                                        style="min-width:90px;">
+
+                                        @(item.EndDate?.ToString("dd-MMM-yyyy"))
+
+                                    </td>
+
+                                    <!-- PRIORITY -->
+                                    <td style="min-width:90px;">
+
+                                        @if (item.Priority == "High")
+                                        {
+                                            <span class="badge bg-danger-subtle text-danger px-3 py-2">
+                                                High
+                                            </span>
+                                        }
+                                        else if (item.Priority == "Medium")
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning px-3 py-2">
+                                                Medium
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+                                                @item.Priority
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <!-- HOURS -->
+                                    <td style="min-width:90px;">
+                                        @item.ProjectHours
+                                    </td>
+
+                                    <!-- BALANCE -->
+                                    <td style="min-width:90px;">
+                                        @item.BalanceHours
+                                    </td>
+
+                                    <!-- ACTION -->
+                                    <td class="text-center"
+                                        style="min-width:120px;">
+
+                                        <div class="d-flex justify-content-center gap-1">
+
+                                            <!-- EDIT -->
+                                            <a class="btn btn-outline-primary btn-sm"
+                                               href="@Url.Action("GetEditPartial", "Project",
+                                               new { area = "SalesCRM", id = item.ProjectId })">
+
+                                                <i class="bi bi-pencil-square"></i>
+
+                                            </a>
+
+                                            <!-- DELETE -->
+                                            <button class="btn btn-outline-danger btn-sm"
+                                                    onclick="deleteProject('@item.ProjectId')">
+
+                                                <i class="bi bi-trash"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="11"
+                                    class="text-center text-muted py-4">
+
+                                    No records found
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="d-flex justify-content-end align-items-center px-3 py-2 border-top bg-light pagination-wrapper">
+
+            <ul class="pagination pagination-sm mb-0 custom-pagination">
+
+                <!-- FIRST -->
+                <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
+
+                    <a class="page-link"
+                       href="@Url.Action("Index", new {
+                           pageNumber = 1,
+                           searchText = ViewBag.SearchText,
+                           startDate = ViewBag.StartDate,
+                           endDate = ViewBag.EndDate
+                       })">
+
+                        <i class="bi bi-chevron-double-left"></i>
+
+                    </a>
+
+                </li>
+
+                <!-- PREVIOUS -->
+                <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
+
+                    <a class="page-link"
+                       href="@Url.Action("Index", new {
+                           pageNumber = ViewBag.PageNumber - 1,
+                           searchText = ViewBag.SearchText,
+                           startDate = ViewBag.StartDate,
+                           endDate = ViewBag.EndDate
+                       })">
+
+                        <i class="bi bi-chevron-left"></i>
+
+                    </a>
+
+                </li>
+
+                <!-- NEXT -->
+                <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
+
+                    <a class="page-link"
+                       href="@Url.Action("Index", new {
+                           pageNumber = ViewBag.PageNumber + 1,
+                           searchText = ViewBag.SearchText,
+                           startDate = ViewBag.StartDate,
+                           endDate = ViewBag.EndDate
+                       })">
+
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                </li>
+
+                <!-- LAST -->
+                <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
+
+                    <a class="page-link"
+                       href="@Url.Action("Index", new {
+                           pageNumber = ViewBag.TotalPages,
+                           searchText = ViewBag.SearchText,
+                           startDate = ViewBag.StartDate,
+                           endDate = ViewBag.EndDate
+                       })">
+
+                        <i class="bi bi-chevron-double-right"></i>
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        flatpickr(".datepicker", {
+            dateFormat: "d-M-Y",
+            allowInput: true
+        });
+
+    });
+
+</script>

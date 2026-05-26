@@ -1,0 +1,345 @@
+﻿@model List<BSuit.Core.Entities.TenantSubscriptionModule>
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+
+    int totalPages = (int)Math.Ceiling(
+        (double)ViewBag.TotalCount / ViewBag.PageSize);
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Tenant Module Management</h3>
+    <div>
+        <a href="/Admin/Tenants/Index"
+           class="btn btn-secondary me-2">
+            ← Back
+        </a>
+
+        <span id="helpIcon" class="help-icon">?</span>
+    </div>
+</div>
+
+<!-- Help Tooltip Content -->
+<div id="moduleHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Tenant Module Help</h6>
+
+        <p class="text-white mb-2">
+            Manage tenant module assignments.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Assign modules to tenants</li>
+            <li>Manage assigned modules</li>
+            <li>Delete single assignment</li>
+            <li>Bulk delete assignments</li>
+            <li>Search tenant/module mappings</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<div class="card">
+
+    <!-- Card Header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>Assigned Modules</h5>
+
+        <div>
+            <button type="button"
+                    onclick="location.reload()"
+                    class="btn btn-secondary btn-sm me-2">
+                Refresh
+            </button>
+
+            <button type="button"
+                    class="btn btn-success btn-sm"
+                    onclick="openAssignModal()">
+                + Assign Module
+            </button>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="card-body border-bottom">
+        <form method="get" class="row">
+            <div class="col-md-4">
+                <input name="search"
+                       value="@ViewBag.Search"
+                       class="form-control"
+                       placeholder="Search tenant/module..." />
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bulk Delete -->
+    <form method="post"
+          action="/Admin/TenantModules/DeleteSelected">
+
+        <div class="p-3">
+            <button class="btn btn-danger btn-sm"
+                    onclick="return validateBulkDelete()">
+                Delete Selected
+            </button>
+        </div>
+
+        <!-- Grid -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th width="50">
+                            <input type="checkbox"
+                                   onclick="selectAll(this)" />
+                        </th>
+                        <th>Tenant</th>
+                        <th>Module</th>
+                        <th width="220">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           name="ids"
+                                           value="@item.Id" />
+                                </td>
+
+                                <td>
+                                    @item.TenantSubscription.Tenant.Name
+                                </td>
+
+                                <td>
+                                    @item.Module.Name
+                                </td>
+
+                                <td>                                    
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="deleteModule('@item.Id')">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                No records found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    <!-- Pagination -->
+    <div class="p-3">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a asp-route-pageNumber="@i"
+               asp-route-search="@ViewBag.Search"
+               class="btn btn-sm @(i == ViewBag.PageNumber ? "btn-primary" : "btn-light")">
+                @i
+            </a>
+        }
+    </div>
+</div>
+
+
+<!-- Bootstrap Modal -->
+<div class="modal fade"
+     id="assignModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <form method="post"
+                  id="moduleForm"
+                  action="/Admin/TenantModules/Create">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">
+                        Assign Module
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body" id="modalBodyContent">
+
+                    <!-- Assign Section -->
+                    <div id="assignSection">
+                        <div class="mb-3">
+                            <label>Tenant</label>
+                            <select name="tenantId"
+                                    class="form-select"
+                                    required>
+                                @foreach (var t in ViewBag.Tenants)
+                                {
+                                    <option value="@t.Value">@t.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Module</label>
+                            <select name="moduleId"
+                                    class="form-select"
+                                    required>
+                                @foreach (var m in ViewBag.Modules)
+                                {
+                                    <option value="@m.Value">@m.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>                   
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success"
+                            id="saveBtn">
+                        Save
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    let assignModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        assignModal = new bootstrap.Modal(
+            document.getElementById("assignModal")
+        );
+
+        // Help tooltip
+        let helpContent =
+            document.getElementById("moduleHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+        function openAssignModal() {
+
+        document.getElementById("modalTitle").innerText = "Assign Module";
+
+        document.getElementById("assignSection").style.display = "block";
+
+        document.getElementById("saveBtn").style.display = "inline-block";
+
+        document.getElementById("moduleForm").reset();
+
+        document.getElementById("moduleForm").action =
+            "/Admin/TenantModules/Create";
+
+        assignModal.show();
+    }
+    
+
+    function selectAll(source) {
+        document.querySelectorAll("input[name='ids']")
+            .forEach(cb => cb.checked = source.checked);
+    }
+
+    function validateBulkDelete() {
+        let checkedItems = document.querySelectorAll(
+            "input[name='ids']:checked"
+        );
+
+        if (checkedItems.length === 0) {
+            alert("Please select at least one module.");
+            return false;
+        }
+
+        return confirm("Delete selected modules?");
+    }
+
+    function deleteModule(id) {
+
+        if (!confirm("Delete this module assignment?"))
+            return;
+
+        let form = document.createElement("form");
+        form.method = "post";
+        form.action = "/Admin/TenantModules/Delete";
+
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "id";
+        input.value = id;
+
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>

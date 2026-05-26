@@ -1,0 +1,330 @@
+﻿Superadmin UI:
+--------------
+
+STEP 1 — Install Required Packages (API Project)
+
+Install-Package Microsoft.AspNetCore.Identity.UI
+Install-Package Microsoft.VisualStudio.Web.CodeGeneration.Design
+
+STEP 2 — Update Identity registration:
+
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+{
+    // 🔐 Password Policy
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireUppercase = false;
+
+    // 🔒 Lockout settings
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // 👤 User settings
+    options.User.RequireUniqueEmail = true;
+
+    // 🔐 Sign-in settings
+    options.SignIn.RequireConfirmedEmail = false;
+})
+.AddEntityFrameworkStores<IdentityDbContext>()
+.AddDefaultTokenProviders();
+
+
+
+STEP 3 — Enable Razor Pages
+builder.Services.AddRazorPages();
+
+
+
+STEP 4 — Enable Middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapRazorPages(); // IMPORTANT
+
+
+STEP 5 — Scaffold Identity UI
+dotnet aspnet-codegenerator identity -dc IdentityDbContext
+OR
+dotnet aspnet-codegenerator identity \
+--files "Account.Login;Account.ForgotPassword;Account.ResetPassword;Account.Manage.Index;Account.Manage.ChangePassword;Account.Manage.TwoFactorAuthentication" \
+-dc IdentityDbContext
+OR
+PMC:
+dotnet aspnet-codegenerator identity --files "Account.Login;Account.ForgotPassword;Account.ResetPassword;Account.Manage.Index;Account.Manage.ChangePassword;Account.Manage.TwoFactorAuthentication" -dc IdentityDbContext
+
+dotnet-aspnet-codegenerator tool Installation if PMC statement causing error:
+
+From CMD
+dotnet tool install -g dotnet-aspnet-codegenerator
+
+
+STEP 6 — FEATURE IMPLEMENTATION
+1. LOGIN
+await _signInManager.PasswordSignInAsync(
+    Input.Email,
+    Input.Password,
+    Input.RememberMe,
+    lockoutOnFailure: true // 🔥 enables lockout
+);
+
+2. LOCKOUT AFTER INVALID ATTEMPTS
+options.Lockout.MaxFailedAccessAttempts = 5;
+
+3. FORGOT PASSWORD
+var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+4. RESET PASSWORD
+await _userManager.ResetPasswordAsync(user, code, Input.Password);
+
+5. 2FA (TWO FACTOR AUTH)
+builder.Services.AddIdentity<...>()
+    .AddDefaultTokenProviders();
+
+
+ 
+STEP 9 — EMAIL CONFIG (FOR RESET + 2FA)
+public class EmailSender : IEmailSender
+{
+    public Task SendEmailAsync(string email, string subject, string message)
+    {
+        // SMTP / SendGrid / Azure Email
+        return Task.CompletedTask;
+    }
+}
+
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+
+
+
+
+//IMPORTANT
+STEP 10: Replace IdentotyUser with ApplicationUser wherever used in user side code.
+
+
+
+JWT (JSON Web Token) is a compact, secure way to transmit user identity and claims between client and server — commonly used for API authentication.
+Stateless Authentication
+
+
+What is JWT?
+A JWT is a signed token issued by your server after login.
+The client (browser/mobile/Postman) sends this token with every request instead of sending username/password again.
+
+
+Structure of JWT
+A JWT has 3 parts:
+Header.Payload.Signature
+Contains algorithm info:Payload Contains claims (data):Signature Used to verify token is not tampered:
+
+Signature:
+HMACSHA256(
+  base64UrlEncode(header) + "." + base64UrlEncode(payload),
+  secret_key
+)
+
+
+STEP 1 — Install Package
+Install-Package Microsoft.AspNetCore.Authentication.JwtBearer
+
+
+STEP 2 — Add JWT Settings (appsettings.json)
+"Jwt": {
+  "Key": "THIS_IS_SUPER_SECRET_KEY_12345",
+  "Issuer": "BSuits",
+  "Audience": "BSuitsUsers",
+  "DurationInMinutes": 60
+}
+
+STEP 3 — Configure Authentication (Program.cs)
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+    };
+});
+
+
+
+STEP 4 — Enable Middleware
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+
+STEP 5 — Create JWT Token Service
+Services/JwtService.cs
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using BSuits.Identity.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+
+public interface IJwtService
+{
+    string GenerateToken(ApplicationUser user, IList<string> roles, Guid tenantId);
+}
+
+public class JwtService : IJwtService
+{
+    private readonly IConfiguration _config;
+
+    public JwtService(IConfiguration config)
+    {
+        _config = config;
+    }
+
+    public string GenerateToken(ApplicationUser user, IList<string> roles, Guid tenantId)
+    {
+        var jwtSettings = _config.GetSection("Jwt");
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("TenantId", tenantId.ToString())
+        };
+
+        // Add roles
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Key"]));
+
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(
+                Convert.ToDouble(jwtSettings["DurationInMinutes"])),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+}
+
+STEP 6 — Register Service
+builder.Services.AddScoped<IJwtService, JwtService>();
+
+
+STEP 7 — Create Login API
+Controllers/AuthController.cs
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using BSuits.Identity.Models;
+
+[ApiController]
+[Route("api/auth")]
+public class AuthController : ControllerBase
+{
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IJwtService _jwtService;
+
+    public AuthController(
+        SignInManager<ApplicationUser> signInManager,
+        UserManager<ApplicationUser> userManager,
+        IJwtService jwtService)
+    {
+        _signInManager = signInManager;
+        _userManager = userManager;
+        _jwtService = jwtService;
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        // 🔑 Multi-tenant support
+        var tenantId = HttpContext.Items["TenantId"]?.ToString();
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        if (user == null)
+            return Unauthorized("Invalid credentials");
+
+        var result = await _signInManager.CheckPasswordSignInAsync(
+            user, request.Password, true);
+
+        if (!result.Succeeded)
+            return Unauthorized("Invalid credentials");
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var token = _jwtService.GenerateToken(
+            user,
+            roles,
+            Guid.Parse(tenantId));
+
+        return Ok(new
+        {
+            token
+        });
+    }
+}
+
+LoginRequest.cs
+public class LoginRequest
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+}
+
+
+STEP 8 — Protect APIs
+[Authorize]
+[HttpGet("secure-data")]
+public IActionResult Get()
+{
+    return Ok("You are authorized");
+}
+
+
+
+STEP 9 — Role-based Authorization
+[Authorize(Roles = "SuperAdmin")]
+
+
+STEP 10 — Permission-based
+[Authorize(Policy = "CRM.View")]
+
+
+User Setup:
+
+
+
+Menu Setup
+
+Permission UI Setup
+Permission Role UI Mapping Setup
+

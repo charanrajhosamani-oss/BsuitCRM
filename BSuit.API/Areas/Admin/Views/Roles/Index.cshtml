@@ -1,0 +1,315 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model RolePageVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+    var grid = Model.Grid;
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Role Management</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Content -->
+<div id="roleHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Role Management Help</h6>
+
+        <p class="text-white mb-2">
+            Manage application roles and assign them to tenants.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Create roles</li>
+            <li>Edit role details</li>
+            <li>Assign roles to tenants</li>
+            <li>Activate/Deactivate roles</li>
+            <li>Delete unused roles</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+@Html.AntiForgeryToken()
+
+<!-- Search + Actions -->
+<div class="row align-items-center mb-3">
+
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input name="Search"
+                   value="@grid.Search"
+                   class="form-control me-2"
+                   placeholder="Search roles..." />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-4 text-end">
+        <button type="button"
+                onclick="location.reload();"
+                class="btn btn-secondary me-2">
+            Refresh
+        </button>
+
+        <button type="button"
+                onclick="openCreate()"
+                class="btn btn-success">
+            Add Role
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th width="50">Status</th>
+            <th width="250">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+          @*   <tr class="@(item.IsActive ? "" : "table-secondary text-muted")"> *@
+              <tr class="@(item.IsSystemRole ? "table-primary" : "") 
+                        @(!item.IsActive ? "table-secondary text-muted" : "")">
+                <td>
+                    @item.Name
+                    @if (item.IsSystemRole)
+                    {
+                         <span class="system-role-indicator ms-1"
+                              title="Created by Super Admin">
+                            *
+                        </span>
+                          
+                    }
+                </td>
+
+                <td>
+                    <span title="@item.TenantId">
+                        @item.Description
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")"
+                            @(item.CanEdit ? "" : "disabled")
+                            onclick="toggleStatus('@item.Id')">
+                        @(item.IsActive ? "Deactivate" : "Activate")
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            @(item.CanEdit ? "" : "disabled")
+                            onclick="edit(
+                                    '@item.Id',
+                                    '@item.Name',
+                                    '@item.Description',
+                                    '@item.TenantId')">
+                        Edit
+                    </button>
+
+                   
+
+                    <button class="btn btn-sm btn-danger"
+                            @(item.CanEdit ? "" : "disabled")
+                            onclick="deleteRole('@item.Id')">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="modal fade" id="roleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post"
+              action="/Admin/Roles/Save"
+              id="roleForm">
+
+            @Html.AntiForgeryToken()
+
+            <div class="modal-content">
+
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalTitle">
+                        Role
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input type="hidden"
+                           name="Grid.Id"
+                           id="Grid_Id" />
+
+                    <div class="mb-2">
+                        <label>Role Name</label>
+                        <input name="Grid.Name"
+                               id="Grid_Name"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Description</label>
+                        <input name="Grid.Description"
+                               id="Grid_Description"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Tenant</label>
+
+                        <select name="Grid.TenantId"
+                                id="Grid_TenantId"
+                                class="form-select"
+                                @(Model.Grid.IsSuperadmin ? "" : "disabled")>
+
+                            @foreach (var t in Model.Grid.Tenants)
+                            {
+                                <option value="@t.Id">
+                                    @t.Name
+                                </option>
+                            }
+                        </select>
+
+                        @if (!Model.Grid.IsSuperadmin)
+                        {
+                            <input type="hidden"
+                                   name="Grid.TenantId"
+                                   value="@Model.Grid.TenantId" />
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-success"
+                            type="submit">
+                        Save
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    let roleModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        roleModal = new bootstrap.Modal(
+            document.getElementById("roleModal")
+        );
+
+        // Tooltip
+        let helpContent =
+            document.getElementById("roleHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto-hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+            }, 3000);
+        }
+    });
+
+    function openCreate() {
+        document.getElementById("roleForm").reset();
+        document.getElementById("Grid_Id").value = "";
+
+        document.getElementById("modalTitle").innerText =
+            "Add Role";
+
+        roleModal.show();
+    }
+
+    function edit(id, name, desc, tenantId) {
+        document.getElementById("Grid_Id").value = id;
+        document.getElementById("Grid_Name").value = name;
+        document.getElementById("Grid_Description").value = desc;
+
+        let tenant =
+            document.getElementById("Grid_TenantId");
+
+        if (tenant) {
+            tenant.value = tenantId;
+        }
+
+        document.getElementById("modalTitle").innerText =
+            "Edit Role";
+
+        roleModal.show();
+    }
+
+    function toggleStatus(id) {
+        fetch('/Admin/Roles/ToggleStatus?id=' + id, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(res => {
+            location.reload();
+        });
+    }
+
+    function deleteRole(id) {
+        if (!confirm("Delete this role?")) return;
+
+        fetch('/Admin/Roles/Delete?id=' + id, {
+            method: 'POST'
+        })
+        .then(() => {
+            location.reload();
+        });
+    }
+</script>

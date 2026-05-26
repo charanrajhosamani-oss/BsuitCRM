@@ -1,0 +1,401 @@
+﻿@model BSuit.SalesCRM.VM.Lead.NDAAgreementVM
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>NDA Agreement</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+    <style>
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: #f5f7fb;
+                font-family: Arial, sans-serif;
+            }
+
+            .container-box {
+                max-width: 1100px;
+                margin: 30px auto;
+                background: #ffffff;
+                border-radius: 10px;
+                padding: 40px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            }
+
+            .title {
+                font-size: 30px;
+                font-weight: 700;
+                margin-bottom: 30px;
+                color: #0D2D5A;
+                text-align: center;
+            }
+
+            .content {
+                line-height: 1.9;
+                font-size: 14px;
+                text-align: justify;
+                color: #333;
+            }
+
+            .section-title {
+                font-size: 18px;
+                font-weight: 700;
+                margin-top: 30px;
+                margin-bottom: 10px;
+                color: #0D2D5A;
+            }
+
+            .agreement-box {
+                background: #f8f9fc;
+                border: 1px solid #e2e6ea;
+                border-radius: 8px;
+                padding: 25px;
+                margin-top: 40px;
+            }
+
+            .btn-submit {
+                min-width: 220px;
+            }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container-box">
+
+        <!-- TITLE -->
+        <div class="title">
+            Non-disclosure Agreement
+        </div>
+
+        <!-- INTRO -->
+        <div class="content">
+
+            This Non-disclosure Agreement (“Agreement”) has been made and entered into as of
+            <strong>@Model.RequestedDate</strong>
+            between
+            <strong>Brickwork India Pvt. Ltd.</strong>
+            (“Brickwork”)
+            a company registered under the Companies Act 1956 having its registered office at
+            3rd Floor, Raj Alkaa Park,
+            29/3 & 32/2 Kalena Agrahara,
+            Bannerghatta Road,
+            Bangalore – 560 076 India
+            and
+            <strong>@Model.CustomerName</strong>
+            (“Customer”),
+            located at
+            <strong>
+                @Model.City,
+                @Model.Country
+            </strong>.
+
+            <br />
+            <br />
+
+            Each of the parties hereby represent it is competent to execute this agreement and each of their respective representative has been duly authorized to execute this contract.
+
+            <br />
+            <br />
+
+            <strong>
+                NOW THIS AGREEMENT WITNESSETH AS FOLLOWS;
+            </strong>
+
+        </div>
+
+        <!-- SECTION 1 -->
+        <div class="section-title">
+            1. Definition
+        </div>
+
+        <div class="content">
+
+            The party receiving the proprietary and confidential information is referred to as the “Receiving Party” and the party disclosing the confidential information is referred to as the “Disclosing Party”.
+
+        </div>
+
+        <!-- SECTION 2 -->
+        <div class="section-title">
+            2. Purpose
+        </div>
+
+        <div class="content">
+
+            This Agreement is signed with the purpose of preventing unauthorized disclosure of confidential information, as defined and agreed upon by the parties.
+
+            The parties agree to enter into a confidential relationship with respect to the disclosure of certain proprietary and confidential information for the purposes of discussing, evaluating and engaging into a prospective business relationship (“Purpose”).
+
+        </div>
+
+        <!-- SECTION 3 -->
+        <div class="section-title">
+            3. Term of the Confidentiality
+        </div>
+
+        <div class="content">
+
+            This agreement shall be valid for five (5) years from the effective date.
+
+            <br /><br />
+
+            Trade Secrets: In connection with Confidential Information that constitutes a trade secret, the obligation of confidentiality will continue until that information is no longer a trade secret.
+
+            <br /><br />
+
+            Other Confidential Information: In connection with all other Confidential Information, the obligations of confidentiality imposed on the parties by this Agreement shall survive for a period of ten (10) years after the initial disclosure date of each respective item of Confidential Information disclosed hereunder.
+
+        </div>
+
+        <!-- SECTION 4 -->
+        <div class="section-title">
+            4. Confidential Information
+        </div>
+
+        <div class="content">
+
+            For the purposes of this agreement, Proprietary or confidential information means information related to the business (including third party information), which:
+
+            <br /><br />
+
+            (i) is subject to privacy rules and regulations and/or derives economic value, actual or potential, from not being generally known,
+
+            <br /><br />
+
+            (ii) is the subject of efforts by the Disclosing Party that are reasonable under the circumstances to maintain the secrecy of the information,
+
+            <br /><br />
+
+            (iii) is identified by the Disclosing Party as “Confidential” and/or “Proprietary”.
+
+        </div>
+
+        <!-- SECTION 5 -->
+        <div class="section-title">
+            5. Obligations of Receiving Party
+        </div>
+
+        <div class="content">
+
+            The Receiving Party agrees:
+
+            <br /><br />
+
+            (i) to use the confidential information solely for the purpose;
+
+            <br /><br />
+
+            (ii) to use all possible means to maintain the Confidential Information in strict confidence;
+
+            <br /><br />
+
+            (iii) not to disclose the Confidential Information to any third party except authorized employees;
+
+            <br /><br />
+
+            (iv) to immediately notify the Disclosing Party in the event of any unauthorized disclosure.
+
+        </div>
+
+        <!-- SECTION 6 -->
+        <div class="section-title">
+            6. Governing Laws and Jurisdiction
+        </div>
+
+        <div class="content">
+
+            This Agreement shall be governed by and construed and enforced in accordance with the laws of India and the parties agree to submit to the exclusive jurisdiction of the courts of Bangalore.
+
+        </div>
+
+        <!-- SECTION 7 -->
+        <div class="section-title">
+            7. Signatures
+        </div>
+
+        @{
+            bool isSigned =
+                Model.NDAData?.ExecutedDate != null == true;
+        }
+
+        <div class="content">
+
+            This document is an electronic record in terms of Information Technology Act, 2000 and does not require any physical or digital signatures.
+
+        </div>
+
+        <!-- AGREEMENT -->
+        <div class="agreement-box">
+
+            @if (isSigned)
+            {
+                <div class="alert alert-success mb-4">
+
+                    <strong>NDA Already Signed</strong>
+
+                    <br />
+
+                    Signed On :
+                    <strong>
+                        @(Model.NDAData?.ExecutedDate?.ToString("dd-MMM-yyyy hh:mm tt"))
+                    </strong>
+
+                </div>
+            }
+
+            <!-- CHECKBOX 1 -->
+            <div class="form-check mb-3">
+
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="chkAgree"
+                @(Model.NDAData?.AcceptNonDisclosureAgreement == true ? "checked" : "")
+                @(isSigned ? "disabled" : "") />
+
+                <label class="form-check-label"
+                       for="chkAgree">
+
+                    By ticking this box, I confirm that I have read and agree to Brickwork NDA.
+
+                </label>
+
+            </div>
+
+            <!-- CHECKBOX 2 -->
+            <div class="form-check mb-4">
+
+                <input class="form-check-input"
+                       type="checkbox"
+                       id="chkScannedDoc"
+                @(Model.NDAData?.AcceptScannedDocumentsNDA == true ? "checked" : "")
+                @(isSigned ? "disabled" : "") />
+
+                <label class="form-check-label"
+                       for="chkScannedDoc">
+
+                    I prefer to send and receive a scanned document with signatures of both parties.
+
+                </label>
+
+            </div>
+
+            <!-- BUTTON -->
+            @if (!isSigned)
+            {
+                <button class="btn btn-primary btn-submit"
+                        id="btnSubmit">
+
+                    Submit Agreement
+
+                </button>
+            }
+            else
+            {
+                <button class="btn btn-success btn-submit"
+                        disabled>
+
+                    Agreement Submitted
+
+                </button>
+            }
+
+        </div>
+    </div>
+
+    <script>
+
+            document.getElementById("btnSubmit")
+                .addEventListener("click", async function () {
+
+                    try {
+
+                        const agree =
+                            document.getElementById("chkAgree").checked;
+
+                        if (!agree) {
+
+                            alert("Please accept NDA agreement");
+                            return;
+                        }
+
+                        const model = {
+
+                            leadId: "@Model.LeadId",
+
+                            requestedDate: "@Model.RequestedDate",
+
+                            acceptedAgreement: agree,
+
+                            acceptScannedDocuments:
+                                document.getElementById("chkScannedDoc").checked
+                        };
+
+                        const response =
+                            await fetch('/SalesCRM/Lead/SubmitAgreement', {
+
+                                method: 'POST',
+
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+
+                                body: JSON.stringify(model)
+
+                            });
+
+                        if (!response.ok) {
+
+                            const errorText =
+                                await response.text();
+
+                            console.error(errorText);
+
+                            alert("Failed to submit NDA");
+                            return;
+                        }
+
+                        const data =
+                            await response.json();
+
+                        alert(data.message);
+
+                        document.getElementById("btnSubmit")
+                            .disabled = true;
+
+                        document.getElementById("btnSubmit")
+                            .innerText = "Agreement Submitted";
+
+                          window.location.reload();
+
+                    }
+                    catch (error) {
+
+                        console.error(error);
+
+                        alert("Something went wrong");
+
+                    }
+
+                });
+
+    </script>
+
+</body>
+</html>

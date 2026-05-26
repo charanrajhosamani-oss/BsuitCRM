@@ -1,0 +1,342 @@
+﻿@using BSuit.API.Areas.Admin.Models
+@model PIIConfigVM
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>PII Configuration Management</h3>
+
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Hidden Help Content -->
+<div id="piiHelpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">PII Configuration Help</h6>
+
+        <p class="text-white mb-2">
+            Manage Personally Identifiable Information (PII) settings for each tenant.
+        </p>
+
+        <ul class="mb-0 ps-3">
+            <li>Configure tenant-specific PII fields</li>
+            <li>Select database tables dynamically</li>
+            <li>Select columns dynamically</li>
+            <li>Activate/Deactivate configurations</li>
+            <li>Delete unused configurations</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<!-- Search + Actions -->
+<div class="row align-items-center mb-3">
+
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input name="Search"
+                   value="@Model.Search"
+                   placeholder="Search PII config..."
+                   class="form-control me-2" />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <div class="col-md-4 text-end">
+        <button type="button"
+                onclick="location.reload();"
+                class="btn btn-secondary me-2">
+            Refresh
+        </button>
+
+        <button type="button"
+                onclick="showCreate()"
+                class="btn btn-success">
+            Add PII
+        </button>
+    </div>
+</div>
+
+<!-- Table -->
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Tenant</th>
+            <th>Table</th>
+            <th>Column</th>
+            <th>Status</th>
+            <th width="250">Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            var tenant = Model.Tenants.FirstOrDefault(t => t.Id == item.TenantId);
+
+            <tr class="@(item.IsActive ? "" : "table-secondary text-muted")">
+                <td>@tenant?.Name</td>
+                <td>@item.TableName</td>
+                <td>@item.ColumnName</td>
+                <td>@(item.IsActive ? "Active" : "Inactive")</td>
+
+                <td>
+                    <button class="btn btn-primary btn-sm"
+                            onclick="edit('@item.Id','@item.TenantId','@item.TableName','@item.ColumnName')">
+                        Edit
+                    </button>
+
+                    <form action="/Admin/PIIConfig/Toggle"
+                          method="post"
+                          style="display:inline">
+                        <input type="hidden"
+                               name="id"
+                               value="@item.Id" />
+
+                        <button class="btn btn-info btn-sm">
+                            @(item.IsActive ? "Deactivate" : "Activate")
+                        </button>
+                    </form>
+
+                    <button onclick="del('@item.Id')"
+                            class="btn btn-danger btn-sm">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="piiModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTitle">
+                    PII Configuration
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="post" id="piiForm">
+                    <input type="hidden" name="Id" id="Id" />
+
+                    <div class="mb-2">
+                        <label>Tenant</label>
+                        <select name="TenantId"
+                                id="TenantId"
+                                class="form-select">
+                            @foreach (var t in Model.Tenants)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Table Name</label>
+                        <select id="TableName"
+                                name="TableName"
+                                class="form-select">
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Column Name</label>
+                        <select id="ColumnName"
+                                name="ColumnName"
+                                class="form-select">
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit"
+                        form="piiForm"
+                        class="btn btn-success">
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    let piiModal;
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Initialize modal
+        piiModal = new bootstrap.Modal(
+            document.getElementById("piiModal")
+        );
+
+        // Initialize tooltip
+        let helpContent = document.getElementById("piiHelpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto hide alerts
+        let alertBox = document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+
+        // Table dropdown change event
+        document.getElementById("TableName")
+            .addEventListener("change", function () {
+                loadColumns(this.value);
+            });
+
+        // Initial table load
+        loadTables();
+    });
+
+
+    function loadTables(selectedTable = null, selectedColumn = null) {
+        fetch('/Admin/PIIConfig/GetTables')
+            .then(res => res.json())
+            .then(data => {
+
+                let ddl = document.getElementById("TableName");
+                ddl.innerHTML = '<option value="">Select Table</option>';
+
+                data.forEach(t => {
+                    ddl.innerHTML += `<option value="${t}">${t}</option>`;
+                });
+
+                if (selectedTable) {
+                    ddl.value = selectedTable;
+                    loadColumns(selectedTable, selectedColumn);
+                }
+            });
+    }
+
+
+    function loadColumns(table, selectedColumn = null) {
+
+        if (!table) {
+            document.getElementById("ColumnName").innerHTML =
+                '<option value="">Select Column</option>';
+            return;
+        }
+
+        fetch(`/Admin/PIIConfig/GetColumns?tableName=${table}`)
+            .then(res => res.json())
+            .then(data => {
+
+                let ddl = document.getElementById("ColumnName");
+                ddl.innerHTML = '<option value="">Select Column</option>';
+
+                data.forEach(c => {
+                    ddl.innerHTML += `<option value="${c}">${c}</option>`;
+                });
+
+                if (selectedColumn) {
+                    ddl.value = selectedColumn;
+                }
+            });
+    }
+
+
+    function showCreate() {
+        document.getElementById("piiForm").reset();
+        document.getElementById("Id").value = "";
+
+        document.getElementById("modalTitle").innerText =
+            "Add PII Configuration";
+
+        document.getElementById("piiForm").action =
+            "/Admin/PIIConfig/Create";
+
+        loadTables();
+
+        piiModal.show();
+    }
+
+
+    function edit(id, tenantId, tableName, columnName) {
+        document.getElementById("Id").value = id;
+        document.getElementById("TenantId").value = tenantId;
+
+        document.getElementById("modalTitle").innerText =
+            "Edit PII Configuration";
+
+        document.getElementById("piiForm").action =
+            "/Admin/PIIConfig/Edit";
+
+        loadTables(tableName, columnName);
+
+        piiModal.show();
+    }
+
+
+    function del(id) {
+        if (confirm("Delete this configuration?")) {
+
+            let f = document.createElement("form");
+            f.method = "post";
+            f.action = "/Admin/PIIConfig/Delete";
+
+            let i = document.createElement("input");
+            i.type = "hidden";
+            i.name = "id";
+            i.value = id;
+
+            f.appendChild(i);
+            document.body.appendChild(f);
+            f.submit();
+        }
+    }
+</script>

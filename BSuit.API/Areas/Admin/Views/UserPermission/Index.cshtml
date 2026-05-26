@@ -1,0 +1,312 @@
+﻿@model BSuit.API.Areas.Admin.Models.UserPermissionVM
+
+@{
+    Layout = "/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>User Permission Management</h3>
+    <span id="helpIcon" class="help-icon">?</span>
+</div>
+
+<!-- Help Tooltip -->
+<div id="helpContent" style="display:none;">
+    <div class="p-2">
+        <h6 class="text-primary mb-2">Permission Help</h6>
+
+        <ul class="mb-0 ps-3 text-white">
+            <li>Select user from dropdown</li>
+            <li>Assign permissions module-wise</li>
+            <li>Select/Unselect all permissions</li>
+            <li>Search assigned permissions</li>
+            <li>Remove assigned permissions instantly</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Alerts -->
+<div id="alertContainer">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+</div>
+
+<div class="card">
+
+    <!-- Header Actions -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>User Permission Setup</h5>
+
+        <button type="button"
+                class="btn btn-secondary btn-sm"
+                onclick="location.reload()">
+            Refresh
+        </button>
+    </div>
+
+    <div class="card-body">
+
+        <!-- User Selection -->
+        <form method="get" class="row mb-4">
+            <div class="col-md-6">
+                <label>Select User</label>
+
+                <select name="userId"
+                        class="form-select"
+                        onchange="this.form.submit()">
+
+                    @foreach (var u in Model.Users)
+                    {
+                        <option value="@u.Id"
+                                selected="@(u.Id == Model.UserId)">
+                            @u.Name
+                        </option>
+                    }
+                </select>
+            </div>
+        </form>
+
+        <!-- Permission Assignment -->
+        <form method="post" action="/Admin/UserPermission/Save">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   name="userId"
+                   value="@Model.UserId" />
+
+            <div class="mb-3">
+                <button type="button"
+                        class="btn btn-sm btn-primary me-2"
+                        onclick="selectAll(true)">
+                    Select All
+                </button>
+
+                <button type="button"
+                        class="btn btn-sm btn-warning"
+                        onclick="selectAll(false)">
+                    Unselect All
+                </button>
+            </div>
+
+            @if (Model.PermissionGroups != null && Model.PermissionGroups.Any())
+            {
+                @foreach (var group in Model.PermissionGroups)
+                {
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <strong>@group.ModuleName</strong>
+
+                            <div>
+                                <label class="me-2 mb-0">
+                                    Select Module
+                                </label>
+
+                                <input type="checkbox"
+                                       onclick="toggleGroup(this)" />
+                            </div>
+                        </div>
+
+                        <div class="card-body row">
+                            @foreach (var p in group.Permissions)
+                            {
+                                <div class="col-md-4 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="permissionIds"
+                                               value="@p.Id"
+                                               @(p.IsAssigned ? "checked" : "") />
+
+                                        <label class="form-check-label">
+                                            @p.DisplayName
+                                        </label>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No permissions available
+                </div>
+            }
+
+            <button class="btn btn-success mt-2">
+                Save Permissions
+            </button>
+        </form>
+
+        <hr />
+
+        <!-- Assigned Permission Grid -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5>Assigned Permissions</h5>
+
+            <input type="text"
+                   id="searchBox"
+                   class="form-control w-25"
+                   placeholder="Search permissions..."
+                   onkeyup="filterGrid()" />
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover"
+                   id="grid">
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Permission</th>
+                        <th>Status</th>
+                        <th width="120">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.AssignedPermissions != null &&
+                                        Model.AssignedPermissions.Any())
+                    {
+                        @foreach (var item in Model.AssignedPermissions)
+                        {
+                            <tr>
+                                <td>@item.ModuleName</td>
+
+                                <td>@item.DisplayName</td>
+
+                                <td>
+                                    <span class="badge @(item.IsAllowed ? "bg-success" : "bg-danger")">
+                                        @(item.IsAllowed ? "Allowed" : "Denied")
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="btn btn-danger btn-sm"
+                                            onclick="removePermission('@Model.UserId',
+                                                    '@item.PermissionId',
+                                                    this)">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4"
+                                class="text-center text-muted">
+                                No assigned permissions found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Help Tooltip
+        let helpContent =
+            document.getElementById("helpContent").innerHTML;
+
+        new bootstrap.Tooltip(
+            document.getElementById("helpIcon"),
+            {
+                title: helpContent,
+                html: true,
+                placement: "left"
+            }
+        );
+
+        // Auto Hide Alerts
+        let alertBox =
+            document.getElementById("alertContainer");
+
+        if (alertBox && alertBox.innerHTML.trim() !== "") {
+            setTimeout(() => {
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = "0";
+
+                setTimeout(() => {
+                    alertBox.remove();
+                }, 500);
+
+            }, 3000);
+        }
+    });
+
+    function selectAll(flag) {
+        document.querySelectorAll(
+            'input[name="permissionIds"]'
+        ).forEach(cb => cb.checked = flag);
+    }
+
+    function toggleGroup(src) {
+        src.closest('.card')
+            .querySelectorAll(
+                'input[name="permissionIds"]'
+            )
+            .forEach(cb => cb.checked = src.checked);
+    }
+
+    function filterGrid() {
+        let val = document
+            .getElementById("searchBox")
+            .value.toLowerCase();
+
+        document.querySelectorAll(
+            "#grid tbody tr"
+        ).forEach(tr => {
+            tr.style.display =
+                tr.innerText.toLowerCase()
+                .includes(val) ? "" : "none";
+        });
+    }
+
+    function removePermission(userId, permissionId, btn) {
+
+        if (!confirm("Remove this permission?"))
+            return;
+
+        fetch('/Admin/UserPermission/RemovePermission', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken':
+                    document.querySelector(
+                        'input[name="__RequestVerificationToken"]'
+                    ).value
+            },
+            body: JSON.stringify({
+                userId: userId,
+                permissionId: permissionId
+            })
+        })
+        .then(r => r.json())
+        .then(r => {
+            if (r.success) {
+                btn.closest("tr").remove();
+            }
+            else {
+                alert("Failed to remove permission");
+            }
+        });
+    }
+</script>

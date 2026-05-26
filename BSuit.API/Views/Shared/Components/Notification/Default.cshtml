@@ -1,0 +1,131 @@
+﻿@using BSuit.API.ViewComponents
+@using BSuit.Core.Entities
+
+@model NotificationHeaderVM
+
+<li class="nav-item dropdown notification-dropdown">
+    <a class="nav-link position-relative"
+       href="#"
+       id="notificationDropdown"
+       data-bs-toggle="dropdown"
+       aria-expanded="false">
+
+        <i class="bi bi-bell-fill fs-5 text-white"></i>
+
+        @if (Model.UnreadCount > 0)
+        {
+            <span class="notification-badge">
+                @Model.UnreadCount
+            </span>
+        }
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-end notification-menu shadow border-0"
+         aria-labelledby="notificationDropdown">
+
+        <!-- Header -->
+        <div class="notification-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"> <i class="bi bi-bell-fill me-1 text-primary"></i>Notifications</h6>
+
+           <a href="/Notifications/MarkAllRead"class="mark-read text-decoration-none">
+                <i class="bi bi-check2-all me-1 text-success"></i>Mark all read   
+           </a>
+        </div>
+
+        <!-- Notification Body -->
+        <div class="notification-body">
+
+            @if (Model.Notifications.Any())
+            {
+                @foreach (var item in Model.Notifications)
+                {
+                    var iconClass = "";
+                    var bgClass = "";
+                    var itemBgClass = "";
+
+                    switch (item.Notification.NotificationType)
+                    {
+                        case NotificationType.Success:
+                            iconClass = "bi bi-check-circle-fill";
+                            bgClass = "success-bg";
+                            itemBgClass = "success-light";
+                            break;
+
+                        case NotificationType.Error:
+                            iconClass = "bi bi-x-circle-fill";
+                            bgClass = "error-bg";
+                            itemBgClass = "error-light";
+                            break;
+
+                        case NotificationType.Warning:
+                            iconClass = "bi bi-exclamation-triangle-fill";
+                            bgClass = "warning-bg";
+                            itemBgClass = "warning-light";
+                            break;
+
+                        case NotificationType.Info:
+                            iconClass = "bi bi-info-circle-fill";
+                            bgClass = "info-bg";
+                            itemBgClass = "info-light";
+                            break;
+
+                        default:
+                            iconClass = "bi bi-bell-fill";
+                            bgClass = "default-bg";
+                            itemBgClass = "default-light";
+                            break;
+                    }
+
+                    <a href="/Notifications/Read/@item.Id"
+                        class="notification-item @itemBgClass">
+
+                        <div class="notification-icon @bgClass">
+                            <i class="@iconClass"></i>
+                        </div>
+
+                        <div class="notification-content">
+                            <h6>
+                                    @{
+                                    var title = item.Notification.Title;
+
+                                    var shortTitle = string.IsNullOrWhiteSpace(title)
+                                    ? "No message"
+                                    : title.Length > 30
+                                    ? title.Substring(0, 30) + "..."
+                                    : title;
+                                }
+
+                                @shortTitle
+                            </h6>
+
+                            <p>
+                                @{
+                                    var message = item.Notification.Message;
+
+                                    var shortMessage = string.IsNullOrWhiteSpace(message)
+                                    ? "No description available"
+                                    : message.Length > 60
+                                    ? message.Substring(0, 60) + "..."
+                                    : message;
+                                }
+
+                                @shortMessage
+                            </p>
+
+                            <span>
+                                @item.Notification.CreatedOn.ToString("dd MMM yyyy hh:mm tt")
+                            </span>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+
+        <!-- Footer -->
+        <div class="notification-footer">
+            <a href="/Notifications/ViewAll"><i class="bi bi-list-ul me-1 text-primary"></i>View All Notifications</a>
+        </div>
+
+    </div>
+</li>
+
