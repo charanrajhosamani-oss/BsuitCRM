@@ -1,171 +1,518 @@
-﻿@page
+@page
 @model LoginModel
 
 @{
     ViewData["Title"] = "Log in";
     Layout = null;
 }
-<link href="~/css/bootstrap.min.css" rel="stylesheet" />
-<link href="~/css/custom.css" rel="stylesheet" />
-<link href="~/css/font-awesome.min.css" rel="stylesheet" />
-<script src="~/js/bootstrap-5.3.8.js"></script>
-<script src="~/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/popper-2.11.8.min.js"></script>
 
-<title>BSuit: @User.Identity?.Name Log in</title>
+<!DOCTYPE html>
 
-<div class="container-fluid">
-    <div class="row min-vh-100">
+<html>
 
-        <!-- LEFT SIDE -->
-        <div class="col-lg-4 col-md-5 login-right-panel text-white d-flex flex-column justify-content-start p-lg-5 p-4">
+<head>
 
-            <div class="d-flex justify-content-start logo mb-4">
-                <img src="~/images/logo-white.png" alt="logo">
-            </div>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-            <h3 class="hdr arvo-bold mb-4">
-                Welcome <br>
-                <span class="highlight">to the Brickwork <br>Enterprise Portal</span>
-            </h3>
+    <title>BSuit Login</title>
 
-            <p class="small">
-                Access your business operations quickly and securely through this unified platform.
-                Manage enterprise resources, customer relationships, projects, tasks, and team collaboration with ease.
-                Track performance, monitor progress, and stay informed with real-time insights
-            </p>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/font-awesome.min.css" rel="stylesheet" />
 
-            <p class="fw-semibold mt-4 small highlight">
-                Everything you need.<br>
-                One integrated platform.
-            </p>
+    <style>
 
-        </div>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f4f7fb;
+            font-family: 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+        }
 
-        <!-- RIGHT SIDE (FORM) -->
-        <div class="col-lg-8 col-md-7 d-flex align-items-center justify-content-center p-lg-5 p-4">
-            <div class="box1 login-box">
+        .login-wrapper {
+            min-height: 100vh;
+        }
 
-                <h3 class="hdr mb-2">Login</h3>
-                <p class="mb-4">
-                    Please provide your username and password to <b>sign in</b>
+        /* ========================================= */
+        /* LEFT PANEL */
+        /* ========================================= */
+
+        .left-panel {
+
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+
+            color: white;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+            .left-panel::before {
+
+                content: "";
+
+                position: absolute;
+
+                width: 500px;
+                height: 500px;
+
+                background: rgba(255,255,255,0.05);
+
+                border-radius: 50%;
+
+                top: -150px;
+                right: -120px;
+            }
+
+            .left-panel::after {
+
+                content: "";
+
+                position: absolute;
+
+                width: 350px;
+                height: 350px;
+
+                background: rgba(255,255,255,0.04);
+
+                border-radius: 50%;
+
+                bottom: -120px;
+                left: -100px;
+            }
+
+        .brand-logo img {
+            height: 55px;
+        }
+
+        .welcome-title {
+
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .welcome-title span {
+            color: #38bdf8;
+        }
+
+        .welcome-desc {
+
+            color: #cbd5e1;
+
+            font-size: 1rem;
+
+            line-height: 1.8;
+        }
+
+        /* ========================================= */
+        /* RIGHT PANEL */
+        /* ========================================= */
+
+        .right-panel {
+            background: #f8fafc;
+        }
+
+        .login-card {
+
+            background: white;
+
+            width: 100%;
+            max-width: 450px;
+
+            border-radius: 20px;
+
+            padding: 40px;
+
+            box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+        }
+
+        .login-card h2 {
+
+            font-weight: 700;
+
+            color: #0f172a;
+        }
+
+        .login-card p {
+            color: #64748b;
+        }
+
+        .form-control {
+
+            height: 52px;
+
+            border-radius: 12px;
+
+            border: 1px solid #dbe2ea;
+
+            padding-left: 15px;
+        }
+
+            .form-control:focus {
+
+                border-color: #0ea5e9;
+
+                box-shadow: none;
+            }
+
+        .btn-login {
+
+            height: 52px;
+
+            border-radius: 12px;
+
+            background: linear-gradient(90deg, #0ea5e9, #2563eb);
+
+            border: none;
+
+            font-weight: 600;
+
+            color: white;
+
+            transition: 0.3s;
+        }
+
+            .btn-login:hover {
+
+                transform: translateY(-1px);
+
+                opacity: 0.95;
+            }
+
+        .captcha-box {
+
+            border: 1px solid #dbe2ea;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            height: 42px;
+        }
+
+        .captcha-input {
+            height: 42px;
+        }
+
+        .fp-link {
+
+            text-decoration: none;
+
+            color: #2563eb;
+
+            font-size: 14px;
+        }
+
+            .fp-link:hover {
+                text-decoration: underline;
+            }
+
+        .bottom-text {
+
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+            .bottom-text a {
+
+                color: #2563eb;
+
+                text-decoration: none;
+
+                font-weight: 600;
+            }
+
+        .eye-icon {
+
+            position: absolute;
+
+            top: 42px;
+            right: 15px;
+
+            cursor: pointer;
+
+            color: #64748b;
+        }
+
+        @@media(max-width:991px) {
+
+            .left-panel {
+                display: none !important;
+            }
+
+            .login-card {
+                padding: 30px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container-fluid">
+
+        <div class="row login-wrapper">
+
+            <!-- ========================================= -->
+            <!-- LEFT PANEL -->
+            <!-- ========================================= -->
+
+            <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-center p-5 left-panel">
+
+                <div class="brand-logo mb-5">
+                    <img src="~/images/logo-white.png" />
+                </div>
+
+                <h1 class="welcome-title mb-4">
+                    Smart Enterprise <br />
+                    <span>Management Platform</span>
+                </h1>
+
+                <p class="welcome-desc mb-4">
+
+                    Manage leads, projects, operations, approvals,
+                    collaboration, customer engagement and reporting
+                    from one centralized enterprise ecosystem.
+
                 </p>
 
-                <!-- ✅ IMPORTANT: method="post" + asp-page -->
-                <form id="account" method="post">
+                <div class="mt-3">
 
-                    <!-- Validation -->
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <h5 class="fw-semibold mb-3">
+                        Platform Highlights
+                    </h5>
 
-                    <!-- Email -->
-                    <div class="mb-3">
-                        <label asp-for="Input.Email" class="form-label"></label>
-                        <input asp-for="Input.Email"
-                               class="form-control"
-                               placeholder="username@brickworkindia.com" />
-                        <span asp-validation-for="Input.Email" class="text-danger"></span>
-                    </div>
+                    <ul class="list-unstyled lh-lg text-light">
 
-                    <!-- Password -->
-                    <div class="mb-3 position-relative">
-                        <label asp-for="Input.Password" class="form-label"></label>
+                        <li>
+                            <i class="fa fa-check-circle me-2"></i>
+                            CRM & Lead Management
+                        </li>
 
-                        <input asp-for="Input.Password"
-                               type="password"
-                               class="form-control pe-5"
-                               id="passwordInput"
-                               placeholder="************" />
-                        <!-- Eye Icon -->
-                        <span class="position-absolute top-70 end-0 translate-middle-y me-2"
-                              style="cursor:pointer;"
-                              onclick="togglePassword()">
-                            <i id="toggleIcon" class="fa fa-eye"></i>
-                        </span>
+                        <li>
+                            <i class="fa fa-check-circle me-2"></i>
+                            Workflow Automation
+                        </li>
 
-                        <span asp-validation-for="Input.Password" class="text-danger"></span>
-                    </div>
+                        <li>
+                            <i class="fa fa-check-circle me-2"></i>
+                            Real-time Analytics
+                        </li>
 
-                    <!-- Remember + Forgot -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <li>
+                            <i class="fa fa-check-circle me-2"></i>
+                            Secure Enterprise Access
+                        </li>
 
-                        <div class="form-check">
-                            <input class="form-check-input" asp-for="Input.RememberMe" />
-                            <label class="form-check-label small" asp-for="Input.RememberMe">
-                                @Html.DisplayNameFor(m => m.Input.RememberMe)
-                            </label>
-                        </div>
+                    </ul>
 
-                        <a asp-page="./ForgotPassword" class="fpw">
-                            Forgot password?
-                        </a>
-                    </div>
-
-                    <!-- CAPTCHA -->
-                    <div class="d-flex justify-content-between mb-4 gap-2">
-                        <div class="d-flex gap-2">
-
-                            <div class="captcha-box">
-                                <img id="captchaImage"
-                                     src="?handler=Captcha"
-                                     class="img-fluid" style="height:40px;"/>
-                            </div>
-
-                            <a href="javascript:void(0)" class="text-center m-2" title="Load new Captcha text"
-                               onclick="refreshCaptcha()">
-                                <i class="fa fa-repeat"></i>
-                            </a>
-                        </div>
-
-                        <input asp-for="CaptchaInput"
-                               class="form-control captcha-input"
-                               placeholder="Enter Captcha" />
-                    </div>
-
-
-                    <!-- Button -->
-                    <button type="submit" class="btn btn-success w-100 mb-3">
-                        Sign In
-                    </button>
-
-                    <!-- Footer -->
-                    <p class="text-center dont-account mb-0 mt-3">
-                        Don't have an account?
-                        <a href="#" class="a-orange">Contact HR</a>
-                    </p>
-
-                </form>
+                </div>
 
             </div>
+
+            <!-- ========================================= -->
+            <!-- RIGHT PANEL -->
+            <!-- ========================================= -->
+
+            <div class="col-lg-6 d-flex align-items-center justify-content-center right-panel p-4">
+
+                <div class="login-card">
+
+                    <h2 class="mb-2">
+                        Welcome Back
+                    </h2>
+
+                    <p class="mb-4">
+                        Sign in to continue to BSuit Enterprise Portal
+                    </p>
+
+                    <form method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <!-- EMAIL -->
+
+                        <div class="mb-3">
+
+                            <label asp-for="Input.Email"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Input.Email"
+                                   class="form-control"
+                                   placeholder="Enter your email" />
+
+                            <span asp-validation-for="Input.Email"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <!-- PASSWORD -->
+
+                        <div class="mb-3 position-relative">
+
+                            <label asp-for="Input.Password"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Input.Password"
+                                   type="password"
+                                   class="form-control pe-5"
+                                   id="passwordInput"
+                                   placeholder="Enter password" />
+
+                            <span class="eye-icon"
+                                  onclick="togglePassword()">
+
+                                <i id="toggleIcon"
+                                   class="fa fa-eye"></i>
+
+                            </span>
+
+                            <span asp-validation-for="Input.Password"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <!-- REMEMBER -->
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                            <div class="form-check">
+
+                                <input class="form-check-input"
+                                       asp-for="Input.RememberMe" />
+
+                                <label class="form-check-label"
+                                       asp-for="Input.RememberMe">
+                                </label>
+
+                            </div>
+
+                            <a asp-page="./ForgotPassword"
+                               class="fp-link">
+
+                                Forgot Password?
+
+                            </a>
+
+                        </div>
+
+                        <!-- CAPTCHA -->
+
+                        <div class="row mb-4">
+
+                            <div class="col-7">
+
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <div class="captcha-box">
+
+                                        <img id="captchaImage"
+                                             src="?handler=Captcha"
+                                             style="height:42px;" />
+
+                                    </div>
+
+                                    <a href="javascript:void(0)"
+                                       onclick="refreshCaptcha()">
+
+                                        <i class="fa fa-refresh"></i>
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-5">
+
+                                <input asp-for="CaptchaInput"
+                                       class="form-control captcha-input"
+                                       placeholder="Captcha" />
+
+                            </div>
+
+                        </div>
+
+                        <!-- BUTTON -->
+
+                        <button type="submit"
+                                class="btn btn-login w-100">
+
+                            Sign In
+
+                        </button>
+
+                        <!-- FOOTER -->
+
+                        <p class="text-center bottom-text mt-4 mb-0">
+
+                            Need account access?
+
+                            <a href="#">
+                                Contact Administrator
+                            </a>
+
+                        </p>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
-</div>
 
-@section Scripts {
     <partial name="_ValidationScriptsPartial" />
-}
 
-<script>
-    function togglePassword() {
-        var passwordInput = document.getElementById("passwordInput");
-        var toggleIcon = document.getElementById("toggleIcon");
+    <script>
 
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            toggleIcon.classList.remove("bi-eye");
-            toggleIcon.classList.add("bi-eye-slash");
+        function togglePassword() {
+
+            var passwordInput =
+                document.getElementById("passwordInput");
+
+            var toggleIcon =
+                document.getElementById("toggleIcon");
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                toggleIcon.classList.remove("fa-eye");
+
+                toggleIcon.classList.add("fa-eye-slash");
+            }
+            else {
+
+                passwordInput.type = "password";
+
+                toggleIcon.classList.remove("fa-eye-slash");
+
+                toggleIcon.classList.add("fa-eye");
+            }
         }
-        else {
-            passwordInput.type = "password";
-            toggleIcon.classList.remove("bi-eye-slash");
-            toggleIcon.classList.add("bi-eye");
+
+        function refreshCaptcha() {
+
+            document.getElementById("captchaImage").src =
+                "?handler=Captcha&t=" + new Date().getTime();
+
+            document.getElementById("CaptchaInput").value = "";
         }
-    }
 
-     function refreshCaptcha() {
-        document.getElementById("captchaImage").src =
-            "?handler=Captcha&t=" + new Date().getTime();
+    </script>
 
-        document.getElementById("CaptchaInput").value = "";
-    }
-</script>
+</body>
+
+</html>
